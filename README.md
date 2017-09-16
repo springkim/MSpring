@@ -7,3 +7,6 @@ MFC library
 ###version 0.0.2
 * Fixed close button problem.
 * Removed frame moving bottleneck.
+
+###version 0.0.3
+* Append version information.
