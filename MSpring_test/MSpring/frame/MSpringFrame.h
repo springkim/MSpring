@@ -240,6 +240,11 @@ public:	//messageevent method
 		return 0;
 	}
 	afx_msg void OnNcPaint() {
+		WINDOWPLACEMENT place;
+		place.length = (UINT)sizeof(WINDOWPLACEMENT);
+		if (GetWindowPlacement(&place) && place.showCmd==SW_SHOWMINIMIZED) {
+			return;
+		}
 		auto Normalize = [](CRect r)->CRect {
 			r.OffsetRect(-r.left, -r.top);
 			r.NormalizeRect();
@@ -500,15 +505,18 @@ public:	//messageevent method
 		point=this->GetMousePoint();
 		this->ReplaceSystemButtonState(SystemButton::State::Hover, SystemButton::State::Normal);
 		this->ReplaceSystemButtonState(SystemButton::State::Click, SystemButton::State::Normal);
+		bool clicked = false;
 		for (int i = 0; i < (int)this->m_sysbtn.size(); i++) {
 			if (this->m_sysbtn[i].m_rect.PtInRect(point) == TRUE) {
 				this->m_sysbtn[i].Do(this);
+				clicked = true;
 				break;
 			}
 		}
-		
-		for (auto&e : m_expansion) {
-			e->OnNcLButtonUp(nHitTest, this->GetMousePoint());
+		if (clicked == false) {
+			for (auto&e : m_expansion) {
+				e->OnNcLButtonUp(nHitTest, this->GetMousePoint());
+			}
 		}
 		REDRAW_NCAREA;
 		CFrameWnd::OnNcLButtonUp(nHitTest, apoint);

@@ -10,3 +10,6 @@ MFC library
 
 ###version 0.0.3
 * Append version information.
+
+###version 0.0.4
+* Fixed minimized window error.
