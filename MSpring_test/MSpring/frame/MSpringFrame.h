@@ -249,7 +249,7 @@ public:	//messageevent method
 		CWindowDC* ncpaint = &_ncpaint;
 
 		CRect rect_window = this->GetWindowNomalizedRect();
-
+		
 
 		CRect rect_window_top = {
 			rect_window.left
@@ -275,6 +275,7 @@ public:	//messageevent method
 			,rect_window.right
 			,rect_window_bottom.top
 		};
+		
 		mspring::DoubleBufferingDC* dbb_top = new mspring::DoubleBufferingDC(ncpaint, rect_window_top);
 		mspring::DoubleBufferingDC* dbb_bottom = new mspring::DoubleBufferingDC(ncpaint, rect_window_bottom);
 		mspring::DoubleBufferingDC* dbb_left = new mspring::DoubleBufferingDC(ncpaint, rect_window_left);
@@ -286,6 +287,7 @@ public:	//messageevent method
 		dbb_left->getDC().FillRect(Normalize(rect_window_left), &brush);
 		dbb_right->getDC().FillRect(Normalize(rect_window_right), &brush);
 		brush.DeleteObject();
+		
 		//여기까지가 프레임 그리기.
 		CPen pen, *old_pen;
 		int thickness = 1;
@@ -314,7 +316,7 @@ public:	//messageevent method
 		dbb_right->getDC().MoveTo(Normalize(rect_window_right).right - 1 - thickness, Normalize(rect_window_right).top);
 		dbb_right->getDC().LineTo(Normalize(rect_window_right).right - 1 - thickness, Normalize(rect_window_right).bottom);
 		dbb_right->getDC().SelectObject(old_pen);
-
+		
 		pen.DeleteObject();
 		//테두리 그리기.
 		CSize btn_sz(rect_window_top.Height() - m_sysbtn_margin * 2, rect_window_top.Height() - m_sysbtn_margin * 2);
@@ -494,16 +496,22 @@ public:	//messageevent method
 		}
 	}
 	afx_msg void OnNcLButtonUp(UINT nHitTest, CPoint point) {
-		auto it = std::find_if(m_sysbtn.begin(), m_sysbtn.end(), [](SystemButton& btn)->bool {return btn.m_state == SystemButton::State::Click; });
-		if (it != m_sysbtn.end()) {
-			it->Do(this);
+		CPoint apoint = point;
+		point=this->GetMousePoint();
+		this->ReplaceSystemButtonState(SystemButton::State::Hover, SystemButton::State::Normal);
+		this->ReplaceSystemButtonState(SystemButton::State::Click, SystemButton::State::Normal);
+		for (int i = 0; i < (int)this->m_sysbtn.size(); i++) {
+			if (this->m_sysbtn[i].m_rect.PtInRect(point) == TRUE) {
+				this->m_sysbtn[i].Do(this);
+				break;
+			}
 		}
-		this->ReplaceSystemButtonState(SystemButton::State::Click, SystemButton::State::Hover);
+		
 		for (auto&e : m_expansion) {
 			e->OnNcLButtonUp(nHitTest, this->GetMousePoint());
 		}
 		REDRAW_NCAREA;
-		CFrameWnd::OnNcLButtonUp(nHitTest, point);
+		CFrameWnd::OnNcLButtonUp(nHitTest, apoint);
 	}
 	afx_msg LRESULT OnNcHitTest(CPoint point) {
 		point = this->GetMousePoint();

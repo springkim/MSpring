@@ -48,10 +48,11 @@ namespace mspring {
 			this->m_rect = rect;
 			this->m_dc.CreateCompatibleDC(pdc);
 			BOOL succ = 0;
-			do {
-				succ=this->m_cbmp.CreateCompatibleBitmap(pdc, rect.Width(), rect.Height());
+			succ = this->m_cbmp.CreateCompatibleBitmap(pdc, rect.Width(), rect.Height());
+			while (succ == 0) {
 				Sleep(1);
-			} while (succ==0);
+				succ = this->m_cbmp.CreateCompatibleBitmap(pdc, rect.Width(), rect.Height());
+			}
 			this->m_cbmp_old = (CBitmap*)this->m_dc.SelectObject(&this->m_cbmp);
 			this->m_dc.PatBlt(0, 0, rect.Width(), rect.Height(), WHITENESS);
 		}
