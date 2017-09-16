@@ -204,6 +204,7 @@
     <ClInclude Include="mspring\MSpring.h" />
     <ClInclude Include="mspring\Operator.h" />
     <ClInclude Include="mspring\Util.h" />
+    <ClInclude Include="MSpring\View.h" />
     <ClInclude Include="mspring\view\MSpringView.h" />
     <ClInclude Include="mspring\view\VirtualView.h" />
     <ClInclude Include="MSpring_test.h" />

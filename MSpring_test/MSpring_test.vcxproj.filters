@@ -90,6 +90,9 @@
     <ClInclude Include="repository.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="MSpring\View.h">
+      <Filter>mspring</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MSpring_test.cpp">

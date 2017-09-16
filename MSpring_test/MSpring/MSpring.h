@@ -24,6 +24,6 @@
 #include"String.h"
 #include"Operator.h"
 #include"Util.h"
-
+#define MSPRING_VERSION 0.0.3
 
 #endif  //MSPRING_7E1_9_C_MSPRING_HPP_INCLUDED

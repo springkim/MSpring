@@ -22,8 +22,8 @@ namespace mspring {
 	public:
 		static void ToWChar(char* src, wchar_t* dst, size_t dst_len) {
 			ZeroMemory(dst, dst_len * sizeof(wchar_t));
-			int len = MultiByteToWideChar(CP_ACP, 0, src, strlen(src), NULL, NULL);
-			MultiByteToWideChar(CP_ACP, 0, src, strlen(src), dst, len);
+			int len = MultiByteToWideChar(CP_ACP, 0, src, static_cast<int>(strlen(src)), NULL, NULL);
+			MultiByteToWideChar(CP_ACP, 0, src, static_cast<int>(strlen(src)), dst, len);
 		}
 		static void ToChar(wchar_t* src, char* dst, size_t dst_len) {
 			ZeroMemory(dst, dst_len * sizeof(char));
