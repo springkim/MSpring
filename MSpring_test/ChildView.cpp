@@ -55,6 +55,7 @@ void CChildView::OnPaint()
 	dc.TextOutA(0, 0, text);
 	dc.MoveTo(0, 20);
 	dc.LineTo(50, 20);
+	font.DeleteObject();
 	// 그리기 메시지에 대해서는 CWnd::OnPaint()를 호출하지 마십시오.
 }
 

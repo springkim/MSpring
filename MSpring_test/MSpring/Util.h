@@ -13,6 +13,7 @@
 #if !defined(MSPRING_7E1_9_C_UTIL_HPP_INCLUDED)
 #define MSPRING_7E1_9_C_UTIL_HPP_INCLUDED
 #include<afxwin.h>
+#include<fstream>
 #define EXEC_ALWAYS(EXPRESSION)	while((EXPRESSION)==FALSE)
 namespace mspring {
 	template<typename T>

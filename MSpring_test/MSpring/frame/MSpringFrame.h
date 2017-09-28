@@ -22,6 +22,11 @@
 #include<map>
 #include"../MSpring.h"
 #include"resource.h"
+#ifdef _DEBUG
+#define new DEBUG_NEW
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
+#endif
 #define REDRAW_NCAREA this->OnNcPaint()
 class MSpringFrameExpansion {
 	/*
@@ -243,6 +248,7 @@ public:	//messageevent method
 		return 0;
 	}
 	afx_msg void OnNcPaint() {
+		
 		WINDOWPLACEMENT place;
 		place.length = (UINT)sizeof(WINDOWPLACEMENT);
 		if (GetWindowPlacement(&place) && place.showCmd==SW_SHOWMINIMIZED) {
@@ -258,110 +264,125 @@ public:	//messageevent method
 
 		CRect rect_window = this->GetWindowNomalizedRect();
 		
-
-		CRect rect_window_top = {
-			rect_window.left
-			,rect_window.top
-			,rect_window.right
+		CRect rect_window_top = {rect_window.left,rect_window.top,rect_window.right
 			,GetSystemMetrics(SM_CYCAPTION) + GetSystemMetrics(SM_CYFRAME) + GetSystemMetrics(SM_CYSIZEFRAME)
 		};
-		CRect rect_window_bottom = {
-			rect_window.left
+		CRect rect_window_bottom = {rect_window.left
 			,rect_window.bottom - GetSystemMetrics(SM_CYFRAME) - GetSystemMetrics(SM_CYSIZEFRAME)
-			,rect_window.right
-			,rect_window.bottom
+			,rect_window.right,rect_window.bottom
 		};
-		CRect rect_window_left = {
-			rect_window.left
-			,rect_window_top.bottom
+		CRect rect_window_left = {rect_window.left,rect_window_top.bottom
 			,GetSystemMetrics(SM_CXFRAME) + GetSystemMetrics(SM_CXSIZEFRAME)
 			,rect_window_bottom.top
 		};
 		CRect rect_window_right = {
 			rect_window.right - GetSystemMetrics(SM_CXFRAME) - GetSystemMetrics(SM_CXSIZEFRAME)
-			,rect_window_top.bottom
-			,rect_window.right
-			,rect_window_bottom.top
+			,rect_window_top.bottom,rect_window.right,rect_window_bottom.top
 		};
 		
 		mspring::DoubleBufferingDC* dbb_top = new mspring::DoubleBufferingDC(ncpaint, rect_window_top);
 		mspring::DoubleBufferingDC* dbb_bottom = new mspring::DoubleBufferingDC(ncpaint, rect_window_bottom);
 		mspring::DoubleBufferingDC* dbb_left = new mspring::DoubleBufferingDC(ncpaint, rect_window_left);
 		mspring::DoubleBufferingDC* dbb_right = new mspring::DoubleBufferingDC(ncpaint, rect_window_right);
-		CBrush brush;
-		EXEC_ALWAYS(brush.CreateSolidBrush(m_color_bk));
-		dbb_top->getDC().FillRect(Normalize(rect_window_top), &brush);
-		dbb_bottom->getDC().FillRect(Normalize(rect_window_bottom), &brush);
-		dbb_left->getDC().FillRect(Normalize(rect_window_left), &brush);
-		dbb_right->getDC().FillRect(Normalize(rect_window_right), &brush);
-		EXEC_ALWAYS(brush.DeleteObject());
-		
+		{
+			CBrush brush;
+			EXEC_ALWAYS(brush.CreateSolidBrush(m_color_bk));
+			dbb_top->getDC().FillRect(Normalize(rect_window_top), &brush);
+			dbb_bottom->getDC().FillRect(Normalize(rect_window_bottom), &brush);
+			dbb_left->getDC().FillRect(Normalize(rect_window_left), &brush);
+			dbb_right->getDC().FillRect(Normalize(rect_window_right), &brush);
+			EXEC_ALWAYS(brush.DeleteObject());
+		}
 		//여기까지가 프레임 그리기.
-		CPen pen, *old_pen;
-		int thickness = 1;
-		EXEC_ALWAYS(pen.CreatePen(PS_SOLID, thickness, m_color_border));
-		old_pen = dbb_top->getDC().SelectObject(&pen);
-		dbb_top->getDC().MoveTo(Normalize(rect_window_top).left, Normalize(rect_window_top).bottom);
-		dbb_top->getDC().LineTo(Normalize(rect_window_top).left, Normalize(rect_window_top).top);
-		dbb_top->getDC().LineTo(Normalize(rect_window_top).right - 1 - thickness, Normalize(rect_window_top).top);
-		dbb_top->getDC().LineTo(Normalize(rect_window_top).right - 1 - thickness, Normalize(rect_window_top).bottom);
-		dbb_top->getDC().SelectObject(old_pen);
+		{
+			CPen pen, *old_pen;
+			int thickness = 1;
+			EXEC_ALWAYS(pen.CreatePen(PS_SOLID, thickness, m_color_border));
+			old_pen = dbb_top->getDC().SelectObject(&pen);
+			dbb_top->getDC().MoveTo(Normalize(rect_window_top).left, Normalize(rect_window_top).bottom);
+			dbb_top->getDC().LineTo(Normalize(rect_window_top).left, Normalize(rect_window_top).top);
+			dbb_top->getDC().LineTo(Normalize(rect_window_top).right - 1 - thickness, Normalize(rect_window_top).top);
+			dbb_top->getDC().LineTo(Normalize(rect_window_top).right - 1 - thickness, Normalize(rect_window_top).bottom);
+			dbb_top->getDC().SelectObject(old_pen);
 
-		old_pen = dbb_bottom->getDC().SelectObject(&pen);
-		//bottom-bottom
-		dbb_bottom->getDC().MoveTo(Normalize(rect_window_bottom).left, Normalize(rect_window_bottom).top);
-		dbb_bottom->getDC().LineTo(Normalize(rect_window_bottom).left, Normalize(rect_window_bottom).bottom - 1 - thickness);
-		dbb_bottom->getDC().LineTo(Normalize(rect_window_bottom).right - 1 - thickness, Normalize(rect_window_bottom).bottom - 1 - thickness);
-		dbb_bottom->getDC().LineTo(Normalize(rect_window_bottom).right - 1 - thickness, Normalize(rect_window_bottom).top - 1);
-		dbb_bottom->getDC().SelectObject(old_pen);
+			old_pen = dbb_bottom->getDC().SelectObject(&pen);
+			//bottom-bottom
+			dbb_bottom->getDC().MoveTo(Normalize(rect_window_bottom).left, Normalize(rect_window_bottom).top);
+			dbb_bottom->getDC().LineTo(Normalize(rect_window_bottom).left, Normalize(rect_window_bottom).bottom - 1 - thickness);
+			dbb_bottom->getDC().LineTo(Normalize(rect_window_bottom).right - 1 - thickness, Normalize(rect_window_bottom).bottom - 1 - thickness);
+			dbb_bottom->getDC().LineTo(Normalize(rect_window_bottom).right - 1 - thickness, Normalize(rect_window_bottom).top - 1);
+			dbb_bottom->getDC().SelectObject(old_pen);
 
-		old_pen = dbb_left->getDC().SelectObject(&pen);
-		dbb_left->getDC().MoveTo(Normalize(rect_window_left).left, Normalize(rect_window_left).top);
-		dbb_left->getDC().LineTo(Normalize(rect_window_left).left, Normalize(rect_window_left).bottom);
-		dbb_left->getDC().SelectObject(old_pen);
+			old_pen = dbb_left->getDC().SelectObject(&pen);
+			dbb_left->getDC().MoveTo(Normalize(rect_window_left).left, Normalize(rect_window_left).top);
+			dbb_left->getDC().LineTo(Normalize(rect_window_left).left, Normalize(rect_window_left).bottom);
+			dbb_left->getDC().SelectObject(old_pen);
 
-		old_pen = dbb_right->getDC().SelectObject(&pen);
-		dbb_right->getDC().MoveTo(Normalize(rect_window_right).right - 1 - thickness, Normalize(rect_window_right).top);
-		dbb_right->getDC().LineTo(Normalize(rect_window_right).right - 1 - thickness, Normalize(rect_window_right).bottom);
-		dbb_right->getDC().SelectObject(old_pen);
-		
-		EXEC_ALWAYS(pen.DeleteObject());
+			old_pen = dbb_right->getDC().SelectObject(&pen);
+			dbb_right->getDC().MoveTo(Normalize(rect_window_right).right - 1 - thickness, Normalize(rect_window_right).top);
+			dbb_right->getDC().LineTo(Normalize(rect_window_right).right - 1 - thickness, Normalize(rect_window_right).bottom);
+			dbb_right->getDC().SelectObject(old_pen);
+
+			EXEC_ALWAYS(pen.DeleteObject());
+		}
 		//테두리 그리기.
 		CSize btn_sz(rect_window_top.Height() - m_sysbtn_margin * 2, rect_window_top.Height() - m_sysbtn_margin * 2);
 		CPoint btn_pt(rect_window.right - rect_window_right.Width() - btn_sz.cx,
 					  rect_window.top + m_sysbtn_margin);
+
 		CDC cdc;
 		EXEC_ALWAYS(cdc.CreateCompatibleDC(ncpaint));
-		
 		for (size_t i = 0; i < m_sysbtn.size(); i++) {
+			
 			BITMAP bmp;
 			CBitmap* cbmp=nullptr, *old_cbmp = nullptr;
 			if (m_sysbtn[i].m_bitmap_resource > 0) {
 				cbmp=new CBitmap;
 				EXEC_ALWAYS(cbmp->LoadBitmap(m_sysbtn[i].m_bitmap_resource));
-				
+				if (cbmp == nullptr) {
+					continue;
+				}
+				EXEC_ALWAYS(cbmp->GetBitmap(&bmp));
+				//메서드가 성공 하면 0이 아닌. 그렇지 않으면 0입니다.
+				old_cbmp = cdc.SelectObject(cbmp);
+				EXEC_ALWAYS(dbb_top->getDC().TransparentBlt(btn_pt.x, btn_pt.y, btn_sz.cx, btn_sz.cy, &cdc
+															, bmp.bmHeight*static_cast<int>(this->m_sysbtn[i].m_state), 0
+															, bmp.bmHeight, bmp.bmHeight, m_color_transparent));
+				m_sysbtn[i].m_rect = CRect(btn_pt.x, btn_pt.y, btn_pt.x + btn_sz.cx, btn_pt.y + btn_sz.cy);
+				btn_pt.x -= btn_sz.cx + m_sysbtn_margin;
+				cdc.SelectObject(old_cbmp);
 			} else {
+				HBITMAP hbmp = nullptr;
+				CDC* DC = this->GetDC();
 				switch (m_sysbtn[i].m_bitmap_resource) {
-					case -1:cbmp = CBitmap::FromHandle(GetHeaderResource(this->GetDC()->GetSafeHdc(), resource_close_w, resource_close_h, resource_close)); break;
-					case -2:cbmp = CBitmap::FromHandle(GetHeaderResource(this->GetDC()->GetSafeHdc(), resource_maximize_w, resource_maximize_h, resource_maximize)); break;
-					case -3:cbmp = CBitmap::FromHandle(GetHeaderResource(this->GetDC()->GetSafeHdc(), resource_minimize_w, resource_minimize_h, resource_minimize)); break;
+					case -1:hbmp = GetHeaderResource(DC->GetSafeHdc(), resource_close_w, resource_close_h, resource_close); break;
+					case -2:hbmp=GetHeaderResource(DC->GetSafeHdc(), resource_maximize_w, resource_maximize_h, resource_maximize); break;
+					case -3:hbmp = GetHeaderResource(DC->GetSafeHdc(), resource_minimize_w, resource_minimize_h, resource_minimize); break;
 					default:break;
 				}
-				
+				ReleaseDC(DC);
+				if (hbmp == nullptr) {
+					continue;
+				}
+				cbmp = CBitmap::FromHandle(hbmp);
+				if (cbmp == nullptr) {
+					continue;
+				}
+				EXEC_ALWAYS(cbmp->GetBitmap(&bmp));
+				//메서드가 성공 하면 0이 아닌. 그렇지 않으면 0입니다.
+				old_cbmp = cdc.SelectObject(cbmp);
+				EXEC_ALWAYS(dbb_top->getDC().TransparentBlt(btn_pt.x, btn_pt.y, btn_sz.cx, btn_sz.cy, &cdc
+															, bmp.bmHeight*static_cast<int>(this->m_sysbtn[i].m_state), 0
+															, bmp.bmHeight, bmp.bmHeight, m_color_transparent));
+				m_sysbtn[i].m_rect = CRect(btn_pt.x, btn_pt.y, btn_pt.x + btn_sz.cx, btn_pt.y + btn_sz.cy);
+				btn_pt.x -= btn_sz.cx + m_sysbtn_margin;
+				cdc.SelectObject(old_cbmp);
+				//BITMAP is static, Do Not Delete or Release
+				//cbmp->DeleteObject();
+				//EXEC_ALWAYS(::DeleteObject(hbmp));
 			}
-			if (cbmp == nullptr) {
-				continue;
-			}
-			EXEC_ALWAYS(cbmp->GetBitmap(&bmp));
-			//메서드가 성공 하면 0이 아닌. 그렇지 않으면 0입니다.
-			old_cbmp = cdc.SelectObject(cbmp);
-			EXEC_ALWAYS(dbb_top->getDC().TransparentBlt(btn_pt.x, btn_pt.y, btn_sz.cx, btn_sz.cy, &cdc
-														, bmp.bmHeight*static_cast<int>(this->m_sysbtn[i].m_state), 0
-														, bmp.bmHeight, bmp.bmHeight, m_color_transparent));
-			m_sysbtn[i].m_rect = CRect(btn_pt.x, btn_pt.y, btn_pt.x + btn_sz.cx, btn_pt.y + btn_sz.cy);
-			btn_pt.x -= btn_sz.cx + m_sysbtn_margin;
-			cdc.SelectObject(old_cbmp);
 		}
+		cdc.DeleteDC();
 		if (m_icon.m_icon != nullptr) {
 			m_icon.m_rect.left = m_icon_margin + rect_window_left.Width();
 			m_icon.m_rect.top = m_icon_margin;
@@ -373,21 +394,21 @@ public:	//messageevent method
 									 , m_icon.m_icon, m_icon.m_rect.Width(), m_icon.m_rect.Height()
 									 , 0, NULL, DI_NORMAL));
 		}
-		m_dbb[0] = dbb_top;
-		m_dbb[1] = (dbb_bottom);
-		m_dbb[2] = (dbb_left);
-		m_dbb[3] = (dbb_right);
+		
 
 		int title_h = rect_window_top.Height() - 10;
 		int h = mspring::Font::GetRealFontHeight(m_font_str, title_h, dbb_top->getPDC());
 		CFont font;
+		
 		EXEC_ALWAYS(font.CreatePointFont(h, m_font_str));
-		EXEC_ALWAYS(dbb_top->getDC().SetTextColor(m_color_text));
-		EXEC_ALWAYS(dbb_top->getDC().SetBkMode(TRANSPARENT));
+		CFont* old_font=dbb_top->getDC().SelectObject(&font);
+		dbb_top->getDC().SetTextColor(m_color_text);
+		dbb_top->getDC().SetBkMode(TRANSPARENT);
 		
 		CSize title_sz;
 		EXEC_ALWAYS(GetTextExtentPoint32(dbb_top->getDC().GetSafeHdc(), m_title, m_title.GetLength(), &title_sz));
-		EXEC_ALWAYS(dbb_top->getDC().TextOut(m_icon.m_rect.right + 5, rect_window_top.Height() / 2 - title_sz.cy / 2, m_title));
+		dbb_top->getDC().TextOut(m_icon.m_rect.right + 5, rect_window_top.Height() / 2 - title_sz.cy / 2, m_title);
+		dbb_top->getDC().SelectObject(&old_font);
 		EXEC_ALWAYS(font.DeleteObject());
 		//아이콘 오른쪽 부터
 		int begin_point = m_icon.m_rect.right + 10 + title_sz.cx;
@@ -398,6 +419,10 @@ public:	//messageevent method
 		iRect.left = begin_point;
 		iRect.right = end_point;
 		iRect.bottom = iRect.top + GetSystemMetrics(SM_CYCAPTION) + GetSystemMetrics(SM_CYFRAME) + GetSystemMetrics(SM_CYSIZEFRAME);
+		m_dbb[0] = dbb_top;
+		m_dbb[1] = dbb_bottom;
+		m_dbb[2] = dbb_left;
+		m_dbb[3] = dbb_right;
 		for (auto&e : m_expansion) {
 			int last = e->OnNcPaint(m_dbb[0]->getPDC(), iRect);
 			if (last >= 0) {
@@ -416,6 +441,7 @@ public:	//messageevent method
 			delete e;
 			e = nullptr;
 		}
+		ReleaseDC(ncpaint);
 	}
 	afx_msg BOOL OnNcActivate(BOOL bActive) {
 		REDRAW_NCAREA;

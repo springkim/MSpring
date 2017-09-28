@@ -45,10 +45,9 @@ protected:
 		this->GetClientRect(&rect);
 		mspring::DoubleBufferingDC dbb(&dc, rect);
 		CBrush bk_brush;
-		bk_brush.CreateSolidBrush(m_color_bk);
-
+		EXEC_ALWAYS(bk_brush.CreateSolidBrush(m_color_bk));
 		dbb.getDC().FillRect(rect, &bk_brush);
-		bk_brush.DeleteObject();
+		EXEC_ALWAYS(bk_brush.DeleteObject());
 		SAFETY_CALL(m_view, OnPaint, dbb.getPDC());
 		dbb.Draw();
 	}
@@ -71,12 +70,13 @@ public:
 		rect_right.left = rect_right.right - 3;
 		//Fixed value
 		CBrush brush;
-		brush.CreateSolidBrush(m_color_bk);
+		EXEC_ALWAYS(brush.CreateSolidBrush(m_color_bk));
 		ncpaint.FillRect(rect_top, &brush);
 		ncpaint.FillRect(rect_bottom, &brush);
 		ncpaint.FillRect(rect_left, &brush);
 		ncpaint.FillRect(rect_right, &brush);
-		brush.DeleteObject();
+		EXEC_ALWAYS(brush.DeleteObject());
+		ReleaseDC(&ncpaint);
 	}
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct) {
 		if (CWnd::OnCreate(lpCreateStruct) == -1) {

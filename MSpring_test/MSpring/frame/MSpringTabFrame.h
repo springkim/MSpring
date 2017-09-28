@@ -12,6 +12,10 @@
 
 #if !defined(MSPRING_7E1_9_C_MSPRINGTAFRAME_HPP_INCLUDED)
 #define MSPRING_7E1_9_C_MSPRINGTAFRAME_HPP_INCLUDED
+
+
+
+
 #include<afxwin.h>
 
 #include "MSpringFrame.h"
@@ -123,6 +127,7 @@ public:
 		CPen pen;
 		EXEC_ALWAYS(pen.CreatePen(PS_SOLID, 1, m_color_activate));
 		CPen pen_bk;
+		
 		EXEC_ALWAYS(pen_bk.CreatePen(PS_SOLID, 1, m_color_bk));
 		CFont font;
 		int h = mspring::Font::GetRealFontHeight(m_font_str, rect.Height() - padding * 2, pDC);
@@ -147,6 +152,7 @@ public:
 				}
 
 				pDC->FillRect(&rect_draw, &brush_tab);
+				EXEC_ALWAYS(brush_tab.DeleteObject());
 				CPen* old_pen = nullptr;
 				old_pen = pDC->SelectObject(&pen_bk);
 				if (i != 0) {
@@ -174,7 +180,7 @@ public:
 
 
 				posx += default_width;
-				EXEC_ALWAYS(brush_tab.DeleteObject());
+				
 			}
 			ret = posx - rect.left;
 		} else {	//right align
@@ -193,6 +199,7 @@ public:
 				}
 
 				pDC->FillRect(&rect_draw, &brush_tab);
+				EXEC_ALWAYS(brush_tab.DeleteObject());
 				CPen* old_pen = nullptr;
 				old_pen = pDC->SelectObject(&pen_bk);
 				if (i != 0) {
@@ -220,7 +227,7 @@ public:
 
 
 				posx -= default_width;
-				EXEC_ALWAYS(brush_tab.DeleteObject());
+				
 			}
 			ret = -(rect.right - posx - default_width);
 		}

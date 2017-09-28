@@ -12,6 +12,7 @@
 
 #if !defined(MSPRING_7E1_9_C_MSPRINGMENUFRAME_HPP_INCLUDED)
 #define MSPRING_7E1_9_C_MSPRINGMENUFRAME_HPP_INCLUDED
+
 #include<afxwin.h>
 
 #include"MSpringFrame.h"
@@ -99,6 +100,7 @@ protected:
 			pDC->SelectObject(old_pen);
 			EXEC_ALWAYS(pen.DeleteObject());
 		}
+		CDC::DeleteTempMap();
 	}
 public:	//static member
 	const int MENU_HEIGHT = 16;

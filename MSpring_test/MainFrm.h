@@ -62,6 +62,7 @@ public:
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
 	afx_msg void OnNcLButtonDown(UINT nHitTest, CPoint point);
 	afx_msg void On32775();
+	afx_msg void OnDestroy();
 };
 
 

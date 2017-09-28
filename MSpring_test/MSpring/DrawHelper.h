@@ -35,6 +35,8 @@ namespace mspring {
 				EXEC_ALWAYS(font.CreatePointFont(M, font_str));
 				CFont* old_font = pdc->SelectObject(&font);
 				EXEC_ALWAYS(GetTextExtentPoint32(pdc->GetSafeHdc(), str, str.GetLength(), &sz));
+				pdc->SelectObject(old_font);
+				EXEC_ALWAYS(font.DeleteObject());
 				if (*lp == size) {
 					break;
 				} else if (*lp > size) {
@@ -42,8 +44,7 @@ namespace mspring {
 				} else {
 					L = M + 1;
 				}
-				pdc->SelectObject(old_font);
-				EXEC_ALWAYS(font.DeleteObject());
+				
 			}
 			return (L + R) / 2;
 		}

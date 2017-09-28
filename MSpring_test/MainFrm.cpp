@@ -7,11 +7,12 @@
 
 #include "MainFrm.h"
 
+
+#include"mspring/MSpring.h"
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
-#include"mspring/MSpring.h"
-
 // CMainFrame
 
 IMPLEMENT_DYNAMIC(CMainFrame, MSpringFrame)
@@ -22,6 +23,7 @@ BEGIN_MESSAGE_MAP(CMainFrame, MSpringFrame)
 	ON_WM_LBUTTONDOWN()
 	ON_WM_NCLBUTTONDOWN()
 	ON_COMMAND(ID_32775, &CMainFrame::On32775)
+	ON_WM_DESTROY()
 END_MESSAGE_MAP()
 
 // CMainFrame 생성/소멸
@@ -63,7 +65,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 	this->SetIcon(IDR_MAINFRAME);
 
-
+	
 
 
 	this->SetStyle(g_font[0],g_color_bk[0], g_color_text[0],g_color_border[0]);
@@ -157,4 +159,12 @@ void CMainFrame::OnNcLButtonDown(UINT nHitTest, CPoint point) {
 
 void CMainFrame::On32775() {
 	// TODO: 여기에 명령 처리기 코드를 추가합니다.
+}
+
+
+void CMainFrame::OnDestroy() {
+	MSpringFrame::OnDestroy();
+	delete m_menu_frame;
+	delete m_tab_frame;
+	// TODO: 여기에 메시지 처리기 코드를 추가합니다.
 }
