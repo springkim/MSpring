@@ -15,6 +15,7 @@
 #include<afxwin.h>
 #include<wingdi.h>
 #include<winnt.h>
+#include"Util.h"
 namespace mspring {
 	class Font {
 	public:
@@ -31,9 +32,9 @@ namespace mspring {
 			while (L <= R) {
 				int M = (L + R) / 2;
 				CFont font;
-				font.CreatePointFont(M, font_str);
+				EXEC_ALWAYS(font.CreatePointFont(M, font_str));
 				CFont* old_font = pdc->SelectObject(&font);
-				GetTextExtentPoint32(pdc->GetSafeHdc(), str, str.GetLength(), &sz);
+				EXEC_ALWAYS(GetTextExtentPoint32(pdc->GetSafeHdc(), str, str.GetLength(), &sz));
 				if (*lp == size) {
 					break;
 				} else if (*lp > size) {
@@ -42,7 +43,7 @@ namespace mspring {
 					L = M + 1;
 				}
 				pdc->SelectObject(old_font);
-				font.DeleteObject();
+				EXEC_ALWAYS(font.DeleteObject());
 			}
 			return (L + R) / 2;
 		}

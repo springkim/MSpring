@@ -95,6 +95,9 @@ BEGIN
             MENUITEM "test2",                       ID_TEST_TEST2
             MENUITEM "test3",                       ID_TEST_TEST3
         END
+        MENUITEM "check",                       ID_32775, CHECKED
+        MENUITEM "enabled",                     ID_32776, INACTIVE
+        MENUITEM "grayed",                      ID_32777, GRAYED
     END
     POPUP "µµ¿ò¸»(&H)"
     BEGIN

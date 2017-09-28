@@ -15,6 +15,7 @@
 #include<afxwin.h>
 #include<wingdi.h>
 #include"ErrorMessage.h"
+#include"Util.h"
 ///Double Buffering
 namespace mspring {
 	class DoubleBufferingDC {
@@ -46,32 +47,27 @@ namespace mspring {
 		void Create(CDC* pdc, CRect rect) {
 			this->m_pdc = pdc;
 			this->m_rect = rect;
-			this->m_dc.CreateCompatibleDC(pdc);
-			BOOL succ = 0;
-			succ = this->m_cbmp.CreateCompatibleBitmap(pdc, rect.Width(), rect.Height());
-			while (succ == 0) {
-				Sleep(1);
-				succ = this->m_cbmp.CreateCompatibleBitmap(pdc, rect.Width(), rect.Height());
-			}
+			EXEC_ALWAYS(this->m_dc.CreateCompatibleDC(pdc));
+			EXEC_ALWAYS(this->m_cbmp.CreateCompatibleBitmap(pdc, rect.Width(), rect.Height()));
 			this->m_cbmp_old = (CBitmap*)this->m_dc.SelectObject(&this->m_cbmp);
-			this->m_dc.PatBlt(0, 0, rect.Width(), rect.Height(), WHITENESS);
+			EXEC_ALWAYS(this->m_dc.PatBlt(0, 0, rect.Width(), rect.Height(), WHITENESS));
 		}
 		void Draw() {
 			if (m_pdc == nullptr) {
 				MSPRING_ERROR("DoubleBufferingDC is NULL");
 			}
-			this->m_pdc->BitBlt(this->m_rect.left, this->m_rect.top, this->m_rect.Width(), this->m_rect.Height(), &this->m_dc, 0, 0, SRCCOPY);
+			EXEC_ALWAYS(this->m_pdc->BitBlt(this->m_rect.left, this->m_rect.top, this->m_rect.Width(), this->m_rect.Height(), &this->m_dc, 0, 0, SRCCOPY));
 			this->m_dc.SelectObject(this->m_cbmp_old);
-			this->m_dc.DeleteDC();
-			this->m_cbmp.DeleteObject();
+			EXEC_ALWAYS(this->m_dc.DeleteDC());
+			EXEC_ALWAYS(this->m_cbmp.DeleteObject());
 			m_pdc = nullptr;
 		}
 		~DoubleBufferingDC() {
 			if (m_pdc != nullptr) {
-				this->m_pdc->BitBlt(this->m_rect.left, this->m_rect.top, this->m_rect.Width(), this->m_rect.Height(), &this->m_dc, 0, 0, SRCCOPY);
+				EXEC_ALWAYS(this->m_pdc->BitBlt(this->m_rect.left, this->m_rect.top, this->m_rect.Width(), this->m_rect.Height(), &this->m_dc, 0, 0, SRCCOPY));
 				this->m_dc.SelectObject(this->m_cbmp_old);
-				this->m_dc.DeleteDC();
-				this->m_cbmp.DeleteObject();
+				EXEC_ALWAYS(this->m_dc.DeleteDC());
+				EXEC_ALWAYS(this->m_cbmp.DeleteObject());
 			}
 		}
 	};

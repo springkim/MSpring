@@ -45,18 +45,6 @@
     <ClInclude Include="Resource.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="DoubleBufferingDC.h">
-      <Filter>mspring</Filter>
-    </ClInclude>
-    <ClInclude Include="ErrorMessage.h">
-      <Filter>mspring</Filter>
-    </ClInclude>
-    <ClInclude Include="DrawHelper.h">
-      <Filter>mspring</Filter>
-    </ClInclude>
-    <ClInclude Include="String.h">
-      <Filter>mspring</Filter>
-    </ClInclude>
     <ClInclude Include="mspring\Operator.h">
       <Filter>mspring</Filter>
     </ClInclude>
@@ -91,6 +79,18 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="MSpring\View.h">
+      <Filter>mspring</Filter>
+    </ClInclude>
+    <ClInclude Include="MSpring\String.h">
+      <Filter>mspring</Filter>
+    </ClInclude>
+    <ClInclude Include="MSpring\DrawHelper.h">
+      <Filter>mspring</Filter>
+    </ClInclude>
+    <ClInclude Include="MSpring\DoubleBufferingDC.h">
+      <Filter>mspring</Filter>
+    </ClInclude>
+    <ClInclude Include="MSpring\ErrorMessage.h">
       <Filter>mspring</Filter>
     </ClInclude>
   </ItemGroup>

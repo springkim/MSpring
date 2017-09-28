@@ -21,6 +21,7 @@ BEGIN_MESSAGE_MAP(CMainFrame, MSpringFrame)
 	ON_WM_SETFOCUS()
 	ON_WM_LBUTTONDOWN()
 	ON_WM_NCLBUTTONDOWN()
+	ON_COMMAND(ID_32775, &CMainFrame::On32775)
 END_MESSAGE_MAP()
 
 // CMainFrame 생성/소멸
@@ -151,4 +152,9 @@ void CMainFrame::OnNcLButtonDown(UINT nHitTest, CPoint point) {
 	m_wndView.SetStyle(g_color_bk[idx]);
 	m_wndView.Invalidate();
 	this->Invalidate();
+}
+
+
+void CMainFrame::On32775() {
+	// TODO: 여기에 명령 처리기 코드를 추가합니다.
 }

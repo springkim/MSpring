@@ -18,6 +18,7 @@
 
 #include<deque>
 #include<vector>
+
 ///MSpringMenu
 class MSpringMenu : public CMenu {
 	/*
@@ -52,12 +53,12 @@ protected:
 		lpMeasureItemStruct->itemHeight = MENU_HEIGHT;
 		CFont font;
 		int h = mspring::Font::GetRealFontHeight(m_font_string, lpMeasureItemStruct->itemHeight, &dc);
-		font.CreatePointFont(h, m_font_string);
+		EXEC_ALWAYS(font.CreatePointFont(h, m_font_string));
 		CFont* old_font = dc.SelectObject(&font);
 		CString str = ((MenuObject*)lpMeasureItemStruct->itemData)->m_strCaption;
 		CSize sz;
-		::GetTextExtentPoint32(dc.GetSafeHdc(), str, str.GetLength(), &sz);
-
+		EXEC_ALWAYS(::GetTextExtentPoint32(dc.GetSafeHdc(), str, str.GetLength(), &sz));
+		EXEC_ALWAYS(font.DeleteObject());
 		lpMeasureItemStruct->itemWidth = sz.cx + 10 < 100 ? 100 : sz.cx + 10;
 	}
 	void DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)override {
@@ -72,27 +73,31 @@ protected:
 				//일반 상태
 				color_bk = MSpringMenu::m_color_bk;
 			}
-			if ((lpDrawItemStruct->itemState & ODS_SELECTED) &&
-				(lpDrawItemStruct->itemAction & (ODA_SELECT | ODA_DRAWENTIRE))) {
+			
+			if ((lpDrawItemStruct->itemState & ODS_SELECTED) && (lpDrawItemStruct->itemAction & (ODA_SELECT | ODA_DRAWENTIRE))) {
 				//Hover 상태
 				color_bk = MSpringMenu::m_color_hover;
 			}
+			if (lpDrawItemStruct->itemState & ODS_CHECKED) {
+				pDC->Rectangle(rect.left, rect.top, rect.Height(), rect.Height());
+			}
 			CFont font;
 			int h = mspring::Font::GetRealFontHeight(m_font_string, MENU_HEIGHT, pDC);
-			font.CreatePointFont(h, m_font_string);
+			EXEC_ALWAYS(font.CreatePointFont(h, m_font_string));
 			CFont* old_font = pDC->SelectObject(&font);
-			pDC->SetBkColor(color_bk);
+			::FillRect(pDC->GetSafeHdc(), &rect, CreateSolidBrush(color_bk));
+			pDC->SetBkMode(TRANSPARENT);
 			pDC->SetTextColor(MSpringMenu::m_color_text);
-			pDC->TextOut(rect.left + 5, rect.top, ((MenuObject*)lpDrawItemStruct->itemData)->m_strCaption);
+			EXEC_ALWAYS(pDC->TextOut(rect.left + 5, rect.top, ((MenuObject*)lpDrawItemStruct->itemData)->m_strCaption));
 		} else {
 			//구분선
 			CPen pen;
-			pen.CreatePen(PS_SOLID, 1, MSpringMenu::m_color_text);
+			EXEC_ALWAYS(pen.CreatePen(PS_SOLID, 1, MSpringMenu::m_color_text));
 			CPen* old_pen = pDC->SelectObject(&pen);
 			pDC->MoveTo(rect.left, (rect.top + rect.bottom) / 2);
 			pDC->LineTo(rect.right, (rect.top + rect.bottom) / 2);
 			pDC->SelectObject(old_pen);
-			pen.DeleteObject();
+			EXEC_ALWAYS(pen.DeleteObject());
 		}
 	}
 public:	//static member
@@ -129,7 +134,7 @@ public:
 			uID = GetMenuItemID(i);
 
 			ModifyMenu(i, MF_BYPOSITION | MF_OWNERDRAW,
-					   uID, (TCHAR*)pObject);
+								   uID, (TCHAR*)pObject);
 			if (GetSubMenu(i)) {
 				MSpringMenu* pSubMenu = new MSpringMenu(m_parent_wnd);
 				deleteMenu.push_back((DWORD_PTR)pSubMenu);
@@ -222,11 +227,11 @@ public:			//messageevent method
 		rect.top += margin;
 		rect.bottom -= margin;
 		CBrush brush;
-		brush.CreateSolidBrush(m_color_bk);
+		EXEC_ALWAYS(brush.CreateSolidBrush(m_color_bk));
 		pDC->FillRect(rect, &brush);
 		int h = mspring::Font::GetRealFontHeight(m_font_str, rect.Height(), pDC);
 		CFont font;
-		font.CreatePointFont(h, m_font_str);
+		EXEC_ALWAYS(font.CreatePointFont(h, m_font_str));
 		CFont* old_font = pDC->SelectObject(&font);
 		pDC->SetBkColor(m_color_bk);
 		pDC->SetTextColor(m_color_text);
@@ -238,16 +243,16 @@ public:			//messageevent method
 			for (int i = 0; i < (int)m_menu.size(); i++) {
 				CString str = m_menu[i].first;
 				CSize sz;
-				::GetTextExtentPoint32(pDC->GetSafeHdc(), str, str.GetLength(), &sz);
+				EXEC_ALWAYS(::GetTextExtentPoint32(pDC->GetSafeHdc(), str, str.GetLength(), &sz));
 				m_menu_rect.push_back(CRect(posx, rect.top, posx + sz.cx + margin, rect.bottom));
 				if (i == m_menu_hover) {
 					CBrush brush;
-					brush.CreateSolidBrush(m_color_hover);
+					EXEC_ALWAYS(brush.CreateSolidBrush(m_color_hover));
 					pDC->FillRect(m_menu_rect.back(), &brush);
-					brush.DeleteObject();
+					EXEC_ALWAYS(brush.DeleteObject());
 				}
 				pDC->SetBkMode(TRANSPARENT);
-				pDC->TextOut(posx + margin / 2, margin, str, str.GetLength());
+				EXEC_ALWAYS(pDC->TextOut(posx + margin / 2, margin, str, str.GetLength()));
 				posx += sz.cx + margin;
 				if (posx > rect.right) {
 					break;
@@ -259,16 +264,16 @@ public:			//messageevent method
 			for (int i = (int)m_menu.size() - 1; i >= 0; i--) {
 				CString str = m_menu[i].first;
 				CSize sz;
-				::GetTextExtentPoint32(pDC->GetSafeHdc(), str, str.GetLength(), &sz);
+				EXEC_ALWAYS(::GetTextExtentPoint32(pDC->GetSafeHdc(), str, str.GetLength(), &sz));
 				m_menu_rect.push_front(CRect(posx - sz.cx - margin, rect.top, posx, rect.bottom));
 				if (i == m_menu_hover) {
 					CBrush brush;
-					brush.CreateSolidBrush(m_color_hover);
+					EXEC_ALWAYS(brush.CreateSolidBrush(m_color_hover));
 					pDC->FillRect(m_menu_rect.back(), &brush);
-					brush.DeleteObject();
+					EXEC_ALWAYS(brush.DeleteObject());
 				}
 				pDC->SetBkMode(TRANSPARENT);
-				pDC->TextOut(posx - sz.cx - margin, margin, str, str.GetLength());
+				EXEC_ALWAYS(pDC->TextOut(posx - sz.cx - margin, margin, str, str.GetLength()));
 				posx -= sz.cx + margin;
 				if (posx < rect.left) {
 					break;
@@ -277,8 +282,8 @@ public:			//messageevent method
 			ret = -(rect.right - posx);
 		}
 		pDC->SelectObject(old_font);
-		brush.DeleteObject();
-		font.DeleteObject();
+		EXEC_ALWAYS(brush.DeleteObject());
+		EXEC_ALWAYS(font.DeleteObject());
 		return ret;
 	}
 	void OnSize(UINT nType, int cx, int cy)override {}
@@ -293,7 +298,7 @@ public:			//messageevent method
 																				, m_menu_rect[i].bottom + apoint.y - point.y
 																				, m_wnd);
 				if (rVal != 0) {
-					m_wnd->PostMessage(WM_COMMAND, rVal, 0);
+					EXEC_ALWAYS(m_wnd->PostMessage(WM_COMMAND, rVal, 0));
 					ret = true;
 				}
 			}
