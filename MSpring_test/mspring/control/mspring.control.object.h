@@ -114,7 +114,9 @@ public:
 		}
 	}
 	virtual void OnLButtonUp() {}
-	virtual void OnRButtonUp(CPoint point) {}
+	virtual void OnRButtonDown() {
+	}
+	virtual void OnRButtonUp() {}
 	virtual void OnMouseMove() {	}
 	virtual void OnMouseWheel(short zDelta) {}
 	virtual void OnMouseLeave() {}

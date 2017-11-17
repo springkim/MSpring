@@ -192,6 +192,16 @@ public:///Message Function
 			m_select = this->GetElementByPoint(point);
 		}
 	}
+	void OnRButtonDown() override{
+		MControlObject::OnLButtonDown();
+		if (s_curr_id != m_id) return;
+		CPoint point = this->GetMousePoint();
+		CRect rect;
+		m_parent->GetClientRect(&rect);
+		if (m_thumb_rect.PtInRect(point) == FALSE) {
+			m_select = this->GetElementByPoint(point);
+		}
+	}
 	void OnLButtonUp()override {
 		if (m_is_drag == true) {
 			m_parent->KillTimer(TIMER_SCROLLMOVE+m_id);

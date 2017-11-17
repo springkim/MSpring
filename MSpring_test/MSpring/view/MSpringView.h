@@ -153,6 +153,10 @@ public:
 		this->OnNcPaint();
 		return TRUE;
 	}
+	afx_msg void OnRButtonDown(UINT nFlags, CPoint point) {
+		SAFETY_CALL(m_view, OnRButtonDown, nFlags, point);
+		CWnd::OnRButtonDown(nFlags, point);
+	}
 	afx_msg void OnRButtonUp(UINT nFlags, CPoint point) {
 		SAFETY_CALL(m_view, OnRButtonUp, nFlags, point);
 		CWnd::OnRButtonUp(nFlags, point);

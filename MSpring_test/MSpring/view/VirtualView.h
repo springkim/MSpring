@@ -43,6 +43,8 @@ public:
 	virtual void OnLButtonDown(UINT nFlags, CPoint point){}
 	virtual void OnLButtonUp(UINT nFlags, CPoint point){}
 	virtual void OnLButtonDblClk(UINT nFlags, CPoint point){}
+	virtual void OnRButtonDown(UINT nFlags, CPoint point) {
+	}
 	virtual void OnRButtonUp(UINT nFlags, CPoint point){}
 	virtual BOOL OnMouseWheel(UINT nFlags, short zDelta, CPoint pt){
 		return TRUE;

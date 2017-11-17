@@ -334,7 +334,7 @@ public:
 		if (s_curr_id != m_id) {
 			return;
 		}
-		if (nIDEvent >= MEDIT_TIMER && nIDEvent <= MEDIT_TIMER + s_id) {
+		if (nIDEvent >= MEDIT_TIMER && nIDEvent <= MEDIT_TIMER + (UINT_PTR)s_id) {
 			caret = !caret;
 			m_parent->Invalidate();
 		}

@@ -23,7 +23,7 @@ public:
 		m_edit2 = new MEdit(wnd, MRect(MRectPosition::LB, 20, 120, 200, 30));
 		m_list = new MListBox(wnd, MRect(MRectPosition::DYNAMIC, 20, 20, 400, 400));
 		m_list->is_check = true;
-		for (int i = 0; i < 50; i++) {
+		for (int i = 0; i < 500; i++) {
 			std::ostringstream oss;
 			oss << "list element " << i;
 			m_list->m_data.push_back(std::make_pair(mspring::String::ToCString(oss.str()),true));
