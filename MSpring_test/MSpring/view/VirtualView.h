@@ -1,6 +1,7 @@
 #pragma once
 #include<vector>
 #include<string>
+#include<imm.h>
 class VirtualView {
 public:
 	CPoint GetMousePoint() {
@@ -19,7 +20,7 @@ public:
 	virtual ~VirtualView() = default;
 public:
 	CWnd* m_parent;
-	CClientDC* m_cdc;
+	CClientDC* m_cdc = nullptr;
 	CRect GetViewRect() {
 		CRect rect;
 		m_parent->GetClientRect(&rect);
@@ -36,7 +37,6 @@ public:
 	}
 
 	virtual void OnPaint(CDC* pDC){}
-
 	virtual void OnSetFocus(CWnd* pOldWnd){}
 	virtual void OnKillFocus(CWnd* pNewWnd){}
 	
@@ -58,8 +58,11 @@ public:
 	virtual void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags){}
 	
 	virtual void OnTimer(UINT_PTR nIDEvent){}
-	//virtual void OnChar(UINT nChar, UINT nRepCnt, UINT nFlags);
+	virtual void OnChar(UINT nChar, UINT nRepCnt, UINT nFlags) {
+	}
 	//virtual void OnContextMenu(CWnd* pWnd, CPoint point);
-	//virtual LONG OnComposition(UINT wParam, LONG lParam);
+	virtual LRESULT OnComposition(WPARAM wParam, LPARAM lParam) {
+		return 1;
+	}
 };
 

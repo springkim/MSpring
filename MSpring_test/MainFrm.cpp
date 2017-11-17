@@ -8,7 +8,7 @@
 #include "MainFrm.h"
 
 
-#include"mspring/MSpring.h"
+#include"mspring/utils.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -85,6 +85,9 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	m_tab_frame->AddTab(TEXT("solarized dark"));
 	this->AddExpansionClass(m_tab_frame);
 	m_wndView.SetStyle(g_color_bk[0]);
+
+	this->m_ctl_test_view = new ControlTestView(&m_wndView);
+	m_wndView.m_view = this->m_ctl_test_view;
 	return 0;
 }
 
@@ -152,6 +155,12 @@ void CMainFrame::OnNcLButtonDown(UINT nHitTest, CPoint point) {
 	m_tab_frame->SetStyle(g_font[idx], g_color_hover[idx], g_color_deactivate[idx], g_color_bk[idx], g_color_text[idx], RGB(idx, idx, idx));
 	
 	m_wndView.SetStyle(g_color_bk[idx]);
+
+	if (idx == 0) {
+		m_wndView.m_view = this->m_ctl_test_view;
+	} else {
+		m_wndView.m_view = nullptr;
+	}
 	m_wndView.Invalidate();
 	this->Invalidate();
 }

@@ -44,7 +44,7 @@
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
-    <CharacterSet>MultiByte</CharacterSet>
+    <CharacterSet>Unicode</CharacterSet>
     <UseOfMfc>Static</UseOfMfc>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
@@ -80,7 +80,6 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IntDir>$(temp)\($SolutionName)\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -89,7 +88,6 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IntDir>$(temp)\($SolutionName)\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -170,6 +168,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>_WINDOWS;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
+      <AdditionalOptions>/FS %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -191,21 +190,26 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ChildView.h" />
+    <ClInclude Include="ControlTestView.h" />
     <ClInclude Include="MainFrm.h" />
-    <ClInclude Include="MSpring\DoubleBufferingDC.h" />
-    <ClInclude Include="MSpring\DrawHelper.h" />
-    <ClInclude Include="MSpring\ErrorMessage.h" />
-    <ClInclude Include="mspring\Frame.h" />
-    <ClInclude Include="mspring\frame\MSpringTabFrame.h" />
-    <ClInclude Include="mspring\frame\MSpringMenuFrame.h" />
-    <ClInclude Include="mspring\frame\MSpringFrame.h" />
-    <ClInclude Include="mspring\frame\resource.h" />
-    <ClInclude Include="mspring\MSpring.h" />
-    <ClInclude Include="mspring\Operator.h" />
-    <ClInclude Include="MSpring\String.h" />
-    <ClInclude Include="mspring\Util.h" />
-    <ClInclude Include="MSpring\View.h" />
+    <ClInclude Include="MSpring\control.h" />
+    <ClInclude Include="MSpring\control\mspring.control.listbox.h" />
+    <ClInclude Include="MSpring\control\mspring.control.button.h" />
+    <ClInclude Include="MSpring\control\_rect.h" />
+    <ClInclude Include="MSpring\control\mspring.control.object.h" />
+    <ClInclude Include="MSpring\frame.h" />
+    <ClInclude Include="mspring\frame\mspring.tab_frame.h" />
+    <ClInclude Include="mspring\frame\mspring.menu_frame.h" />
+    <ClInclude Include="mspring\frame\mspring.frame.h" />
+    <ClInclude Include="mspring\frame\mspring.resource.h" />
+    <ClInclude Include="MSpring\utils.h" />
+    <ClInclude Include="MSpring\utils\DoubleBufferingDC.h" />
+    <ClInclude Include="MSpring\utils\DrawHelper.h" />
+    <ClInclude Include="MSpring\utils\ErrorMessage.h" />
+    <ClInclude Include="MSpring\utils\Operator.h" />
+    <ClInclude Include="MSpring\utils\String.h" />
+    <ClInclude Include="MSpring\utils\Util.h" />
+    <ClInclude Include="MSpring\view.h" />
     <ClInclude Include="mspring\view\MSpringView.h" />
     <ClInclude Include="mspring\view\VirtualView.h" />
     <ClInclude Include="MSpring_test.h" />
@@ -215,7 +219,6 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="ChildView.cpp" />
     <ClCompile Include="MainFrm.cpp" />
     <ClCompile Include="MSpring_test.cpp" />
     <ClCompile Include="stdafx.cpp">

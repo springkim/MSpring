@@ -1,5 +1,5 @@
-
-// MSpring_test.cpp : ÀÀ¿ë ÇÁ·Î±×·¥¿¡ ´ëÇÑ Å¬·¡½º µ¿ÀÛÀ» Á¤ÀÇÇÕ´Ï´Ù.
+ï»¿
+// MSpring_test.cpp : ì‘ìš© í”„ë¡œê·¸ë¨ì— ëŒ€í•œ í´ë˜ìŠ¤ ë™ì‘ì„ ì •ì˜í•©ë‹ˆë‹¤.
 //
 
 #include "stdafx.h"
@@ -21,52 +21,53 @@ BEGIN_MESSAGE_MAP(CMSpring_testApp, CWinApp)
 END_MESSAGE_MAP()
 
 
-// CMSpring_testApp »ı¼º
+// CMSpring_testApp ìƒì„±
 
 CMSpring_testApp::CMSpring_testApp()
 {
-	// TODO: ¾Æ·¡ ÀÀ¿ë ÇÁ·Î±×·¥ ID ¹®ÀÚ¿­À» °íÀ¯ ID ¹®ÀÚ¿­·Î ¹Ù²Ù½Ê½Ã¿À(±ÇÀå).
-	// ¹®ÀÚ¿­¿¡ ´ëÇÑ ¼­½Ä: CompanyName.ProductName.SubProduct.VersionInformation
+	// TODO: ì•„ë˜ ì‘ìš© í”„ë¡œê·¸ë¨ ID ë¬¸ìì—´ì„ ê³ ìœ  ID ë¬¸ìì—´ë¡œ ë°”ê¾¸ì‹­ì‹œì˜¤(ê¶Œì¥).
+	// ë¬¸ìì—´ì— ëŒ€í•œ ì„œì‹: CompanyName.ProductName.SubProduct.VersionInformation
 	SetAppID(_T("MSpring_test.AppID.NoVersion"));
 
-	// TODO: ¿©±â¿¡ »ı¼º ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
-	// InitInstance¿¡ ¸ğµç Áß¿äÇÑ ÃÊ±âÈ­ ÀÛ¾÷À» ¹èÄ¡ÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— ìƒì„± ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
+	// InitInstanceì— ëª¨ë“  ì¤‘ìš”í•œ ì´ˆê¸°í™” ì‘ì—…ì„ ë°°ì¹˜í•©ë‹ˆë‹¤.
 }
 
-// À¯ÀÏÇÑ CMSpring_testApp °³Ã¼ÀÔ´Ï´Ù.
+// ìœ ì¼í•œ CMSpring_testApp ê°œì²´ì…ë‹ˆë‹¤.
 
 CMSpring_testApp theApp;
 
 
-// CMSpring_testApp ÃÊ±âÈ­
+// CMSpring_testApp ì´ˆê¸°í™”
 
 BOOL CMSpring_testApp::InitInstance()
 {
+	AfxOleInit();
 	CWinApp::InitInstance();
 
 
 	EnableTaskbarInteraction(FALSE);
 
-	// RichEdit ÄÁÆ®·ÑÀ» »ç¿ëÇÏ·Á¸é  AfxInitRichEdit2()°¡ ÀÖ¾î¾ß ÇÕ´Ï´Ù.	
+	// RichEdit ì»¨íŠ¸ë¡¤ì„ ì‚¬ìš©í•˜ë ¤ë©´  AfxInitRichEdit2()ê°€ ìˆì–´ì•¼ í•©ë‹ˆë‹¤.	
 	// AfxInitRichEdit2();
 
-	// Ç¥ÁØ ÃÊ±âÈ­
-	// ÀÌµé ±â´ÉÀ» »ç¿ëÇÏÁö ¾Ê°í ÃÖÁ¾ ½ÇÇà ÆÄÀÏÀÇ Å©±â¸¦ ÁÙÀÌ·Á¸é
-	// ¾Æ·¡¿¡¼­ ÇÊ¿ä ¾ø´Â Æ¯Á¤ ÃÊ±âÈ­
-	// ·çÆ¾À» Á¦°ÅÇØ¾ß ÇÕ´Ï´Ù.
-	// ÇØ´ç ¼³Á¤ÀÌ ÀúÀåµÈ ·¹Áö½ºÆ®¸® Å°¸¦ º¯°æÇÏ½Ê½Ã¿À.
-	// TODO: ÀÌ ¹®ÀÚ¿­À» È¸»ç ¶Ç´Â Á¶Á÷ÀÇ ÀÌ¸§°ú °°Àº
-	// ÀûÀıÇÑ ³»¿ëÀ¸·Î ¼öÁ¤ÇØ¾ß ÇÕ´Ï´Ù.
-	SetRegistryKey(_T("·ÎÄÃ ÀÀ¿ë ÇÁ·Î±×·¥ ¸¶¹ı»ç¿¡¼­ »ı¼ºµÈ ÀÀ¿ë ÇÁ·Î±×·¥"));
+	// í‘œì¤€ ì´ˆê¸°í™”
+	// ì´ë“¤ ê¸°ëŠ¥ì„ ì‚¬ìš©í•˜ì§€ ì•Šê³  ìµœì¢… ì‹¤í–‰ íŒŒì¼ì˜ í¬ê¸°ë¥¼ ì¤„ì´ë ¤ë©´
+	// ì•„ë˜ì—ì„œ í•„ìš” ì—†ëŠ” íŠ¹ì • ì´ˆê¸°í™”
+	// ë£¨í‹´ì„ ì œê±°í•´ì•¼ í•©ë‹ˆë‹¤.
+	// í•´ë‹¹ ì„¤ì •ì´ ì €ì¥ëœ ë ˆì§€ìŠ¤íŠ¸ë¦¬ í‚¤ë¥¼ ë³€ê²½í•˜ì‹­ì‹œì˜¤.
+	// TODO: ì´ ë¬¸ìì—´ì„ íšŒì‚¬ ë˜ëŠ” ì¡°ì§ì˜ ì´ë¦„ê³¼ ê°™ì€
+	// ì ì ˆí•œ ë‚´ìš©ìœ¼ë¡œ ìˆ˜ì •í•´ì•¼ í•©ë‹ˆë‹¤.
+	SetRegistryKey(_T("ë¡œì»¬ ì‘ìš© í”„ë¡œê·¸ë¨ ë§ˆë²•ì‚¬ì—ì„œ ìƒì„±ëœ ì‘ìš© í”„ë¡œê·¸ë¨"));
 
 
-	// ÁÖ Ã¢À» ¸¸µé±â À§ÇØ ÀÌ ÄÚµå¿¡¼­´Â »õ ÇÁ·¹ÀÓ Ã¢ °³Ã¼¸¦
-	// ¸¸µç ´ÙÀ½ ÀÌ¸¦ ÀÀ¿ë ÇÁ·Î±×·¥ÀÇ ÁÖ Ã¢ °³Ã¼·Î ¼³Á¤ÇÕ´Ï´Ù.
+	// ì£¼ ì°½ì„ ë§Œë“¤ê¸° ìœ„í•´ ì´ ì½”ë“œì—ì„œëŠ” ìƒˆ í”„ë ˆì„ ì°½ ê°œì²´ë¥¼
+	// ë§Œë“  ë‹¤ìŒ ì´ë¥¼ ì‘ìš© í”„ë¡œê·¸ë¨ì˜ ì£¼ ì°½ ê°œì²´ë¡œ ì„¤ì •í•©ë‹ˆë‹¤.
 	CMainFrame* pFrame = new CMainFrame;
 	if (!pFrame)
 		return FALSE;
 	m_pMainWnd = pFrame;
-	// ÇÁ·¹ÀÓÀ» ¸¸µé¾î ¸®¼Ò½º¿Í ÇÔ²² ·ÎµåÇÕ´Ï´Ù.
+	// í”„ë ˆì„ì„ ë§Œë“¤ì–´ ë¦¬ì†ŒìŠ¤ì™€ í•¨ê»˜ ë¡œë“œí•©ë‹ˆë‹¤.
 	pFrame->LoadFrame(IDR_MAINFRAME,
 		WS_OVERLAPPEDWINDOW | FWS_ADDTOTITLE, NULL,
 		NULL);
@@ -75,7 +76,7 @@ BOOL CMSpring_testApp::InitInstance()
 
 
 
-	// Ã¢ ÇÏ³ª¸¸ ÃÊ±âÈ­µÇ¾úÀ¸¹Ç·Î ÀÌ¸¦ Ç¥½ÃÇÏ°í ¾÷µ¥ÀÌÆ®ÇÕ´Ï´Ù.
+	// ì°½ í•˜ë‚˜ë§Œ ì´ˆê¸°í™”ë˜ì—ˆìœ¼ë¯€ë¡œ ì´ë¥¼ í‘œì‹œí•˜ê³  ì—…ë°ì´íŠ¸í•©ë‹ˆë‹¤.
 	pFrame->ShowWindow(SW_SHOW);
 	pFrame->UpdateWindow();
 	return TRUE;
@@ -83,29 +84,29 @@ BOOL CMSpring_testApp::InitInstance()
 
 int CMSpring_testApp::ExitInstance()
 {
-	//TODO: Ãß°¡ÇÑ Ãß°¡ ¸®¼Ò½º¸¦ Ã³¸®ÇÕ´Ï´Ù.
+	//TODO: ì¶”ê°€í•œ ì¶”ê°€ ë¦¬ì†ŒìŠ¤ë¥¼ ì²˜ë¦¬í•©ë‹ˆë‹¤.
 	return CWinApp::ExitInstance();
 }
 
-// CMSpring_testApp ¸Ş½ÃÁö Ã³¸®±â
+// CMSpring_testApp ë©”ì‹œì§€ ì²˜ë¦¬ê¸°
 
 
-// ÀÀ¿ë ÇÁ·Î±×·¥ Á¤º¸¿¡ »ç¿ëµÇ´Â CAboutDlg ´ëÈ­ »óÀÚÀÔ´Ï´Ù.
+// ì‘ìš© í”„ë¡œê·¸ë¨ ì •ë³´ì— ì‚¬ìš©ë˜ëŠ” CAboutDlg ëŒ€í™” ìƒìì…ë‹ˆë‹¤.
 
 class CAboutDlg : public CDialogEx
 {
 public:
 	CAboutDlg();
 
-// ´ëÈ­ »óÀÚ µ¥ÀÌÅÍÀÔ´Ï´Ù.
+// ëŒ€í™” ìƒì ë°ì´í„°ì…ë‹ˆë‹¤.
 #ifdef AFX_DESIGN_TIME
 	enum { IDD = IDD_ABOUTBOX };
 #endif
 
 protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV Áö¿øÀÔ´Ï´Ù.
+	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV ì§€ì›ì…ë‹ˆë‹¤.
 
-// ±¸ÇöÀÔ´Ï´Ù.
+// êµ¬í˜„ì…ë‹ˆë‹¤.
 protected:
 	DECLARE_MESSAGE_MAP()
 };
@@ -122,14 +123,14 @@ void CAboutDlg::DoDataExchange(CDataExchange* pDX)
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialogEx)
 END_MESSAGE_MAP()
 
-// ´ëÈ­ »óÀÚ¸¦ ½ÇÇàÇÏ±â À§ÇÑ ÀÀ¿ë ÇÁ·Î±×·¥ ¸í·ÉÀÔ´Ï´Ù.
+// ëŒ€í™” ìƒìë¥¼ ì‹¤í–‰í•˜ê¸° ìœ„í•œ ì‘ìš© í”„ë¡œê·¸ë¨ ëª…ë ¹ì…ë‹ˆë‹¤.
 void CMSpring_testApp::OnAppAbout()
 {
 	CAboutDlg aboutDlg;
 	aboutDlg.DoModal();
 }
 
-// CMSpring_testApp ¸Ş½ÃÁö Ã³¸®±â
+// CMSpring_testApp ë©”ì‹œì§€ ì²˜ë¦¬ê¸°
 
 
 

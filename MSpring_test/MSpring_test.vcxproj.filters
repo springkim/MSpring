@@ -22,6 +22,12 @@
     <Filter Include="mspring\view">
       <UniqueIdentifier>{243c9fbe-67eb-4a6e-b0e6-302577d68b6e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="mspring\control">
+      <UniqueIdentifier>{09f4fe6b-4e88-40bc-b101-fa18b9c3bf80}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="mspring\utils">
+      <UniqueIdentifier>{45b35451-663d-4872-9390-5a8c81688d88}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -39,35 +45,8 @@
     <ClInclude Include="MainFrm.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="ChildView.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="Resource.h">
       <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="mspring\Operator.h">
-      <Filter>mspring</Filter>
-    </ClInclude>
-    <ClInclude Include="mspring\Util.h">
-      <Filter>mspring</Filter>
-    </ClInclude>
-    <ClInclude Include="mspring\Frame.h">
-      <Filter>mspring</Filter>
-    </ClInclude>
-    <ClInclude Include="mspring\MSpring.h">
-      <Filter>mspring</Filter>
-    </ClInclude>
-    <ClInclude Include="mspring\frame\resource.h">
-      <Filter>mspring\frame</Filter>
-    </ClInclude>
-    <ClInclude Include="mspring\frame\MSpringFrame.h">
-      <Filter>mspring\frame</Filter>
-    </ClInclude>
-    <ClInclude Include="mspring\frame\MSpringMenuFrame.h">
-      <Filter>mspring\frame</Filter>
-    </ClInclude>
-    <ClInclude Include="mspring\frame\MSpringTabFrame.h">
-      <Filter>mspring\frame</Filter>
     </ClInclude>
     <ClInclude Include="mspring\view\MSpringView.h">
       <Filter>mspring\view</Filter>
@@ -78,20 +57,62 @@
     <ClInclude Include="repository.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="MSpring\View.h">
+    <ClInclude Include="ControlTestView.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="MSpring\control\_rect.h">
+      <Filter>mspring\control</Filter>
+    </ClInclude>
+    <ClInclude Include="MSpring\frame.h">
       <Filter>mspring</Filter>
     </ClInclude>
-    <ClInclude Include="MSpring\String.h">
+    <ClInclude Include="MSpring\utils.h">
       <Filter>mspring</Filter>
     </ClInclude>
-    <ClInclude Include="MSpring\DrawHelper.h">
+    <ClInclude Include="MSpring\view.h">
       <Filter>mspring</Filter>
     </ClInclude>
-    <ClInclude Include="MSpring\DoubleBufferingDC.h">
+    <ClInclude Include="MSpring\utils\DoubleBufferingDC.h">
+      <Filter>mspring\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="MSpring\utils\DrawHelper.h">
+      <Filter>mspring\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="MSpring\utils\ErrorMessage.h">
+      <Filter>mspring\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="MSpring\utils\Operator.h">
+      <Filter>mspring\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="MSpring\utils\String.h">
+      <Filter>mspring\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="MSpring\utils\Util.h">
+      <Filter>mspring\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="MSpring\control.h">
       <Filter>mspring</Filter>
     </ClInclude>
-    <ClInclude Include="MSpring\ErrorMessage.h">
-      <Filter>mspring</Filter>
+    <ClInclude Include="mspring\frame\mspring.frame.h">
+      <Filter>mspring\frame</Filter>
+    </ClInclude>
+    <ClInclude Include="mspring\frame\mspring.resource.h">
+      <Filter>mspring\frame</Filter>
+    </ClInclude>
+    <ClInclude Include="mspring\frame\mspring.menu_frame.h">
+      <Filter>mspring\frame</Filter>
+    </ClInclude>
+    <ClInclude Include="mspring\frame\mspring.tab_frame.h">
+      <Filter>mspring\frame</Filter>
+    </ClInclude>
+    <ClInclude Include="MSpring\control\mspring.control.object.h">
+      <Filter>mspring\control</Filter>
+    </ClInclude>
+    <ClInclude Include="MSpring\control\mspring.control.listbox.h">
+      <Filter>mspring\control</Filter>
+    </ClInclude>
+    <ClInclude Include="MSpring\control\mspring.control.button.h">
+      <Filter>mspring\control</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -102,9 +123,6 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="MainFrm.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="ChildView.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>

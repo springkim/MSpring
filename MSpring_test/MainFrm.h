@@ -3,12 +3,10 @@
 //
 
 #pragma once
-#include "ChildView.h"
+#include "ControlTestView.h"
 
-#include"mspring/frame/MSpringFrame.h"
-#include"mspring/frame/MSpringMenuFrame.h"
-#include"mspring/frame/MSpringTabFrame.h"
-#include"mspring/view/MSpringView.h"
+#include"mspring/frame.h"
+#include"mspring/view.h"
 
 
 __declspec(selectany) std::vector<CString> g_font = { TEXT("Arial") , TEXT("Arial"), TEXT("Arial"),TEXT("Arial") };
@@ -51,6 +49,7 @@ public:
 	MSpringMenuFrame* m_menu_frame = nullptr;
 	MSpringTabFrame* m_tab_frame = nullptr;
 
+	ControlTestView* m_ctl_test_view;
 	
 // 생성된 메시지 맵 함수
 protected:

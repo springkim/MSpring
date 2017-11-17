@@ -1,9 +1,9 @@
 /*
-*  View.hpp
+*  View.h
 *  MSpring
 *
 *  Created by kimbom on 2017. 9. 16...
-*  Copyright 2017 kimbo. All rights reserved.
+*  Copyright 2017 kimbom. All rights reserved.
 *
 */
 #if _MSC_VER > 1000

@@ -8,7 +8,7 @@
 #include<iostream>
 #include<vector>
 #include<set>
-#include"../MSpring.h"
+#include"../utils.h"
 #include"VirtualView.h"
 #define SAFETY_CALL(VIEW,METHOD,...)	if(VIEW){(VIEW)->METHOD(__VA_ARGS__);}
 
@@ -138,6 +138,7 @@ public:
 	afx_msg void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags) {
 		SAFETY_CALL(m_view, OnKeyDown, nChar, nRepCnt, nFlags);
 		CWnd::OnKeyDown(nChar, nRepCnt, nFlags);
+		this->Invalidate();
 	}
 	afx_msg void OnDestroy() {
 		CWnd::OnDestroy();
@@ -158,6 +159,16 @@ public:
 	}
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC) {
 		return TRUE;
+	}
+	afx_msg void OnChar(UINT nChar, UINT nRepCnt, UINT nFlags) {
+		SAFETY_CALL(m_view, OnChar, nChar, nRepCnt,nFlags);
+		CWnd::OnChar(nChar, nRepCnt, nFlags);
+		this->Invalidate();
+	}
+	afx_msg  LRESULT OnComposition(WPARAM wParam, LPARAM lParam) {
+		SAFETY_CALL(m_view, OnComposition, wParam, lParam);
+		this->Invalidate();
+		return 1;
 	}
 };
 
@@ -181,4 +192,6 @@ MSPRING_BEGIN_MESSAGE_MAP(MSpringView, CWnd)
 	ON_WM_NCACTIVATE()
 	ON_WM_RBUTTONUP()
 	ON_WM_ERASEBKGND()
+	ON_WM_CHAR()
+	ON_MESSAGE(WM_IME_COMPOSITION, MSpringView::OnComposition)
 MSPRING_END_MESSAGE_MAP()
