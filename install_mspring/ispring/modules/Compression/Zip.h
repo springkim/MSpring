@@ -11,6 +11,7 @@
 *			Copyright 2017 kimbom.All rights reserved.
 */
 #include<atomic>
+#include"../defines.h"
 #if defined(ISPRING_WINDOWS)
 #include"Winzip.h"
 
