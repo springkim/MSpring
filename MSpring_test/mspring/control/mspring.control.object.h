@@ -17,6 +17,7 @@
 #include<atomic>
 #include"_rect.h"
 #include"../utils.h"
+#define M_CLICKED 255
 enum MControlState {
 	NORMAL, HOVER, CLICK
 };
@@ -98,9 +99,10 @@ public:
 		return RGB(r, g, b);
 	}
 public:
-	virtual void OnPaint(CDC* pDC) {
+	virtual INT OnPaint(CDC* pDC) {
+		return 1;
 	}
-	virtual void OnLButtonDown() {
+	virtual INT OnLButtonDown() {
 		//반드시 이 함수를 자식 클래스에서 호출해야 합니다.
 		CPoint point = this->GetMousePoint();
 		CRect rect;
@@ -112,19 +114,39 @@ public:
 				s_curr_id = -1;
 			}
 		}
+		return 1;
 	}
-	virtual void OnLButtonUp() {}
-	virtual void OnRButtonDown() {
+	virtual INT OnLButtonUp() {
+		return 1;
 	}
-	virtual void OnRButtonUp() {}
-	virtual void OnMouseMove() {	}
-	virtual void OnMouseWheel(short zDelta) {}
-	virtual void OnMouseLeave() {}
-	virtual void OnChar(UINT nchar) {}
-	virtual void OnKeyDown(UINT nChar) {}
-	virtual void OnTimer(UINT_PTR nIDEvent) {}
+	virtual INT OnRButtonDown() {
+		return 1;
+	}
+	virtual INT OnRButtonUp() {
+		return 1;
+	}
+	virtual INT OnMouseMove() {
+		return 1;
+	}
+	virtual INT OnMouseWheel(short zDelta) {
+		return 1;
+	}
+	virtual INT OnMouseLeave() {
+		return 1;
+	}
+	virtual INT OnChar(UINT nchar) {
+		return 1;
+	}
+	virtual INT OnKeyDown(UINT nChar) {
+		return 1;
+	}
+	virtual INT OnTimer(UINT_PTR nIDEvent) {
+		return 1;
+	}
 	//모든 설정을 초기화 합니다.
-	virtual void Reset() {}
+	virtual INT Reset() {
+		return 1;
+	}
 };
 __declspec(selectany) std::atomic<COLORREF> MControlObject::s_color_bk = RGB(199,199,199);
 __declspec(selectany) std::atomic<COLORREF> MControlObject::s_color_fr = RGB(38,139,210);

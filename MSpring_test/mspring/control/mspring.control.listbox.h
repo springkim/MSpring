@@ -131,7 +131,7 @@ public:///Message Function
 	MListBox(CWnd* parent, MRect base) : MControlObject(parent, base) {
 
 	}
-	void OnPaint(CDC* pDC) override{
+	INT OnPaint(CDC* pDC) override{
 		CRect rect = this->m_rect.GetRect(GetViewRect());
 		CRgn rgn;rgn.CreateRectRgnIndirect(&rect);
 		pDC->SelectClipRgn(&rgn);
@@ -177,10 +177,11 @@ public:///Message Function
 		pen_null.DeleteObject();
 		font.DeleteObject();
 		pDC->SelectClipRgn(nullptr);
+		return 1;
 	}
-	void OnLButtonDown() override{
+	INT OnLButtonDown() override{
 		MControlObject::OnLButtonDown();
-		if (s_curr_id != m_id) return;
+		if (s_curr_id != m_id) return 0;
 		CPoint point = this->GetMousePoint();
 		CRect rect;
 		m_parent->GetClientRect(&rect);
@@ -191,28 +192,31 @@ public:///Message Function
 		} else {
 			m_select = this->GetElementByPoint(point);
 		}
+		return 1;
 	}
-	void OnRButtonDown() override{
+	INT OnRButtonDown() override{
 		MControlObject::OnLButtonDown();
-		if (s_curr_id != m_id) return;
+		if (s_curr_id != m_id) return 0;
 		CPoint point = this->GetMousePoint();
 		CRect rect;
 		m_parent->GetClientRect(&rect);
 		if (m_thumb_rect.PtInRect(point) == FALSE) {
 			m_select = this->GetElementByPoint(point);
 		}
+		return 1;
 	}
-	void OnLButtonUp()override {
+	INT OnLButtonUp()override {
 		if (m_is_drag == true) {
 			m_parent->KillTimer(TIMER_SCROLLMOVE+m_id);
 			m_is_drag = false;
 		}
+		return 1;
 	}
-	void OnMouseWheel(short zDelta) override{
+	INT OnMouseWheel(short zDelta) override{
 		CPoint point = this->GetMousePoint();
 		CRect rect = this->m_rect.GetRect(this->GetViewRect());
 		if (rect.PtInRect(point) == FALSE) {
-			return;
+			return 0;
 		}
 		if ((GetKeyState(VK_CONTROL) & 0x8000) == 0x8000) {
 			//Ctrl키를 누르고 휠을 돌리면 확대 옵션.
@@ -237,8 +241,9 @@ public:///Message Function
 			m_scroll_pos = ((float)page_idx*HEIGHT) / (page_height - view_height);
 			mspring::SetRange(m_scroll_pos, 0.0F, 1.0F);
 		}
+		return 1;
 	}
-	void OnMouseMove()override {
+	INT OnMouseMove()override {
 		if (m_is_drag == true) {
 			CPoint point = this->GetMousePoint();
 			int view_height = GetViewHeight();
@@ -248,26 +253,28 @@ public:///Message Function
 			m_scroll_pos = m_prev_scroll_pos + ((float)drag_height / (view_height - thumb_height));
 			mspring::SetRange(m_scroll_pos, 0.0F, 1.0F);
 		}
+		return 1;
 	}
-	void OnMouseLeave()override {
+	INT OnMouseLeave()override {
 		if (m_is_drag == true) {
 			m_parent->SetTimer(TIMER_SCROLLMOVE+m_id, 10, nullptr);
 		}
+		return 1;
 	}
 	const UINT_PTR TIMER_SCROLLMOVE = 0x65C187C6;
-	void OnTimer(UINT_PTR nIDEvent)override {
+	INT OnTimer(UINT_PTR nIDEvent)override {
 		if (nIDEvent == TIMER_SCROLLMOVE+m_id) {
 			CPoint point = this->GetMousePoint();
 			CRect rect = this->GetViewRect();
 			//두 조건은 합쳐질수없음
 			if (rect.PtInRect(point) == TRUE) {
 				m_parent->KillTimer(TIMER_SCROLLMOVE + m_id);
-				return;
+				return 0;
 			}
 			if ((GetAsyncKeyState(VK_LBUTTON) & 0x8000) == false) {
 				m_is_drag = false;
 				m_parent->KillTimer(TIMER_SCROLLMOVE + m_id);
-				return;
+				return 0;
 			}
 			int view_height = GetViewHeight();
 			int page_height = GetPageHeight();
@@ -277,5 +284,6 @@ public:///Message Function
 			m_scroll_pos = mspring::Max(m_scroll_pos, 0.0F);
 			m_scroll_pos = mspring::Min(m_scroll_pos, 1.0F);
 		}
+		return 1;
 	}
 };
