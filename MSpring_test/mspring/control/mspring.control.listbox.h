@@ -169,7 +169,13 @@ public:///Message Function
 			} else {
 				pDC->SetBkMode(TRANSPARENT);
 			}
-			pDC->TextOut(rect.left+m_padding+margin, rect.top+page_y, m_data[page_idx].first);
+			CString str;
+			CString format;
+			format.Format("%%%dd    %%s", std::to_string(m_data.size()).size());
+			str.Format(format, page_idx,m_data[page_idx].first);
+
+
+			pDC->TextOut(rect.left+m_padding+margin, rect.top+page_y, str);
 			page_idx++;
 			page_y += HEIGHT;
 		}
