@@ -53,6 +53,9 @@ protected:
 	static int s_curr_id;			//현재 Focused 된 아이디 입니다.	
 	int m_id;						//객체의 고유 id 입니다.
 public:
+	bool isFocused() {
+		return m_id == s_curr_id;
+	}
 	MControlObject(CWnd* parent, MRect rect) {
 		m_parent = parent;
 		m_rect = rect;
