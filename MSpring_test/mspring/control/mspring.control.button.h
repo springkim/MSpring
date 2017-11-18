@@ -354,4 +354,9 @@ public:
 		}
 		return 1;
 	}
+	INT Reset() override {
+		m_text.Empty();
+		pos = 0;
+		caret = true;
+	}
 };
