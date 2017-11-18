@@ -171,7 +171,7 @@ public:///Message Function
 			}
 			CString str;
 			CString format;
-			format.Format("%%%dd    %%s", std::to_string(m_data.size()).size());
+			format.Format(TEXT("%%%dd    %%s"), std::to_string(m_data.size()).size());
 			str.Format(format, page_idx,m_data[page_idx].first);
 
 
