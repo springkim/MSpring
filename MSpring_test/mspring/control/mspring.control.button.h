@@ -358,5 +358,6 @@ public:
 		m_text.Empty();
 		pos = 0;
 		caret = true;
+		return 1;
 	}
 };
