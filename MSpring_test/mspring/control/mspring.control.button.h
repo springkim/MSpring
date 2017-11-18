@@ -178,6 +178,7 @@ public:
 };
 class MEdit : public MControlObject{
 #define MEDIT_TIMER		17777
+public:
 	CString m_text;
 private:
 	bool caret = false;
