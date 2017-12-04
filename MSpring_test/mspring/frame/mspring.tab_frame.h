@@ -74,6 +74,11 @@ public:
 	int GetCurrentTab() {
 		return m_tab_idx;
 	}
+	void SetCurrentTab(int idx) {
+		if (idx > 0 && idx < m_tab.size()) {
+			m_tab_idx = idx;
+		}
+	}
 	void SetDefaultWidth(UINT width) {
 		m_default_width = width;
 	}

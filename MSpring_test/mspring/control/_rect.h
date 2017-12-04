@@ -15,7 +15,7 @@
 #define MSPRING_7E1_A_9__RECT_HPP_INCLUDED
 #include<afxwin.h>
 enum MRectPosition {
-	LT, RT, LB, RB,DYNAMIC
+	LT, RT, LB, RB, DYNAMIC, L, R, T, B
 };
 class MRect {
 private:
@@ -25,7 +25,7 @@ private:
 	int m_xd2;	//pos가 DYNAMIC이면 right-dist, 그 이외의 경우 width 입니다.
 	int m_yd2;	//pos가 DYNAMIC이면 bottom-dist, 그 이외의 경우 height 입니다.
 public:
-	MRect(MRectPosition pos,int xd,int yd,int xd2,int yd2) {
+	MRect(MRectPosition pos, int xd, int yd, int xd2, int yd2) {
 		m_pos = pos;
 		m_xd = xd;
 		m_yd = yd;
@@ -42,6 +42,30 @@ public:
 	CRect GetRect(CRect view) {
 		CRect rect;
 		switch (m_pos) {
+			case L: {
+				rect.left = view.left + m_xd;
+				rect.top = view.top + m_yd;
+				rect.right = rect.left + m_xd2;
+				rect.bottom = view.bottom - m_yd2;
+			}break;
+			case R: {
+				rect.top = view.top + m_yd;
+				rect.right = view.right - m_xd2;
+				rect.bottom = view.bottom - m_yd2;
+				rect.left = rect.right - m_xd;
+			}break;
+			case T: {
+				rect.left = view.left + m_xd;
+				rect.top = view.top + m_yd;
+				rect.right = view.right - m_xd2;
+				rect.bottom = rect.top + m_yd2;
+			}break;
+			case B: {
+				rect.left = view.left + m_xd;
+				rect.bottom = view.bottom - m_yd2;
+				rect.right = view.right - m_xd2;
+				rect.top = rect.bottom - m_yd;
+			}break;
 			case LT: {
 				rect.left = view.left + m_xd;
 				rect.top = view.top + m_yd;

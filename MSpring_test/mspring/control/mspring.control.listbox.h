@@ -21,6 +21,8 @@ public:
 	int m_scrollbar_width = 20;	//스크롤바의 두께 입니다.
 	int HEIGHT = 20;				//각 리스트의 높이 입니다.
 	bool is_check = false;			//체크 박스를 넣을지 말지 결정 합니다.
+	int m_select = -1;				//선택된 리스트의 인덱스 입니다.
+	float m_scroll_pos = 1.0F;		//(내부적사용)스크롤의 위치를 나타냅니다.(0.0~1.0)
 public:///Utility Functions
 	//좌표로 클릭한 지점의 인덱스를 가져옵니다.
 	int GetElementByPoint(CPoint pt) {
@@ -56,9 +58,9 @@ protected:
 	CPoint m_drag_point;			//(내부적사용)드래그의 시작점을 나타냅니다.
 	CRect m_thumb_rect;			//(내부적사용)스크롤 엄지의 사각좌표 입니다.
 	float m_prev_scroll_pos;		//(내부적사용)스크롤의 예전 위치 입니다.
-	float m_scroll_pos = 0.0F;		//(내부적사용)스크롤의 위치를 나타냅니다.(0.0~1.0)
+	
 
-	int m_select = -1;				//선택된 리스트의 인덱스 입니다.
+	
 protected:
 	//리스트박스의 높이를 가져 옵니다.
 	int GetViewHeight() {

@@ -25,9 +25,6 @@ using DoFunc_VP = UINT(*)(void*);
 using DoFunc = UINT(*)();
 inline void ThreadEvent(DoFunc_VP func, void* param) {
 	CWinThread* pthread = AfxBeginThread(func, param);
-	if (pthread != NULL) {
-		CloseHandle(pthread);
-	}
 }
 class MControlObject {
 public:

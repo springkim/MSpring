@@ -58,7 +58,8 @@ public:
 	virtual void OnSize(UINT nType, int cx, int cy){}
 	
 	virtual void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags){}
-	
+	virtual void OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags) {
+	}
 	virtual void OnTimer(UINT_PTR nIDEvent){}
 	virtual void OnChar(UINT nChar, UINT nRepCnt, UINT nFlags) {
 	}

@@ -82,6 +82,7 @@ public:
 		if (CWnd::OnCreate(lpCreateStruct) == -1) {
 			return -1;
 		}
+		SAFETY_CALL(m_view, OnCreate);
 		return 0;
 	}
 	afx_msg void OnSetFocus(CWnd* pOldWnd) {
@@ -138,6 +139,11 @@ public:
 	afx_msg void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags) {
 		SAFETY_CALL(m_view, OnKeyDown, nChar, nRepCnt, nFlags);
 		CWnd::OnKeyDown(nChar, nRepCnt, nFlags);
+		this->Invalidate();
+	}
+	afx_msg void OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags) {
+		SAFETY_CALL(m_view, OnKeyUp, nChar, nRepCnt, nFlags);
+		CWnd::OnKeyUp(nChar, nRepCnt, nFlags);
 		this->Invalidate();
 	}
 	afx_msg void OnDestroy() {
