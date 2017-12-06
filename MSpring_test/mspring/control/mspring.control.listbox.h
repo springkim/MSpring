@@ -159,6 +159,7 @@ public:///Message Function
 			page_idx = div.quot;
 		}
 		CPen pen_null;pen_null.CreatePen(PS_NULL, 0, RGB(0, 0, 0));
+		pDC->SetTextColor(*m_color_text);
 		while (page_idx < (int)m_data.size() && page_y < view_height) {
 			int margin = 0;
 			if (is_check == true) {

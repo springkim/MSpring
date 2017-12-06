@@ -10,6 +10,7 @@ public:
 	MEdit* m_edit2;
 	MListBox* m_list;
 	MListBox* m_list2;
+	MSlider* m_slider;
 public:
 	ControlTestView(CWnd* wnd) :VirtualView(wnd) {
 		m_button = new MButton(wnd, MRect(MRectPosition::RB, 20, 20, 100, 30));
@@ -33,6 +34,10 @@ public:
 		m_list2->m_data.push_back(std::make_pair(TEXT("cat"), false));
 		m_list2->m_data.push_back(std::make_pair(TEXT("person"), false));
 		m_list2->m_data.push_back(std::make_pair(TEXT("bus"), false));
+
+		m_slider=new MSlider(wnd, MRect(MRectPosition::RB, 20, 60, 1000, 20));
+		m_slider->m_color_bk = new std::atomic<COLORREF>(RGB(255, 199, 199));
+		m_slider->m_vertical = false;
 	}
 	virtual ~ControlTestView() {
 
@@ -47,6 +52,7 @@ public:
 		m_edit2->OnPaint(pDC);
 		m_list->OnPaint(pDC);
 		m_list2->OnPaint(pDC);
+		m_slider->OnPaint(pDC);
 	}
 	virtual void OnLButtonDown(UINT nFlags, CPoint point) {
 		m_button->OnLButtonDown();
@@ -55,16 +61,19 @@ public:
 		m_edit2->OnLButtonDown();
 		m_list->OnLButtonDown();
 		m_list2->OnLButtonDown();
+		m_slider->OnLButtonDown();
 	}
 	virtual void OnLButtonUp(UINT nFlags, CPoint point) {
 		m_list->OnLButtonUp();
 		m_list2->OnLButtonUp();
+		m_slider->OnLButtonUp();
 	}
 	virtual void OnMouseMove(UINT nFlags, CPoint point) {
 		m_button->OnMouseMove();
 		m_check->OnMouseMove();
 		m_list->OnMouseMove();
 		m_list2->OnMouseMove();
+		m_slider->OnMouseMove();
 	}
 	virtual void OnChar(UINT nChar, UINT nRepCnt, UINT nFlags) {
 		m_edit->OnChar(nChar);
@@ -84,6 +93,7 @@ public:
 		m_edit2->OnTimer(nIDEvent);
 		m_list->OnTimer(nIDEvent);
 		m_list2->OnTimer(nIDEvent);
+		m_slider->OnTimer(nIDEvent);
 	}
 	virtual BOOL OnMouseWheel(UINT nFlags, short zDelta, CPoint pt) {
 		m_list->OnMouseWheel(zDelta);
@@ -93,6 +103,7 @@ public:
 	virtual void OnMouseLeave() {
 		m_list->OnMouseLeave();
 		m_list2->OnMouseLeave();
+		m_slider->OnMouseLeave();
 	}
 	virtual void OnRButtonUp(UINT nFlags, CPoint point) {
 		int idx = m_list->GetElementByPoint(point);

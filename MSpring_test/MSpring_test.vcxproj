@@ -76,7 +76,6 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)x86\$(Configuration)\</OutDir>
-    <IntDir>$(temp)\($SolutionName)\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
@@ -84,18 +83,18 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)x86\$(Configuration)\</OutDir>
-    <IntDir>$(temp)\($SolutionName)\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
+      <AdditionalOptions>/FS %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -142,6 +141,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
+      <AdditionalOptions>/FS %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

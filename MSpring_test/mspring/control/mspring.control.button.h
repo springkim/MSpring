@@ -1,46 +1,46 @@
 ﻿#pragma once
 #include"mspring.control.object.h"
 
-class MButton : public MControlObject{
+class MButton : public MControlObject {
 public:
 	CString m_text = TEXT("Button");
 	DoFunc m_func = nullptr;
 public:
-	MButton(CWnd* parent, MRect base): MControlObject(parent,base){
-		
+	MButton(CWnd* parent, MRect base) : MControlObject(parent, base) {
+
 	}
 	INT OnPaint(CDC* pDC)override {
 		CRect view_rect = this->GetViewRect();
 		CRect rect = m_rect.GetRect(view_rect);
-		CPen null_pen;null_pen.CreatePen(PS_NULL, 0, RGB(0, 0, 0));
+		CPen null_pen; null_pen.CreatePen(PS_NULL, 0, RGB(0, 0, 0));
 		CBrush brush;
 		if (this->m_state == MControlState::CLICK) {
 			brush.CreateSolidBrush(GetDarkColor(*this->m_color_fr));
-		}else if (this->m_state == MControlState::NORMAL) {
+		} else if (this->m_state == MControlState::NORMAL) {
 			brush.CreateSolidBrush(*this->m_color_fr);
-		} else if(this->m_state == MControlState::HOVER){
+		} else if (this->m_state == MControlState::HOVER) {
 			brush.CreateSolidBrush(GetBrightColor(*this->m_color_fr));
 		}
-		CPen* old_pen= pDC->SelectObject(&null_pen);
+		CPen* old_pen = pDC->SelectObject(&null_pen);
 		CBrush* old_brush = pDC->SelectObject(&brush);
 		pDC->RoundRect(&rect, CPoint(5, 5));
-		int h = mspring::Font::GetRealFontHeight(m_font_str, rect.Height()-6, pDC, m_text, true);
-		int h2= mspring::Font::GetRealFontHeight(m_font_str, rect.Width()-6, pDC, m_text,false);
+		int h = mspring::Font::GetRealFontHeight(m_font_str, rect.Height() - 6, pDC, m_text, true);
+		int h2 = mspring::Font::GetRealFontHeight(m_font_str, rect.Width() - 6, pDC, m_text, false);
 		h = mspring::Min(h, h2);
 		CFont font;
 		font.CreatePointFont(h, m_font_str);
-		CFont* old_font=pDC->SelectObject(&font);
+		CFont* old_font = pDC->SelectObject(&font);
 		pDC->SetBkMode(TRANSPARENT);
 		pDC->SetTextColor(*m_color_text);
 		CSize sz;
 		::GetTextExtentPoint32(pDC->GetSafeHdc(), m_text, m_text.GetLength(), &sz);
-		pDC->TextOut((rect.Width() - sz.cx) / 2+rect.left, (rect.Height() - sz.cy) / 2+rect.top, m_text);
+		pDC->TextOut((rect.Width() - sz.cx) / 2 + rect.left, (rect.Height() - sz.cy) / 2 + rect.top, m_text);
 		pDC->SelectObject(old_font);
 		pDC->SelectObject(old_pen);
 		pDC->SelectObject(old_brush);
 		font.DeleteObject();
 		brush.DeleteObject();
-		null_pen.DeleteObject(); 
+		null_pen.DeleteObject();
 		return 1;
 	}
 	INT OnLButtonDown()override {
@@ -80,26 +80,29 @@ public:
 class MButtonCheck : public MControlObject {
 public:
 	bool check = false;
+	bool disable = false;
 public:
 	MButtonCheck(CWnd* parent, MRect base) : MControlObject(parent, base) {
-		
+
 	}
 	INT OnPaint(CDC* pDC) {
 		CRect view_rect = this->GetViewRect();
 		CRect rect = m_rect.GetRect(view_rect);
-		CPen null_pen;null_pen.CreatePen(PS_NULL, 0, RGB(0, 0, 0));
+		CPen null_pen; null_pen.CreatePen(PS_NULL, 0, RGB(0, 0, 0));
 		CBrush brush;
-		if (this->m_state == MControlState::CLICK) {
+		if (disable == true) {
+			brush.CreateSolidBrush(*this->m_color_other);
+		} else if (this->m_state == MControlState::CLICK) {
 			brush.CreateSolidBrush(GetDarkColor(*this->m_color_fr));
 		} else if (this->m_state == MControlState::NORMAL) {
 			brush.CreateSolidBrush(*this->m_color_fr);
 		} else if (this->m_state == MControlState::HOVER) {
 			brush.CreateSolidBrush(GetBrightColor(*this->m_color_fr));
 		}
-		CPen* old_pen=pDC->SelectObject(&null_pen);
+		CPen* old_pen = pDC->SelectObject(&null_pen);
 		CBrush* old_brush = pDC->SelectObject(&brush);
 		pDC->RoundRect(&rect, CPoint(5, 5));
-		if (check == true) {
+		if (check == true && disable == false) {
 			CPen pen;
 			pen.CreatePen(PS_SOLID, 3, *m_color_text);
 			pDC->SelectObject(&pen);
@@ -108,7 +111,7 @@ public:
 			pDC->LineTo(static_cast<int>(rect.left + divw*1.5), rect.top + divw * 4);
 			pDC->LineTo(rect.right - divw, rect.top + divw * 1);
 			pen.DeleteObject();
-		} 
+		}
 		pDC->SelectObject(old_pen);
 		null_pen.DeleteObject();
 		brush.DeleteObject();
@@ -116,6 +119,9 @@ public:
 	}
 	INT OnLButtonDown()override {
 		MControlObject::OnLButtonDown();
+		if (disable == true) {
+			return 1;
+		}
 		CPoint point = this->GetMousePoint();
 		CRect rect;
 		m_parent->GetClientRect(&rect);
@@ -135,6 +141,9 @@ public:
 		return 1;
 	}
 	INT OnMouseMove()override {
+		if (disable == true) {
+			return 1;
+		}
 		CPoint point = this->GetMousePoint();
 		CRect rect;
 		m_parent->GetClientRect(&rect);
@@ -178,14 +187,14 @@ public:
 		} else if (align == MSTATIC_ALIGN_LEFT) {
 			pDC->TextOut(rect.left, (rect.Height() - sz.cy) / 2 + rect.top, m_text);
 		} else if (align == MSTATIC_ALIGN_RIGHT) {
-			pDC->TextOut(rect.right-sz.cx, (rect.Height() - sz.cy) / 2 + rect.top, m_text);
+			pDC->TextOut(rect.right - sz.cx, (rect.Height() - sz.cy) / 2 + rect.top, m_text);
 		}
 		pDC->SelectObject(old_font);
 		font.DeleteObject();
 		return 1;
 	}
 };
-class MEdit : public MControlObject{
+class MEdit : public MControlObject {
 #define MEDIT_TIMER		17777
 public:
 	CString m_text;
@@ -194,7 +203,7 @@ private:
 	int pos = 0;
 public:
 	MEdit(CWnd* parent, MRect base) : MControlObject(parent, base) {
-	
+
 	}
 	INT OnPaint(CDC* pDC) {
 		CRect view_rect = this->GetViewRect();
@@ -218,20 +227,20 @@ public:
 		pDC->SetTextColor(*m_color_text);
 		CSize sz;
 		::GetTextExtentPoint32(pDC->GetSafeHdc(), m_text, m_text.GetLength(), &sz);
-	
+
 		pDC->TextOut(rect.left, (rect.Height() - sz.cy) / 2 + rect.top, m_text);
-		
-		
-		
-		if (m_id == s_curr_id && caret==true) {
+
+
+
+		if (m_id == s_curr_id && caret == true) {
 			CPen pen;
 			pen.CreatePen(PS_SOLID, 2, *m_color_fr);
 			pDC->SelectObject(&pen);
 			::GetTextExtentPoint32(pDC->GetSafeHdc(), m_text, pos, &sz);
 			int x = rect.left + sz.cx;
 			int width = mspring::Min(rect.Width() - sz.cx, (long)rect.Height());
-			pDC->MoveTo(x,rect.top);
-			pDC->LineTo(x,rect.bottom);
+			pDC->MoveTo(x, rect.top);
+			pDC->LineTo(x, rect.bottom);
 
 			pen.DeleteObject();
 		}
@@ -239,12 +248,12 @@ public:
 
 		pDC->SelectObject(old_font);
 		pDC->SelectObject(old_pen);
-
+		pen.DeleteObject();
 		font.DeleteObject();
 		return 1;
 	}
 
-	INT OnLButtonDown() override{
+	INT OnLButtonDown() override {
 		MControlObject::OnLButtonDown();
 		if (s_curr_id == m_id) {
 			m_parent->SetTimer(MEDIT_TIMER + m_id, 500, nullptr);
@@ -260,10 +269,10 @@ public:
 			case VK_RIGHT:pos++; caret = true; break;
 			default:break;
 		}
-		mspring::SetRange(pos,0, m_text.GetLength());
+		mspring::SetRange(pos, 0, m_text.GetLength());
 		return 1;
 	}
-	INT OnChar(UINT nChar) override{
+	INT OnChar(UINT nChar) override {
 		if (s_curr_id != m_id) {
 			return 0;
 		}
@@ -336,7 +345,7 @@ public:
 
 		if (len > 0) {
 			if (ins) {
-				m_text.Insert(pos,dest[0]);
+				m_text.Insert(pos, dest[0]);
 				pos++;
 			} else {
 				m_text.SetAt(pos - 1, dest[0]);
@@ -358,6 +367,118 @@ public:
 		m_text.Empty();
 		pos = 0;
 		caret = true;
+		return 1;
+	}
+};
+class MSlider : public MControlObject {
+#define MSLIDER_TIMER		17789
+public:
+	CString m_text;
+	float m_pos = 0.1;
+	bool m_vertical = true;	//이 값이 true이면 수직 슬라이더 입니다.
+private:
+	bool m_click = false;
+	CRect m_thumb;
+public:
+	MSlider(CWnd* parent, MRect base) : MControlObject(parent, base) {
+
+	}
+	INT OnPaint(CDC* pDC) {
+		CPoint point = this->GetMousePoint();
+		CRect view_rect = this->GetViewRect();
+		CRect rect = m_rect.GetRect(view_rect);
+		
+		if (m_vertical == false) {
+			auto DrawHSlider = [](CDC* pDC, CRect rect,COLORREF color)->void {
+				CBrush brush;
+				brush.CreateSolidBrush(color);
+				CPen pen_null;
+				pen_null.CreatePen(PS_NULL, 0, RGB(0, 0, 0));
+				CPen* old_pen = pDC->SelectObject(&pen_null);
+				CBrush* old_brush = pDC->SelectObject(&brush);
+				CRect ellipse_left = rect;
+				ellipse_left.right = ellipse_left.left + rect.Height();
+				CRect ellipse_right = rect;
+				ellipse_right.left = ellipse_right.right - rect.Height();
+				pDC->Ellipse(ellipse_left);
+				if (ellipse_left.Width() <= rect.Width()) {
+					pDC->Ellipse(ellipse_right);
+				}
+				CRect rect_inside = rect;
+				rect_inside.left += rect.Height() / 2;
+				rect_inside.right -= rect.Height() / 2;
+				if (ellipse_left.Width() <= rect.Width()) {
+					pDC->Rectangle(rect_inside);
+				}
+				pDC->SelectObject(old_pen);
+				pDC->SelectObject(old_brush);
+				pen_null.DeleteObject();
+				brush.DeleteObject();
+			};
+			DrawHSlider(pDC, rect, *m_color_bk);
+			CRect rect_activate = rect;
+			rect_activate.right = rect.left+rect.Height() + (m_pos*(rect.Width()-rect.Height()));
+			DrawHSlider(pDC, rect_activate, *m_color_fr);
+			
+			int base = rect.left + rect.Height() / 2;
+			int width = rect.Width() - rect.Height();
+			int dst = base + m_pos*width;
+			m_thumb.left = dst - rect.Height() / 2;
+			m_thumb.right = dst + rect.Height() / 2;
+			m_thumb.top = rect.top;
+			m_thumb.bottom = rect.bottom;
+			CBrush brush;
+			brush.CreateSolidBrush(*m_color_other);
+			CPen pen_null;
+			pen_null.CreatePen(PS_NULL, 0, RGB(0, 0, 0));
+			CPen* old_pen = pDC->SelectObject(&pen_null);
+			CBrush* old_brush = pDC->SelectObject(&brush);
+			pDC->Ellipse(m_thumb);
+			pDC->SelectObject(old_pen);
+			pDC->SelectObject(old_brush);
+			pen_null.DeleteObject();
+			brush.DeleteObject();
+		}
+		
+		return 1;
+	}
+	INT OnLButtonDown() override {
+		MControlObject::OnLButtonDown();
+		if (m_thumb.PtInRect(this->GetMousePoint()) == TRUE) {
+			m_click = s_curr_id == m_id;
+		};
+		return 1;
+	}
+	INT OnMouseMove()override {
+		MControlObject::OnMouseMove();
+		if (s_curr_id != m_id) {
+			return 1;
+		}
+		if (m_click == false) {
+			return 1;
+		}
+		CPoint point = this->GetMousePoint();
+		CRect view_rect = this->GetViewRect();
+		CRect rect = m_rect.GetRect(view_rect);		
+		if (m_vertical == true) {
+			m_pos = static_cast<float>(rect.bottom - point.y) / rect.Height();
+		} else {
+			m_pos = static_cast<float>(point.x - (rect.left+rect.Height()/2)) / (rect.Width() - rect.Height());
+		}
+		mspring::SetRange(m_pos, 0.0F, 1.0F);
+		printf("%f\n", m_pos);
+		return 1;
+	}
+	INT OnLButtonUp() {
+		MControlObject::OnLButtonUp();
+		m_click = false;
+		return 1;
+	}
+	INT OnMouseLeave() {
+		m_click = false;
+		return 1;
+	}
+	INT OnTimer(UINT_PTR nIDEvent) {
 		return 1;
 	}
 };
