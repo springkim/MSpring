@@ -7,10 +7,12 @@ IF EXIST "x86" (
 IF EXIST "MSpring_test\x64" (  
     RMDIR /S /Q "MSpring_test\x64"
 )
-IF EXIST "MSpring_test\x86" (  
-    RMDIR /S /Q "MSpring_test\x86"
+IF EXIST "MSpring_test\Debug" (  
+    RMDIR /S /Q "MSpring_test\Debug"
 )
-
+IF EXIST "MSpring_test\Release" (  
+    RMDIR /S /Q "MSpring_test\Release"
+)
 IF EXIST "install_mspring\Debug" (  
     RMDIR /S /Q "install_mspring\Debug"
 )
