@@ -151,7 +151,7 @@ public:
 __declspec(selectany) std::atomic<COLORREF> MControlObject::s_color_bk = RGB(199,199,199);
 __declspec(selectany) std::atomic<COLORREF> MControlObject::s_color_fr = RGB(38,139,210);
 __declspec(selectany) std::atomic<COLORREF> MControlObject::s_color_text = RGB(0,0,0);
-__declspec(selectany) std::atomic<COLORREF> MControlObject::s_color_other = RGB(220,50,47);
+__declspec(selectany) std::atomic<COLORREF> MControlObject::s_color_other = RGB(147,161,161);
 __declspec(selectany) std::atomic<COLORREF> MControlObject::s_color_view = RGB(255, 255, 255);
 __declspec(selectany) CString MControlObject::s_font_str = TEXT("Arial");
 __declspec(selectany) int MControlObject::s_id = 0;

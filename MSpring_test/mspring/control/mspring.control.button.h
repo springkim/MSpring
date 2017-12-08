@@ -374,7 +374,7 @@ class MSlider : public MControlObject {
 #define MSLIDER_TIMER		17789
 public:
 	CString m_text;
-	float m_pos = 0.1;
+	float m_pos = 0.1F;
 	bool m_vertical = true;	//이 값이 true이면 수직 슬라이더 입니다.
 private:
 	bool m_click = false;
@@ -417,12 +417,12 @@ public:
 			};
 			DrawHSlider(pDC, rect, *m_color_bk);
 			CRect rect_activate = rect;
-			rect_activate.right = rect.left+rect.Height() + (m_pos*(rect.Width()-rect.Height()));
+			rect_activate.right = static_cast<LONG>(rect.left + rect.Height() + (m_pos*(rect.Width() - rect.Height())));
 			DrawHSlider(pDC, rect_activate, *m_color_fr);
 			
 			int base = rect.left + rect.Height() / 2;
 			int width = rect.Width() - rect.Height();
-			int dst = base + m_pos*width;
+			int dst = static_cast<int>(base + m_pos*width);
 			m_thumb.left = dst - rect.Height() / 2;
 			m_thumb.right = dst + rect.Height() / 2;
 			m_thumb.top = rect.top;
