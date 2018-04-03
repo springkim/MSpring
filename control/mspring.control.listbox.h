@@ -17,7 +17,10 @@
 class MListBox : public MControlObject {
 public:
 	std::vector<std::pair<CString,bool>> m_data;
-	UINT m_padding=5;				//체크박스와 텍스트의 패딩 입니다.
+	int m_padding=5;				//체크박스와 텍스트의 패딩 입니다.
+	int m_num_padding=0;			//숫자영역의 넓이 입니다.
+	int m_checkbox_padding = 0;		//체크박스의 넓이 입니다.
+
 	int m_scrollbar_width = 20;	//스크롤바의 두께 입니다.
 	int HEIGHT = 20;				//각 리스트의 높이 입니다.
 	bool is_check = false;			//체크 박스를 넣을지 말지 결정 합니다.
@@ -43,23 +46,34 @@ public:///Utility Functions
 			page_y = -div.rem;
 			page_idx = div.quot;
 		}
+		CDC* pDC = this->m_parent->GetDC();
+		int h = mspring::Font::GetRealFontHeight(m_font_str, HEIGHT,pDC);
+		
+		CFont font; font.CreatePointFont(h, m_font_str);
+		CFont* old_font = pDC->SelectObject(&font);
+		int ret = -1;
 		while (page_idx < (int)m_data.size() && page_y < view_height) {
 			//pDC->TextOutW(rect.left+m_padding, rect.top+page_y, m_data[page_idx]);
 			if (rect.top + page_y <= pt.y && pt.y < rect.top + page_y + HEIGHT) {
-				return page_idx;
+				CSize sz;
+				GetTextExtentPoint32(pDC->GetSafeHdc(), m_data[page_idx].first, m_data[page_idx].first.GetLength(), &sz);
+				if (rect.left + m_padding + m_checkbox_padding+m_num_padding + sz.cx > pt.x) {
+					ret = page_idx;
+				}
+				break;
 			}
 			page_idx++;
 			page_y += HEIGHT;
 		}
-		return -1;
+		font.DeleteObject();
+		this->m_parent->ReleaseDC(pDC);
+		return ret;
 	}
 protected:
 	bool m_is_drag = false;			//(내부적사용)현재 드래그 상태인지 나타냅니다.
 	CPoint m_drag_point;			//(내부적사용)드래그의 시작점을 나타냅니다.
 	CRect m_thumb_rect;			//(내부적사용)스크롤 엄지의 사각좌표 입니다.
 	float m_prev_scroll_pos;		//(내부적사용)스크롤의 예전 위치 입니다.
-	
-
 	
 protected:
 	//리스트박스의 높이를 가져 옵니다.
@@ -76,11 +90,33 @@ protected:
 		int page_height = GetPageHeight();
 		return static_cast<int>(((float)view_height / page_height)*view_height);
 	}
+	//페이지의 인덱스를 가져 옵니다.
+	int GetPageIndex() {
+		int view_height = GetViewHeight();
+		int thumb_height = GetThumbHeight();
+		int page_height = GetPageHeight();
+		int page_jump = 0;	//띄워야 하는 좌표
+		if (page_height > view_height) {
+			page_jump = static_cast<int>((page_height - view_height)*m_scroll_pos);
+		}
+		int page_idx = 0;	//시작될 줄 넘버
+		if (page_jump > 0) {
+			page_idx = static_cast<int>(std::round((float)page_jump / HEIGHT));
+		}
+		return page_idx;
+	}
+	void SetPageIndex(int page_idx) {
+		int view_height = GetViewHeight();
+		int page_height = GetPageHeight();
+		m_scroll_pos = ((float)page_idx*HEIGHT) / (page_height - view_height);
+		mspring::SetRange(m_scroll_pos, 0.0F, 1.0F);
+	}
 	void DrawScroll(CDC* pDC) {
 		CRect rect = this->m_rect.GetRect(GetViewRect());
 		int view_height = GetViewHeight();
 		int page_height = GetPageHeight();
 		int thumb_height = GetThumbHeight();
+		thumb_height = mspring::Max(thumb_height, 20);
 		if (page_height > view_height) {
 			CRect thumb_rect = rect;
 			thumb_rect.top += static_cast<decltype(thumb_rect.top)>((view_height - thumb_height)*m_scroll_pos);
@@ -159,30 +195,33 @@ public:///Message Function
 			page_idx = div.quot;
 		}
 		CPen pen_null;pen_null.CreatePen(PS_NULL, 0, RGB(0, 0, 0));
+		CPen* pen_old=pDC->SelectObject(&pen_null);
 		pDC->SetTextColor(*m_color_text);
+
+		CBrush brush_highlight; brush_highlight.CreateSolidBrush(*m_color_fr);
+		
 		while (page_idx < (int)m_data.size() && page_y < view_height) {
-			int margin = 0;
 			if (is_check == true) {
-				margin = HEIGHT + m_padding;
+				m_checkbox_padding = HEIGHT + m_padding;
 				DrawCheckBox(pDC, rect.left + m_padding, rect.top + page_y, m_data[page_idx].second);
 			}
+			pDC->SetBkMode(TRANSPARENT);
+			CSize sz; GetTextExtentPoint32(pDC->GetSafeHdc(), TEXT("A"), 1, &sz);
+			m_num_padding = sz.cx*static_cast<int>(round(log10(m_data.size())));
+			GetTextExtentPoint32(pDC->GetSafeHdc(), m_data[page_idx].first,m_data[page_idx].first.GetLength(), &sz);
+			int width = m_padding + m_num_padding + sz.cx;
 			if (page_idx == m_select) {
-				pDC->SetBkMode(OPAQUE);
-				pDC->SetBkColor(this->GetBrightColor(*m_color_fr));
-			} else {
-				pDC->SetBkMode(TRANSPARENT);
+				CBrush* brush_old=pDC->SelectObject(&brush_highlight);
+				pDC->RoundRect(rect.left+ m_checkbox_padding, rect.top+ page_y, rect.left + m_checkbox_padding+ width+m_padding, rect.top + page_y+HEIGHT, 5, 5);
+				pDC->SelectObject(&brush_old);
 			}
-			CString str;
-			CString format;
-			format.Format(TEXT("%%%dd    %%s"), std::to_string(m_data.size()).size());
-			str.Format(format, page_idx,m_data[page_idx].first);
-
-
-			pDC->TextOut(rect.left+m_padding+margin, rect.top+page_y, str);
+			pDC->TextOut(rect.left + m_padding + m_checkbox_padding, rect.top + page_y, mspring::String::ToCString(std::to_string(page_idx)));
+			pDC->TextOut(rect.left + m_padding + m_checkbox_padding+m_num_padding, rect.top + page_y, m_data[page_idx].first);
 			page_idx++;
 			page_y += HEIGHT;
 		}
 		DrawScroll(pDC);
+		pDC->SelectObject(&pen_old);
 		pen_null.DeleteObject();
 		font.DeleteObject();
 		pDC->SelectClipRgn(nullptr);
@@ -235,20 +274,9 @@ public:///Message Function
 			m_scroll_pos += 0.01F*((zDelta > 0) ? -1 : 1);
 			mspring::SetRange(m_scroll_pos, 0.0F, 1.0F);
 		} else {
-			int view_height = GetViewHeight();
-			int thumb_height = GetThumbHeight();
-			int page_height = GetPageHeight();
-			int page_jump = 0;	//띄워야 하는 좌표
-			if (page_height > view_height) {
-				page_jump = static_cast<int>((page_height - view_height)*m_scroll_pos);
-			}
-			int page_idx = 0;	//시작될 줄 넘버
-			if (page_jump > 0) {
-				page_idx = static_cast<int>(std::round((float)page_jump / HEIGHT));
-			}
+			int page_idx = GetPageIndex();
 			page_idx += ((zDelta > 0) ? -1 : 1);
-			m_scroll_pos = ((float)page_idx*HEIGHT) / (page_height - view_height);
-			mspring::SetRange(m_scroll_pos, 0.0F, 1.0F);
+			SetPageIndex(page_idx);
 		}
 		return 1;
 	}
@@ -270,7 +298,44 @@ public:///Message Function
 		}
 		return 1;
 	}
-	const UINT_PTR TIMER_SCROLLMOVE = 0x65C187C6;
+	INT OnKeyDown(UINT nChar) override {
+		if (isFocused() == false)return 0;
+		int page_idx = GetPageIndex();
+		switch (nChar) {
+			case VK_HOME:this->m_scroll_pos = 0.0F; break;
+			case VK_END:this->m_scroll_pos = 1.0F; break;
+			case VK_PRIOR:SetPageIndex(page_idx - GetViewHeight() / HEIGHT); break;
+			case VK_NEXT:SetPageIndex(page_idx + GetViewHeight() / HEIGHT); break;
+			case VK_UP:if (m_select >0) {
+				if (m_select < page_idx || m_select >= page_idx + (GetViewHeight() / HEIGHT)) {
+					m_select--;
+					SetPageIndex(m_select);
+					
+				} else {
+					m_select--;
+					if (m_select < page_idx) {
+						SetPageIndex(page_idx - 1);
+					}
+				}
+				
+			}break;
+			case VK_DOWN:if (m_select != -1 && m_select<m_data.size()-1) {
+				if (m_select < page_idx || m_select >= page_idx + (GetViewHeight() / HEIGHT)) {
+					m_select++;
+					SetPageIndex(m_select);
+					
+				} else {
+					m_select++;
+					if (m_select >= page_idx + (GetViewHeight() / HEIGHT)) {
+						SetPageIndex(page_idx + 1);
+					}
+				}
+				
+			}break;
+		}
+		return 1;
+	}
+	const UINT_PTR TIMER_SCROLLMOVE = (UINT_PTR)"mspring.control.listbox.h(TIMER_SCROLLMOVE)";
 	INT OnTimer(UINT_PTR nIDEvent)override {
 		if (nIDEvent == TIMER_SCROLLMOVE+m_id) {
 			CPoint point = this->GetMousePoint();
