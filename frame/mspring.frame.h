@@ -237,7 +237,7 @@ public:	//messageevent method
 		if (CFrameWnd::OnCreate(lpCreateStruct) == -1) {
 			return -1;
 		}
-		EXEC_ALWAYS(this->ModifyStyle(WS_SYSMENU, 0));	//시스템 메뉴(종료,최대화,최소화) 버튼을 제거합니다.
+		this->ModifyStyle(WS_SYSMENU, 0);	//시스템 메뉴(종료,최대화,최소화) 버튼을 제거합니다.
 		for (auto&e : m_expansion) {
 			e->OnCreate(lpCreateStruct);
 		}

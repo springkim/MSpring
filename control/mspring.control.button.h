@@ -466,7 +466,6 @@ public:
 			m_pos = static_cast<float>(point.x - (rect.left+rect.Height()/2)) / (rect.Width() - rect.Height());
 		}
 		mspring::SetRange(m_pos, 0.0F, 1.0F);
-		printf("%f\n", m_pos);
 		return 1;
 	}
 	INT OnLButtonUp() {
