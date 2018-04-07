@@ -88,7 +88,7 @@ public:
 			case VK_LEFT:pos--; caret = true; break;
 			case VK_RIGHT:pos++; caret = true; break;
 			case VK_DELETE: {
-				if (pos <m_text.length()) {
+				if (pos <(int)m_text.length()) {
 					m_text.erase(m_text.begin() + pos);
 				}
 			}break;

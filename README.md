@@ -89,3 +89,4 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 * Fix window maximize problem.
 * Support Mother Call.
 * fix mem leak
+* fix vertical sccrollbar

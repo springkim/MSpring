@@ -406,6 +406,7 @@ public:///Message Function
 			int view_height = GetViewHeight();
 			int page_height = GetPageHeight();
 			int thumb_height = GetVThumbHeight();
+			thumb_height = mspring::Max(thumb_height, 20);
 			int drag_height = point.y - m_drag_point.y;
 			m_v_scroll_pos = m_prev_scroll_pos + ((float)drag_height / (view_height - thumb_height));
 			mspring::SetRange(m_v_scroll_pos, 0.0F, 1.0F);
