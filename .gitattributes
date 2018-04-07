@@ -1,0 +1,6 @@
+*.c   eol=crlf
+*.h   eol=crlf
+*.cpp   eol=crlf
+*.hpp   eol=crlf
+*.txt   eol=crlf
+*.bat   eol=crlf
