@@ -17,11 +17,12 @@
 #include<vector>
 #include<iostream>
 #include<algorithm>
+#include<memory>
 #include<string>
 #include<array>
 #include<map>
-#include"../utils.h"
-#include"mspring.resource.h"
+#include"../utils/utils.h"
+#include"MSpringResource01.h"
 
 #define REDRAW_NCAREA this->OnNcPaint()
 class MSpringFrameExpansion {
@@ -53,6 +54,7 @@ public:
 	virtual void OnNcMouseLeave() = 0;
 	virtual void OnDestroy() = 0;
 };
+__declspec(selectany) double g_maximized_time = 0.0;			//창이 최대화 상태가 된 시간입니다. (최대화후 몇 ms 간은 MouseMove를 동작하지 않습니다.)
 class MSpringFrame : public CFrameWnd {
 protected:
 	DECLARE_DYNAMIC(MSpringFrame)
@@ -109,32 +111,35 @@ protected:
 protected:	
 	std::array<mspring::DoubleBufferingDC*,4> m_dbb;			//상,하,좌,우 를 각각 그리는 Device Context 입니다.
 	bool m_is_maximize = false;				//현재 창이 최대화 상태인지 나타냅니다.
-	std::vector<MSpringFrameExpansion*> m_expansion;	//확장 기능 클래스 입니다.
+	std::vector<std::shared_ptr<MSpringFrameExpansion>> m_expansion;	//확장 기능 클래스 입니다.
 	CRect m_blank_caption;						//OnNcDblClk 함수에서 사용합니다.
 protected:	//coord value
 	int m_sysbtn_margin = 4;					//시스템 버튼 사이의 간격입니다.
 	int m_icon_margin = 4;						//아이콘의 margin 입니다.
+	
 protected:	//style value
 	COLORREF m_color_transparent;			//시스템버튼의 투명색을 지정합니다.
 	COLORREF m_color_bk;						//프레임의 배경색입니다.
 	COLORREF m_color_border;					//경계색의 색상입니다.
 	COLORREF m_color_text;
-	CString m_font_str;
-	CString m_title = TEXT("MSpring");
+	TString m_font_str;
+	TString m_title = TEXT("MSpring");
 public:		//static method
 	static void ButtonEvent_Close(CWnd* wnd) {
-		EXEC_ALWAYS(::AfxGetMainWnd()->PostMessage(WM_COMMAND, ID_APP_EXIT, 0));
+		::AfxGetMainWnd()->PostMessage(WM_COMMAND, ID_APP_EXIT, 0);
 	}
 	static void ButtonEvent_MaximizeWindow(CWnd* wnd) {
 		MSpringFrame* pmainframe = dynamic_cast<MSpringFrame*>(wnd);
 		if (pmainframe->m_is_maximize == false) {
+			
+			
 			static CRect rect_window;
 			pmainframe->GetWindowRect(rect_window);
 #ifdef _M_AMD64
 			EXEC_ALWAYS(::SetWindowLongPtr(pmainframe->GetSafeHwnd(), GWLP_USERDATA, (LONG_PTR)&rect_window));
 			//If the function fails, the return value is zero. To get extended error information, call GetLastError. 
 #else
-			EXEC_ALWAYS(::SetWindowLongA(pmainframe->GetSafeHwnd(), GWL_USERDATA, (LONG)&rect_window));
+			::SetWindowLongA(pmainframe->GetSafeHwnd(), GWL_USERDATA, (LONG)&rect_window);
 			//If the function fails, the return value is zero. To get extended error information, call GetLastError. 
 #endif
 			
@@ -143,9 +148,9 @@ public:		//static method
 			CRect rect;
 			wnd->GetWindowRect(&rect);
 			HMONITOR hMOnitor = MonitorFromRect(&rect, MONITOR_DEFAULTTONEAREST);
-			EXEC_ALWAYS(GetMonitorInfoA(hMOnitor, &monitor));
-
-			wnd->MoveWindow(&monitor.rcWork);
+			GetMonitorInfoA(hMOnitor, &monitor);
+			g_maximized_time = clock();			
+			wnd->MoveWindow(&monitor.rcWork,FALSE);
 		} else {
 #ifdef _M_AMD64
 			CRect* rect_window = (CRect*)::GetWindowLongPtr(pmainframe->GetSafeHwnd(), GWLP_USERDATA);
@@ -201,14 +206,14 @@ public:
 		m_icon.m_icon = ::AfxGetApp()->LoadIcon(id);
 	}
 	//스타일을 설정합니다.
-	void SetStyle(CString font_str,COLORREF color_bk,COLORREF color_text ,COLORREF color_border, COLORREF color_transparent = RGB(255, 255, 255)) {
+	void SetStyle(TString font_str,COLORREF color_bk,COLORREF color_text ,COLORREF color_border, COLORREF color_transparent = RGB(255, 255, 255)) {
 		m_font_str = font_str;
 		m_color_bk = color_bk;
 		m_color_text = color_text;
 		m_color_border = color_border;
 		m_color_transparent = color_transparent;
 	}
-	void SetTitle(CString title) {
+	void SetTitle(TString title) {
 		m_title = title;
 	}
 	//시스템버튼을 추가합니다.
@@ -216,7 +221,7 @@ public:
 		m_sysbtn.push_back(SystemButton(bitmap, EventFunc));
 	}
 	//확장 클래스를 추가합니다.
-	void AddExpansionClass(MSpringFrameExpansion* _class) {
+	void AddExpansionClass(std::shared_ptr<MSpringFrameExpansion> _class) {
 		m_expansion.push_back(_class);
 	}
 public:	//messageevent method
@@ -282,18 +287,18 @@ public:	//messageevent method
 		mspring::DoubleBufferingDC* dbb_right = new mspring::DoubleBufferingDC(ncpaint, rect_window_right);
 		{
 			CBrush brush;
-			EXEC_ALWAYS(brush.CreateSolidBrush(m_color_bk));
+			brush.CreateSolidBrush(m_color_bk);
 			dbb_top->getDC().FillRect(Normalize(rect_window_top), &brush);
 			dbb_bottom->getDC().FillRect(Normalize(rect_window_bottom), &brush);
 			dbb_left->getDC().FillRect(Normalize(rect_window_left), &brush);
 			dbb_right->getDC().FillRect(Normalize(rect_window_right), &brush);
-			EXEC_ALWAYS(brush.DeleteObject());
+			brush.DeleteObject();
 		}
 		//여기까지가 프레임 그리기.
 		{
 			CPen pen, *old_pen;
 			int thickness = 1;
-			EXEC_ALWAYS(pen.CreatePen(PS_SOLID, thickness, m_color_border));
+			pen.CreatePen(PS_SOLID, thickness, m_color_border);
 			old_pen = dbb_top->getDC().SelectObject(&pen);
 			dbb_top->getDC().MoveTo(Normalize(rect_window_top).left, Normalize(rect_window_top).bottom);
 			dbb_top->getDC().LineTo(Normalize(rect_window_top).left, Normalize(rect_window_top).top);
@@ -319,7 +324,7 @@ public:	//messageevent method
 			dbb_right->getDC().LineTo(Normalize(rect_window_right).right - 1 - thickness, Normalize(rect_window_right).bottom);
 			dbb_right->getDC().SelectObject(old_pen);
 
-			EXEC_ALWAYS(pen.DeleteObject());
+			pen.DeleteObject();
 		}
 		//테두리 그리기.
 		CSize btn_sz(rect_window_top.Height() - m_sysbtn_margin * 2, rect_window_top.Height() - m_sysbtn_margin * 2);
@@ -327,23 +332,23 @@ public:	//messageevent method
 					  rect_window.top + m_sysbtn_margin);
 
 		CDC cdc;
-		EXEC_ALWAYS(cdc.CreateCompatibleDC(ncpaint));
+		cdc.CreateCompatibleDC(ncpaint);
 		for (size_t i = 0; i < m_sysbtn.size(); i++) {
 			
 			BITMAP bmp;
 			CBitmap* cbmp=nullptr, *old_cbmp = nullptr;
 			if (m_sysbtn[i].m_bitmap_resource > 0) {
 				cbmp=new CBitmap;
-				EXEC_ALWAYS(cbmp->LoadBitmap(m_sysbtn[i].m_bitmap_resource));
+				cbmp->LoadBitmap(m_sysbtn[i].m_bitmap_resource);
 				if (cbmp == nullptr) {
 					continue;
 				}
-				EXEC_ALWAYS(cbmp->GetBitmap(&bmp));
+				cbmp->GetBitmap(&bmp);
 				//메서드가 성공 하면 0이 아닌. 그렇지 않으면 0입니다.
 				old_cbmp = cdc.SelectObject(cbmp);
-				EXEC_ALWAYS(dbb_top->getDC().TransparentBlt(btn_pt.x, btn_pt.y, btn_sz.cx, btn_sz.cy, &cdc
+				dbb_top->getDC().TransparentBlt(btn_pt.x, btn_pt.y, btn_sz.cx, btn_sz.cy, &cdc
 															, bmp.bmHeight*static_cast<int>(this->m_sysbtn[i].m_state), 0
-															, bmp.bmHeight, bmp.bmHeight, m_color_transparent));
+															, bmp.bmHeight, bmp.bmHeight, m_color_transparent);
 				m_sysbtn[i].m_rect = CRect(btn_pt.x, btn_pt.y, btn_pt.x + btn_sz.cx, btn_pt.y + btn_sz.cy);
 				btn_pt.x -= btn_sz.cx + m_sysbtn_margin;
 				cdc.SelectObject(old_cbmp);
@@ -364,12 +369,12 @@ public:	//messageevent method
 				if (cbmp == nullptr) {
 					continue;
 				}
-				EXEC_ALWAYS(cbmp->GetBitmap(&bmp));
+				cbmp->GetBitmap(&bmp);
 				//메서드가 성공 하면 0이 아닌. 그렇지 않으면 0입니다.
 				old_cbmp = cdc.SelectObject(cbmp);
-				EXEC_ALWAYS(dbb_top->getDC().TransparentBlt(btn_pt.x, btn_pt.y, btn_sz.cx, btn_sz.cy, &cdc
+				dbb_top->getDC().TransparentBlt(btn_pt.x, btn_pt.y, btn_sz.cx, btn_sz.cy, &cdc
 															, bmp.bmHeight*static_cast<int>(this->m_sysbtn[i].m_state), 0
-															, bmp.bmHeight, bmp.bmHeight, m_color_transparent));
+															, bmp.bmHeight, bmp.bmHeight, m_color_transparent);
 				m_sysbtn[i].m_rect = CRect(btn_pt.x, btn_pt.y, btn_pt.x + btn_sz.cx, btn_pt.y + btn_sz.cy);
 				btn_pt.x -= btn_sz.cx + m_sysbtn_margin;
 				cdc.SelectObject(old_cbmp);
@@ -385,10 +390,10 @@ public:	//messageevent method
 			m_icon.m_rect.right = rect_window_top.Height() - m_icon_margin + 10;
 			m_icon.m_rect.bottom = rect_window_top.Height() - m_icon_margin;
 			m_icon.m_rect.NormalizeRect();
-			EXEC_ALWAYS(::DrawIconEx(dbb_top->getDC().GetSafeHdc()
+			::DrawIconEx(dbb_top->getDC().GetSafeHdc()
 									 , m_icon.m_rect.left, m_icon.m_rect.top
 									 , m_icon.m_icon, m_icon.m_rect.Width(), m_icon.m_rect.Height()
-									 , 0, NULL, DI_NORMAL));
+									 , 0, NULL, DI_NORMAL);
 		}
 		
 
@@ -396,16 +401,16 @@ public:	//messageevent method
 		int h = mspring::Font::GetRealFontHeight(m_font_str, title_h, dbb_top->getPDC());
 		CFont font;
 		
-		EXEC_ALWAYS(font.CreatePointFont(h, m_font_str));
+		font.CreatePointFont(h, m_font_str.data());
 		CFont* old_font=dbb_top->getDC().SelectObject(&font);
 		dbb_top->getDC().SetTextColor(m_color_text);
 		dbb_top->getDC().SetBkMode(TRANSPARENT);
 		
 		CSize title_sz;
-		EXEC_ALWAYS(GetTextExtentPoint32(dbb_top->getDC().GetSafeHdc(), m_title, m_title.GetLength(), &title_sz));
-		dbb_top->getDC().TextOut(m_icon.m_rect.right + 5, rect_window_top.Height() / 2 - title_sz.cy / 2, m_title);
+		GetTextExtentPoint32(dbb_top->getDC().GetSafeHdc(), m_title.data(), m_title.length(), &title_sz);
+		dbb_top->getDC().TextOut(m_icon.m_rect.right + 5, rect_window_top.Height() / 2 - title_sz.cy / 2, m_title.data(),m_title.length());
 		dbb_top->getDC().SelectObject(&old_font);
-		EXEC_ALWAYS(font.DeleteObject());
+		font.DeleteObject();
 		//아이콘 오른쪽 부터
 		int begin_point = m_icon.m_rect.right + 10 + title_sz.cx;
 		//시스템 버튼의 왼쪽 까지
@@ -449,13 +454,16 @@ public:	//messageevent method
 		rect_window = this->GetWindowNomalizedRect();
 		CRgn rgn;
 		//윈도우를 깔끔한 사각형으로 변경합니다.
-		EXEC_ALWAYS(rgn.CreateRoundRectRgn(0, 0, rect_window.Width(), rect_window.Height(), 0, 0));
-		EXEC_ALWAYS(this->SetWindowRgn(static_cast<HRGN>(rgn.GetSafeHandle()), TRUE));
+		rgn.CreateRoundRectRgn(0, 0, rect_window.Width(), rect_window.Height(), 0, 0);
+		this->SetWindowRgn(static_cast<HRGN>(rgn.GetSafeHandle()), TRUE);
 		for (auto&e : m_expansion) {
 			e->OnSize(nType, cx, cy);
 		}
 	}
 	afx_msg void OnNcMouseMove(UINT nHitTest, CPoint point) {
+		if (clock() - g_maximized_time < 100) {
+			return;
+		}
 		CPoint apoint = point;
 		point = this->GetMousePoint();
 		//마우스 추적 활성화
@@ -464,7 +472,7 @@ public:	//messageevent method
 		tme.hwndTrack = m_hWnd;
 		tme.dwFlags = TME_LEAVE | TME_NONCLIENT;
 		tme.dwHoverTime = 0;
-		EXEC_ALWAYS(TrackMouseEvent(&tme));
+		TrackMouseEvent(&tme);
 		this->ReplaceSystemButtonState(SystemButton::State::Hover, SystemButton::State::Normal);
 		// 버튼 Hover
 		bool is_btnclk = false;
@@ -480,7 +488,7 @@ public:	//messageevent method
 		//->크기가 원래대로 돌아가고 창 움직이는상태로.
 		if (is_btnclk == false && m_is_maximize == true && rect_caption.PtInRect(point) == TRUE && (GetAsyncKeyState(VK_LBUTTON) & 0x8000)) {
 			CPoint abs_point;
-			EXEC_ALWAYS(::GetCursorPos(&abs_point));
+			::GetCursorPos(&abs_point);
 			CRect rect;
 			this->GetWindowRect(rect);
 #ifdef _M_AMD64
@@ -565,6 +573,7 @@ public:	//messageevent method
 		return CFrameWnd::OnNcHitTest(point);
 	}
 	afx_msg void OnNcLButtonDblClk(UINT nHitTest, CPoint point) {
+		
 		if (m_blank_caption.PtInRect(this->GetMousePoint()) == TRUE) {
 			this->ButtonEvent_MaximizeWindow(this);
 		}

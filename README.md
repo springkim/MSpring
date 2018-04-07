@@ -68,6 +68,10 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 * * *
 
+### 2. MSpring View 만들기
+
+
+
 
 
 MFC library
@@ -83,3 +87,9 @@ MFC library
 
 ###version 0.0.4
 * Fixed minimized window error.
+
+###version 0.0.5
+* Complete listbox
+* Fix window maximize problem.
+* Support Mother Call.
+* 

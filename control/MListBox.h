@@ -1,35 +1,34 @@
-ï»¿/**
-* @file		mspring.control.listbox.h
-* @author		kimbomm (springnode@gmail.com)
-* @date		2017. 11. 17...
-* @version	1.0.0
+/*
+*  mlistbox.h
+*  MSpring
 *
-*  @brief
-*			MSpring ListBox
-*	@remark
-*			Created by kimbom on 2017. 11. 17...
-*			Copyright 2017 kimbom.All rights reserved.
+*  Created by KimBomm on 2018. 4. 7...
+*  Copyright 2018 KimBomm. All rights reserved.
+*
 */
+#if _MSC_VER > 1000
 #pragma once
-#include<vector>
-#include"mspring.control.object.h"
+#endif // _MSC_VER > 1000
 
-class MListBox : public MControlObject {
+#if !defined(MSPRING_7E2_4_7_MLISTBOX_HPP_INCLUDED)
+#define MSPRING_7E2_4_7_MLISTBOX_HPP_INCLUDED
+#include"MControlObject.h"
+class MListBox_core : public MControlObject {
 public:
-	std::vector<std::pair<CString,bool>> m_data;
-	int m_padding=5;				//ì²´í¬ë°•ìŠ¤ì™€ í…ìŠ¤íŠ¸ì˜ íŒ¨ë”© ì…ë‹ˆë‹¤.
-	int m_num_padding=0;			//ìˆ«ìì˜ì—­ì˜ ë„“ì´ ì…ë‹ˆë‹¤.
-	int m_checkbox_padding = 0;		//ì²´í¬ë°•ìŠ¤ì˜ ë„“ì´ ì…ë‹ˆë‹¤.
+	std::vector<std::pair<TString, bool>> m_data;
+	int m_padding = 5;				//Ã¼Å©¹Ú½º¿Í ÅØ½ºÆ®ÀÇ ÆĞµù ÀÔ´Ï´Ù.
+	int m_num_padding = 0;			//¼ıÀÚ¿µ¿ªÀÇ ³ĞÀÌ ÀÔ´Ï´Ù.
+	int m_checkbox_padding = 0;		//Ã¼Å©¹Ú½ºÀÇ ³ĞÀÌ ÀÔ´Ï´Ù.
 
-	int m_scrollbar_weight = 20;	//ìŠ¤í¬ë¡¤ë°”ì˜ ë‘ê»˜ ì…ë‹ˆë‹¤.
-	int HEIGHT = 20;				//ê° ë¦¬ìŠ¤íŠ¸ì˜ ë†’ì´ ì…ë‹ˆë‹¤.
-	bool is_check = false;			//ì²´í¬ ë°•ìŠ¤ë¥¼ ë„£ì„ì§€ ë§ì§€ ê²°ì • í•©ë‹ˆë‹¤.
-	bool is_numbering = false;		//ìˆœì„œë¥¼ ë³´ì—¬ì¤„ì§€ ë§ì§€ ê²°ì • í•©ë‹ˆë‹¤.
-	int m_select = -1;				//ì„ íƒëœ ë¦¬ìŠ¤íŠ¸ì˜ ì¸ë±ìŠ¤ ì…ë‹ˆë‹¤.
-	float m_v_scroll_pos = 0.0F;		//(ë‚´ë¶€ì ì‚¬ìš©)ìŠ¤í¬ë¡¤ì˜ ìœ„ì¹˜ë¥¼ ë‚˜íƒ€ëƒ…ë‹ˆë‹¤.(0.0~1.0)
+	int m_scrollbar_weight = 20;	//½ºÅ©·Ñ¹ÙÀÇ µÎ²² ÀÔ´Ï´Ù.
+	int HEIGHT = 20;				//°¢ ¸®½ºÆ®ÀÇ ³ôÀÌ ÀÔ´Ï´Ù.
+	bool is_check = false;			//Ã¼Å© ¹Ú½º¸¦ ³ÖÀ»Áö ¸»Áö °áÁ¤ ÇÕ´Ï´Ù.
+	bool is_numbering = false;		//¼ø¼­¸¦ º¸¿©ÁÙÁö ¸»Áö °áÁ¤ ÇÕ´Ï´Ù.
+	int m_select = -1;				//¼±ÅÃµÈ ¸®½ºÆ®ÀÇ ÀÎµ¦½º ÀÔ´Ï´Ù.
+	float m_v_scroll_pos = 0.0F;		//(³»ºÎÀû»ç¿ë)½ºÅ©·ÑÀÇ À§Ä¡¸¦ ³ªÅ¸³À´Ï´Ù.(0.0~1.0)
 	float m_h_scroll_pos = 0.0F;
 public:///Utility Functions
-	//ì¢Œí‘œë¡œ í´ë¦­í•œ ì§€ì ì˜ ì¸ë±ìŠ¤ë¥¼ ê°€ì ¸ì˜µë‹ˆë‹¤.
+	   //ÁÂÇ¥·Î Å¬¸¯ÇÑ ÁöÁ¡ÀÇ ÀÎµ¦½º¸¦ °¡Á®¿É´Ï´Ù.
 	int GetElementByPoint(CPoint pt) {
 		CRect rect = this->m_rect.GetRect(GetViewRect());
 		if (rect.PtInRect(pt) == FALSE) {
@@ -37,31 +36,31 @@ public:///Utility Functions
 		}
 		int view_height = GetViewHeight();
 		int page_height = GetPageHeight();
-		int page_jump = 0;	//ë„ì›Œì•¼ í•˜ëŠ” ì¢Œí‘œ
+		int page_jump = 0;	//¶ç¿ö¾ß ÇÏ´Â ÁÂÇ¥
 		if (page_height > view_height) {
 			page_jump = static_cast<int>((page_height - view_height)*m_v_scroll_pos);
 		}
-		int page_y = 0;		//í˜ì´ì§€ê°€ ì‹œì‘ë  ì¢Œí‘œ.
-		int page_idx = 0;	//ì‹œì‘ë  ì¤„ ë„˜ë²„
+		int page_y = 0;		//ÆäÀÌÁö°¡ ½ÃÀÛµÉ ÁÂÇ¥.
+		int page_idx = 0;	//½ÃÀÛµÉ ÁÙ ³Ñ¹ö
 		if (page_jump > 0) {
 			div_t div = std::div(page_jump, HEIGHT);
 			page_y = -div.rem;
 			page_idx = div.quot;
 		}
 		CDC* pDC = this->m_parent->GetDC();
-		int h = mspring::Font::GetRealFontHeight(m_font_str, HEIGHT,pDC);
-		
-		CFont font; font.CreatePointFont(h, m_font_str);
+		int h = mspring::Font::GetRealFontHeight(m_font_str, HEIGHT, pDC);
+
+		CFont font; font.CreatePointFont(h, m_font_str.data());
 		CFont* old_font = pDC->SelectObject(&font);
 		int ret = -1;
 		while (page_idx < (int)m_data.size() && page_y < view_height) {
 			//pDC->TextOutW(rect.left+m_padding, rect.top+page_y, m_data[page_idx]);
 			if (rect.top + page_y <= pt.y && pt.y < rect.top + page_y + HEIGHT) {
 				CSize sz;
-				GetTextExtentPoint32(pDC->GetSafeHdc(), m_data[page_idx].first, m_data[page_idx].first.GetLength(), &sz);
-				if (rect.left + m_padding + m_checkbox_padding+m_num_padding + sz.cx > pt.x ){	//ê°€ë¡œ ì…€ì— ìˆëŠ”ì§€ ê²€ì‚¬
-					if (page_height <= view_height || pt.x < rect.right - m_scrollbar_weight){		//VìŠ¤í¬ë¡¤ì´ ìˆìœ¼ë©´ ê·¸ ë¶€ë¶„ì€ ì œì™¸
-						if (m_max_length < rect.Width() || pt.y < rect.bottom - m_scrollbar_weight) {	//HìŠ¤í¬ë¡¤ì´ ìˆìœ¼ë©´ ê·¸ ë¶€ë¶„ì€ ì œì™¸
+				GetTextExtentPoint32(pDC->GetSafeHdc(), m_data[page_idx].first.data(), m_data[page_idx].first.length(), &sz);
+				if (rect.left + m_padding + m_checkbox_padding + m_num_padding + sz.cx > pt.x) {	//°¡·Î ¼¿¿¡ ÀÖ´ÂÁö °Ë»ç
+					if (page_height <= view_height || pt.x < rect.right - m_scrollbar_weight) {		//V½ºÅ©·ÑÀÌ ÀÖÀ¸¸é ±× ºÎºĞÀº Á¦¿Ü
+						if (m_max_length < rect.Width() || pt.y < rect.bottom - m_scrollbar_weight) {	//H½ºÅ©·ÑÀÌ ÀÖÀ¸¸é ±× ºÎºĞÀº Á¦¿Ü
 							ret = page_idx;
 						}
 					}
@@ -80,20 +79,20 @@ protected:
 		NO_DRAG,
 		VSCROLL_DRAG,
 		HSCROLL_DRAG
-	}m_is_drag;	//(ë‚´ë¶€ì ì‚¬ìš©)í˜„ì¬ ë“œë˜ê·¸ ìƒíƒœì¸ì§€ ë‚˜íƒ€ëƒ…ë‹ˆë‹¤.
-	CPoint m_drag_point;			//(ë‚´ë¶€ì ì‚¬ìš©)ë“œë˜ê·¸ì˜ ì‹œì‘ì ì„ ë‚˜íƒ€ëƒ…ë‹ˆë‹¤.
-	CRect m_v_thumb_rect;			//(ë‚´ë¶€ì ì‚¬ìš©)ìŠ¤í¬ë¡¤ ì—„ì§€ì˜ ì‚¬ê°ì¢Œí‘œ ì…ë‹ˆë‹¤.
+	}m_is_drag;	//(³»ºÎÀû»ç¿ë)ÇöÀç µå·¡±× »óÅÂÀÎÁö ³ªÅ¸³À´Ï´Ù.
+	CPoint m_drag_point;			//(³»ºÎÀû»ç¿ë)µå·¡±×ÀÇ ½ÃÀÛÁ¡À» ³ªÅ¸³À´Ï´Ù.
+	CRect m_v_thumb_rect;			//(³»ºÎÀû»ç¿ë)½ºÅ©·Ñ ¾öÁöÀÇ »ç°¢ÁÂÇ¥ ÀÔ´Ï´Ù.
 	CRect m_h_thumb_rect;
-	float m_prev_scroll_pos;		//(ë‚´ë¶€ì ì‚¬ìš©)ìŠ¤í¬ë¡¤ì˜ ì˜ˆì „ ìœ„ì¹˜ ì…ë‹ˆë‹¤.
-	int m_max_length=-1;				//ì œì¼ ê¸´ ë¬¸ìì—´ì˜ ê¸¸ì´ì…ë‹ˆë‹¤.
+	float m_prev_scroll_pos;		//(³»ºÎÀû»ç¿ë)½ºÅ©·ÑÀÇ ¿¹Àü À§Ä¡ ÀÔ´Ï´Ù.
+	int m_max_length = -1;				//Á¦ÀÏ ±ä ¹®ÀÚ¿­ÀÇ ±æÀÌÀÔ´Ï´Ù.
 protected:
-	//ë¦¬ìŠ¤íŠ¸ë°•ìŠ¤ì˜ ë†’ì´ë¥¼ ê°€ì ¸ ì˜µë‹ˆë‹¤.
+	//¸®½ºÆ®¹Ú½ºÀÇ ³ôÀÌ¸¦ °¡Á® ¿É´Ï´Ù.
 	int GetViewHeight() {
 		CRect rect = this->m_rect.GetRect(GetViewRect());
-		int r=this->m_rect.GetRect(this->GetViewRect()).Height();
+		int r = this->m_rect.GetRect(this->GetViewRect()).Height();
 		/*if (m_max_length >= rect.Width()) {
-			r -= HEIGHT;
-			r = mspring::Max(r, 0);
+		r -= HEIGHT;
+		r = mspring::Max(r, 0);
 		}*/
 		return r;
 	}
@@ -106,14 +105,14 @@ protected:
 		return r;
 		//return rect.Width() - (m_padding * 2 + m_num_padding + m_checkbox_padding);
 	}
-	//ì‹¤ì œ ë‚´ìš©ì˜ ë†’ì´ë¥¼ ê°€ì ¸ ì˜µë‹ˆë‹¤.
+	//½ÇÁ¦ ³»¿ëÀÇ ³ôÀÌ¸¦ °¡Á® ¿É´Ï´Ù.
 	int GetPageHeight() {
 		return static_cast<int>(m_data.size()*HEIGHT);
 	}
 	int GetPageWidth() {
 		return m_max_length - (m_padding * 2 + m_num_padding + m_checkbox_padding);
 	}
-	//ìŠ¤í¬ë¡¤ ì—„ì§€ì˜ ë†’ì´ë¥¼ ê°€ì ¸ ì˜µë‹ˆë‹¤.
+	//½ºÅ©·Ñ ¾öÁöÀÇ ³ôÀÌ¸¦ °¡Á® ¿É´Ï´Ù.
 	int GetVThumbHeight() {
 		int view_height = GetViewHeight();
 		int page_height = GetPageHeight();
@@ -124,16 +123,16 @@ protected:
 		int page_width = GetPageWidth();
 		return static_cast<int>(((float)view_width / page_width)*view_width);
 	}
-	//í˜ì´ì§€ì˜ ì¸ë±ìŠ¤ë¥¼ ê°€ì ¸ ì˜µë‹ˆë‹¤.
+	//ÆäÀÌÁöÀÇ ÀÎµ¦½º¸¦ °¡Á® ¿É´Ï´Ù.
 	int GetPageIndex() {
 		int view_height = GetViewHeight();
 		int thumb_height = GetVThumbHeight();
 		int page_height = GetPageHeight();
-		int page_jump = 0;	//ë„ì›Œì•¼ í•˜ëŠ” ì¢Œí‘œ
+		int page_jump = 0;	//¶ç¿ö¾ß ÇÏ´Â ÁÂÇ¥
 		if (page_height > view_height) {
 			page_jump = static_cast<int>((page_height - view_height)*m_v_scroll_pos);
 		}
-		int page_idx = 0;	//ì‹œì‘ë  ì¤„ ë„˜ë²„
+		int page_idx = 0;	//½ÃÀÛµÉ ÁÙ ³Ñ¹ö
 		if (page_jump > 0) {
 			page_idx = static_cast<int>(std::round((float)page_jump / HEIGHT));
 		}
@@ -161,7 +160,7 @@ protected:
 			thumb_rect.top += static_cast<decltype(thumb_rect.top)>((view_height - thumb_height)*m_v_scroll_pos);
 			thumb_rect.left = thumb_rect.right - m_scrollbar_weight;
 			thumb_rect.bottom = thumb_rect.top + thumb_height;
-			
+
 			CRect area = rect;
 			area.left = thumb_rect.left;
 			pDC->FillRect(&area, &brush_bk);
@@ -224,48 +223,49 @@ protected:
 		pen_check.DeleteObject();
 		pen_null.DeleteObject();
 	}
-	
+
 public:///Message Function
-	MListBox(CWnd* parent, MRect base) : MControlObject(parent, base) {
+	MListBox_core(CWnd* parent, MRect base) : MControlObject(parent, base) {
 
 	}
-	INT OnPaint(CDC* pDC) override{
+
+	INT OnPaint(CDC* pDC) override {
 		CRect rect = this->m_rect.GetRect(GetViewRect());
-		CRgn rgn;rgn.CreateRectRgnIndirect(&rect);
+		CRgn rgn; rgn.CreateRectRgnIndirect(&rect);
 		pDC->SelectClipRgn(&rgn);
-		
+
 		CBrush brush_bk; brush_bk.CreateSolidBrush(*m_color_bk);
 		pDC->FillRect(&rect, &brush_bk);
-		
-		
+
+
 		int h = mspring::Font::GetRealFontHeight(m_font_str, HEIGHT, pDC);
-		CFont font; font.CreatePointFont(h, m_font_str);
+		CFont font; font.CreatePointFont(h, m_font_str.data());
 		CFont* old_font = pDC->SelectObject(&font);
 		int view_height = GetViewHeight();
 		int view_width = GetViewWidth();
 		int page_height = GetPageHeight();
 		int page_width = GetPageWidth();
-		int page_jump = 0;	//ë„ì›Œì•¼ í•˜ëŠ” ì¢Œí‘œ
+		int page_jump = 0;	//¶ç¿ö¾ß ÇÏ´Â ÁÂÇ¥
 		if (page_height > view_height) {
 			page_jump = static_cast<int>((page_height - view_height)*m_v_scroll_pos);
 		}
-		int page_y = 0;		//í˜ì´ì§€ê°€ ì‹œì‘ë  ì¢Œí‘œ.
-		int page_idx = 0;	//ì‹œì‘ë  ì¤„ ë„˜ë²„
+		int page_y = 0;		//ÆäÀÌÁö°¡ ½ÃÀÛµÉ ÁÂÇ¥.
+		int page_idx = 0;	//½ÃÀÛµÉ ÁÙ ³Ñ¹ö
 		if (page_jump > 0) {
 			div_t div = std::div(page_jump, HEIGHT);
 			page_y = -div.rem;
 			page_idx = div.quot;
 		}
-		CPen pen_null;pen_null.CreatePen(PS_NULL, 0, RGB(0, 0, 0));
-		CPen* pen_old=pDC->SelectObject(&pen_null);
+		CPen pen_null; pen_null.CreatePen(PS_NULL, 0, RGB(0, 0, 0));
+		CPen* pen_old = pDC->SelectObject(&pen_null);
 		pDC->SetTextColor(*m_color_text);
 
 		CBrush brush_highlight; brush_highlight.CreateSolidBrush(*m_color_fr);
 		CSize sz; GetTextExtentPoint32(pDC->GetSafeHdc(), TEXT("A"), 1, &sz);
-		
+
 
 		int actual_width = m_max_length - (m_padding * 2 + m_num_padding + m_checkbox_padding);
-		int h_minus = (actual_width - (view_width - (m_padding * 2 + m_num_padding + m_checkbox_padding))) * m_h_scroll_pos;
+		int h_minus = static_cast<int>((actual_width - (view_width - (m_padding * 2 + m_num_padding + m_checkbox_padding))) * m_h_scroll_pos);
 		if (m_max_length < rect.Width()) {
 			h_minus = 0;
 			m_h_scroll_pos = 0.0F;
@@ -282,7 +282,7 @@ public:///Message Function
 		}
 		while (page_idx < (int)m_data.size() && page_y < view_height) {
 			pDC->SetBkMode(TRANSPARENT);
-			GetTextExtentPoint32(pDC->GetSafeHdc(), m_data[page_idx].first, m_data[page_idx].first.GetLength(), &sz);
+			GetTextExtentPoint32(pDC->GetSafeHdc(), m_data[page_idx].first.data(), m_data[page_idx].first.length(), &sz);
 			int width = m_padding + m_num_padding + sz.cx;
 
 
@@ -294,7 +294,7 @@ public:///Message Function
 							   rect.top + page_y + HEIGHT, 5, 5);
 				pDC->SelectObject(&brush_old);
 			}
-			pDC->TextOut(rect.left + m_padding + m_checkbox_padding + m_num_padding - h_minus, rect.top + page_y, m_data[page_idx].first);
+			pDC->TextOut(rect.left + m_padding + m_checkbox_padding + m_num_padding - h_minus, rect.top + page_y, m_data[page_idx].first.data());
 
 			CRect area = rect;
 			area.top += page_y;
@@ -312,25 +312,27 @@ public:///Message Function
 				DrawCheckBox(pDC, rect.left + m_padding, rect.top + page_y, m_data[page_idx].second);
 			}
 			if (is_numbering == true) {
-				pDC->TextOut(rect.left + m_padding + m_checkbox_padding, rect.top + page_y, mspring::String::ToCString(std::to_string(page_idx)));
+				OStringStream oss;
+				oss << page_idx;
+				pDC->TextOut(rect.left + m_padding + m_checkbox_padding, rect.top + page_y, oss.str().data());
 			}
-			
-			
+
+
 			page_idx++;
 			page_y += HEIGHT;
 		}
 		m_max_length = -1;
 		int max_len_idx = -1;
 		int max_len = -1;
-		for(size_t i=0;i<m_data.size();i++){
-			if (static_cast<int>(m_data[i].first.GetLength()) > max_len) {
-				max_len = static_cast<int>(m_data[i].first.GetLength());
+		for (size_t i = 0; i<m_data.size(); i++) {
+			if (static_cast<int>(m_data[i].first.length()) > max_len) {
+				max_len = static_cast<int>(m_data[i].first.length());
 				max_len_idx = i;
 			}
 		}
 		if (max_len_idx != -1) {
-			GetTextExtentPoint32(pDC->GetSafeHdc(), m_data[max_len_idx].first, m_data[max_len_idx].first.GetLength(), &sz);
-			m_max_length = mspring::Max(m_max_length, static_cast<int>(m_checkbox_padding + m_num_padding + m_padding*2 + sz.cx));
+			GetTextExtentPoint32(pDC->GetSafeHdc(), m_data[max_len_idx].first.data(), m_data[max_len_idx].first.length(), &sz);
+			m_max_length = mspring::Max(m_max_length, static_cast<int>(m_checkbox_padding + m_num_padding + m_padding * 2 + sz.cx));
 		}
 
 		DrawScroll(pDC);
@@ -341,7 +343,7 @@ public:///Message Function
 		pDC->SelectClipRgn(nullptr);
 		return 1;
 	}
-	INT OnLButtonDown() override{
+	INT OnLButtonDown() override {
 		MControlObject::OnLButtonDown();
 		if (s_curr_id != m_id) return 0;
 		CPoint point = this->GetMousePoint();
@@ -351,7 +353,7 @@ public:///Message Function
 			m_is_drag = DragStatus::VSCROLL_DRAG;
 			m_prev_scroll_pos = m_v_scroll_pos;
 			m_drag_point = point;
-		} else if (m_h_thumb_rect.PtInRect(point)==TRUE) {
+		} else if (m_h_thumb_rect.PtInRect(point) == TRUE) {
 			m_is_drag = DragStatus::HSCROLL_DRAG;
 			m_prev_scroll_pos = m_h_scroll_pos;
 			m_drag_point = point;
@@ -360,7 +362,7 @@ public:///Message Function
 		}
 		return 1;
 	}
-	INT OnRButtonDown() override{
+	INT OnRButtonDown() override {
 		MControlObject::OnLButtonDown();
 		if (s_curr_id != m_id) return 0;
 		CPoint point = this->GetMousePoint();
@@ -373,19 +375,19 @@ public:///Message Function
 	}
 	INT OnLButtonUp()override {
 		if (m_is_drag != DragStatus::NO_DRAG) {
-			m_parent->KillTimer(TIMER_SCROLLMOVE+m_id);
+			m_parent->KillTimer(TIMER_SCROLLMOVE + m_id);
 			m_is_drag = DragStatus::NO_DRAG;
 		}
 		return 1;
 	}
-	INT OnMouseWheel(short zDelta) override{
+	INT OnMouseWheel(short zDelta) override {
 		CPoint point = this->GetMousePoint();
 		CRect rect = this->m_rect.GetRect(this->GetViewRect());
 		if (rect.PtInRect(point) == FALSE) {
 			return 0;
 		}
 		if ((GetKeyState(VK_CONTROL) & 0x8000) == 0x8000) {
-			//Ctrlí‚¤ë¥¼ ëˆ„ë¥´ê³  íœ ì„ ëŒë¦¬ë©´ í™•ëŒ€ ì˜µì…˜.
+			//CtrlÅ°¸¦ ´©¸£°í ÈÙÀ» µ¹¸®¸é È®´ë ¿É¼Ç.
 			HEIGHT += (zDelta > 0) ? 1 : -1;
 			mspring::SetRange(HEIGHT, 10, 50);
 		} else if ((GetKeyState(VK_SHIFT) & 0x8000) == 0x8000) {
@@ -419,7 +421,7 @@ public:///Message Function
 	}
 	INT OnMouseLeave()override {
 		if (m_is_drag != DragStatus::NO_DRAG) {
-			m_parent->SetTimer(TIMER_SCROLLMOVE+m_id, 10, nullptr);
+			m_parent->SetTimer(TIMER_SCROLLMOVE + m_id, 10, nullptr);
 		}
 		return 1;
 	}
@@ -435,27 +437,27 @@ public:///Message Function
 				if (m_select < page_idx || m_select >= page_idx + (GetViewHeight() / HEIGHT)) {
 					m_select--;
 					SetPageIndex(m_select);
-					
+
 				} else {
 					m_select--;
 					if (m_select < page_idx) {
 						SetPageIndex(page_idx - 1);
 					}
 				}
-				
+
 			}break;
-			case VK_DOWN:if (m_select != -1 && m_select<m_data.size()-1) {
+			case VK_DOWN:if (m_select != -1 && m_select<(int)m_data.size() - 1) {
 				if (m_select < page_idx || m_select >= page_idx + (GetViewHeight() / HEIGHT)) {
 					m_select++;
 					SetPageIndex(m_select);
-					
+
 				} else {
 					m_select++;
 					if (m_select >= page_idx + (GetViewHeight() / HEIGHT)) {
 						SetPageIndex(page_idx + 1);
 					}
 				}
-				
+
 			}break;
 			case VK_LEFT:m_h_scroll_pos = 0.0F; break;
 			case VK_RIGHT:m_h_scroll_pos = 1.0F; break;
@@ -464,10 +466,10 @@ public:///Message Function
 	}
 	const UINT_PTR TIMER_SCROLLMOVE = (UINT_PTR)"mspring.control.listbox.h(TIMER_SCROLLMOVE)";
 	INT OnTimer(UINT_PTR nIDEvent)override {
-		if (nIDEvent == TIMER_SCROLLMOVE+m_id) {
+		if (nIDEvent == TIMER_SCROLLMOVE + m_id) {
 			CPoint point = this->GetMousePoint();
 			CRect rect = this->GetViewRect();
-			//ë‘ ì¡°ê±´ì€ í•©ì³ì§ˆìˆ˜ì—†ìŒ
+			//µÎ Á¶°ÇÀº ÇÕÃÄÁú¼ö¾øÀ½
 			if (rect.PtInRect(point) == TRUE) {
 				m_parent->KillTimer(TIMER_SCROLLMOVE + m_id);
 				return 0;
@@ -496,3 +498,5 @@ public:///Message Function
 		return 1;
 	}
 };
+using MListBox = std::shared_ptr<MListBox_core>;
+#endif  //MSPRING_7E2_4_7_MLISTBOX_HPP_INCLUDED

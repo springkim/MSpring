@@ -12,10 +12,11 @@
 
 #if !defined(MSPRING_7E1_9_C_DOUBLEBUFFERINGDC_HPP_INCLUDED)
 #define MSPRING_7E1_9_C_DOUBLEBUFFERINGDC_HPP_INCLUDED
+
 #include<afxwin.h>
 #include<wingdi.h>
 #include"ErrorMessage.h"
-#include"Util.h"
+#include"Safe.h"
 ///Double Buffering
 namespace mspring {
 	class DoubleBufferingDC {
@@ -47,27 +48,27 @@ namespace mspring {
 		void Create(CDC* pdc, CRect rect) {
 			this->m_pdc = pdc;
 			this->m_rect = rect;
-			EXEC_ALWAYS(this->m_dc.CreateCompatibleDC(pdc));
-			EXEC_ALWAYS(this->m_cbmp.CreateCompatibleBitmap(pdc, rect.Width(), rect.Height()));
+			this->m_dc.CreateCompatibleDC(pdc);
+			this->m_cbmp.CreateCompatibleBitmap(pdc, rect.Width(), rect.Height());
 			this->m_cbmp_old = (CBitmap*)this->m_dc.SelectObject(&this->m_cbmp);
-			EXEC_ALWAYS(this->m_dc.PatBlt(0, 0, rect.Width(), rect.Height(), WHITENESS));
+			this->m_dc.PatBlt(0, 0, rect.Width(), rect.Height(), WHITENESS);
 		}
 		void Draw() {
 			if (m_pdc == nullptr) {
 				MSPRING_ERROR("DoubleBufferingDC is NULL");
 			}
-			EXEC_ALWAYS(this->m_pdc->BitBlt(this->m_rect.left, this->m_rect.top, this->m_rect.Width(), this->m_rect.Height(), &this->m_dc, 0, 0, SRCCOPY));
+			this->m_pdc->BitBlt(this->m_rect.left, this->m_rect.top, this->m_rect.Width(), this->m_rect.Height(), &this->m_dc, 0, 0, SRCCOPY);
 			this->m_dc.SelectObject(this->m_cbmp_old);
-			EXEC_ALWAYS(this->m_dc.DeleteDC());
-			EXEC_ALWAYS(this->m_cbmp.DeleteObject());
+			this->m_dc.DeleteDC();
+			this->m_cbmp.DeleteObject();
 			m_pdc = nullptr;
 		}
 		~DoubleBufferingDC() {
 			if (m_pdc != nullptr) {
-				EXEC_ALWAYS(this->m_pdc->BitBlt(this->m_rect.left, this->m_rect.top, this->m_rect.Width(), this->m_rect.Height(), &this->m_dc, 0, 0, SRCCOPY));
+				this->m_pdc->BitBlt(this->m_rect.left, this->m_rect.top, this->m_rect.Width(), this->m_rect.Height(), &this->m_dc, 0, 0, SRCCOPY);
 				this->m_dc.SelectObject(this->m_cbmp_old);
-				EXEC_ALWAYS(this->m_dc.DeleteDC());
-				EXEC_ALWAYS(this->m_cbmp.DeleteObject());
+				this->m_dc.DeleteDC();
+				this->m_cbmp.DeleteObject();
 			}
 		}
 	};

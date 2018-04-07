@@ -18,9 +18,9 @@
 
 #include<afxwin.h>
 
-#include "mspring.frame.h"
+#include"MSpringFrame.h"
 #include<deque>
-class MSpringTabFrame : public MSpringFrameExpansion {
+class MSpringTabFrame_core : public MSpringFrameExpansion {
 	/*
 	*	@class : BMDLTabFrame
 	*	@comment : 이 클래스는 BMDLFrame에 사용될 확장 클래스 입니다.
@@ -29,9 +29,9 @@ class MSpringTabFrame : public MSpringFrameExpansion {
 protected:		//inner class
 	class Tab {
 	public:
-		CString m_str;
+		TString m_str;
 		UINT m_bitmap_resource;	//이 변수는 현재 사용되지 않습니다.
-		Tab(CString str, UINT bitmap_resource = 0) {
+		Tab(TString str, UINT bitmap_resource = 0) {
 			m_str = str;
 			m_bitmap_resource = bitmap_resource;
 		}
@@ -44,7 +44,7 @@ protected:
 	int m_tab_hover = -1;				//현재 Hover된 탭 인덱스 입니다.
 	UINT m_default_width = 150;
 protected:		//style value
-	CString m_font_str;				//탭에 사용될 폰트입니다.
+	TString m_font_str;				//탭에 사용될 폰트입니다.
 	COLORREF m_color_activate;		//활성화된 탭의 배경색 입니다.
 	COLORREF m_color_deactivate;		//비-활성화된 탭의 배경색 입니다.
 	COLORREF m_color_bk;				//배경색
@@ -52,7 +52,7 @@ protected:		//style value
 	COLORREF m_color_hover;			//hover된 탭의 배경색 입니다. 이 색은 자동으로 지정됩니다.
 	COLORREF m_color_bitmap_transparent;	//이 변수는 아직 사용되지 않습니다.
 public:
-	void SetStyle(CString font, COLORREF color_activate, COLORREF color_deactivate, COLORREF color_bk, COLORREF color_text, COLORREF color_bitmap_transparent = RGB(0, 0, 0)) {
+	void SetStyle(TString font, COLORREF color_activate, COLORREF color_deactivate, COLORREF color_bk, COLORREF color_text, COLORREF color_bitmap_transparent = RGB(0, 0, 0)) {
 		m_font_str = font;
 		m_color_activate = color_activate;
 		m_color_deactivate = color_deactivate;
@@ -67,7 +67,7 @@ public:
 	void SetPosition(UINT left_is_zero_right_is_nonzero) {
 		m_position = left_is_zero_right_is_nonzero;
 	}
-	void AddTab(CString str, UINT bitmap_id = 0) {
+	void AddTab(TString str, UINT bitmap_id = 0) {
 		m_tab_idx = 0;
 		m_tab.push_back(Tab(str, bitmap_id));
 	}
@@ -75,7 +75,7 @@ public:
 		return m_tab_idx;
 	}
 	void SetCurrentTab(int idx) {
-		if (idx > 0 && idx < m_tab.size()) {
+		if (idx > 0 && idx < (int)m_tab.size()) {
 			m_tab_idx = idx;
 		}
 	}
@@ -83,9 +83,9 @@ public:
 		m_default_width = width;
 	}
 public:
-	MSpringTabFrame(CWnd* wnd) :MSpringFrameExpansion(wnd) {
+	MSpringTabFrame_core(CWnd* wnd) :MSpringFrameExpansion(wnd) {
 	};
-	virtual ~MSpringTabFrame() = default;
+	virtual ~MSpringTabFrame_core() = default;
 public:
 	void OnCreate(LPCREATESTRUCT lpCreateStruct)override {
 		
@@ -94,12 +94,12 @@ public:
 		if (rect.left >= rect.right) {
 			return 1;
 		}
-		auto CutText = [](CString str, CDC* pDC, int w)->CString {
+		auto CutText = [](TString str, CDC* pDC, int w)->TString {
 			CSize sz;
-			EXEC_ALWAYS(::GetTextExtentPoint32(pDC->GetSafeHdc(), str, str.GetLength(), &sz));
+			::GetTextExtentPoint32(pDC->GetSafeHdc(), str.data(), str.length(), &sz);
 			while (sz.cx > w) {
-				str.Delete(str.GetLength() - 1);
-				EXEC_ALWAYS(::GetTextExtentPoint32(pDC->GetSafeHdc(), str, str.GetLength(), &sz));
+				str.pop_back();
+				::GetTextExtentPoint32(pDC->GetSafeHdc(), str.data(), str.length(), &sz);
 			}
 			return str;
 		};
@@ -130,16 +130,16 @@ public:
 		}
 		int ret = 0;
 		CPen pen;
-		EXEC_ALWAYS(pen.CreatePen(PS_SOLID, 1, m_color_activate));
+		pen.CreatePen(PS_SOLID, 1, m_color_activate);
 		CPen pen_bk;
 		
-		EXEC_ALWAYS(pen_bk.CreatePen(PS_SOLID, 1, m_color_bk));
+		pen_bk.CreatePen(PS_SOLID, 1, m_color_bk);
 		CFont font;
 		int h = mspring::Font::GetRealFontHeight(m_font_str, rect.Height() - padding * 2, pDC);
-		EXEC_ALWAYS(font.CreatePointFont(h, m_font_str, pDC));
+		font.CreatePointFont(h, m_font_str.data(), pDC);
 		m_tab_rect.clear();
 		CBrush brush;
-		EXEC_ALWAYS(brush.CreateSolidBrush(m_color_bk));
+		brush.CreateSolidBrush(m_color_bk);
 		pDC->FillRect(&rect, &brush);
 		if (m_position == 0) {	//left align
 			int posx = rect.left;
@@ -149,15 +149,15 @@ public:
 				m_tab_rect.push_back(CRect(posx, rect.top, posx + default_width, rect.bottom));
 				CRect rect_draw = m_tab_rect.back();
 				if (i == m_tab_hover) {
-					EXEC_ALWAYS(brush_tab.CreateSolidBrush(m_color_hover));
+					brush_tab.CreateSolidBrush(m_color_hover);
 				} else if (i == m_tab_idx) {
-					EXEC_ALWAYS(brush_tab.CreateSolidBrush(m_color_activate));
+					brush_tab.CreateSolidBrush(m_color_activate);
 				} else {
-					EXEC_ALWAYS(brush_tab.CreateSolidBrush(m_color_deactivate));
+					brush_tab.CreateSolidBrush(m_color_deactivate);
 				}
 
 				pDC->FillRect(&rect_draw, &brush_tab);
-				EXEC_ALWAYS(brush_tab.DeleteObject());
+				brush_tab.DeleteObject();
 				CPen* old_pen = nullptr;
 				old_pen = pDC->SelectObject(&pen_bk);
 				if (i != 0) {
@@ -175,14 +175,12 @@ public:
 					pDC->LineTo(CPoint(rect_draw.right, rect_draw.bottom - 1 - j));
 				}
 				pDC->SelectObject(old_pen);
-				CString str = CutText(m_tab[i].m_str, pDC, default_width);
+				TString str = CutText(m_tab[i].m_str, pDC, default_width);
 				CSize sz;
-				EXEC_ALWAYS(::GetTextExtentPoint32(pDC->GetSafeHdc(), str, str.GetLength(), &sz));
+				::GetTextExtentPoint32(pDC->GetSafeHdc(), str.data(), str.length(), &sz);
 				pDC->SetTextColor(m_color_text);
 				pDC->SetBkMode(TRANSPARENT);
-				EXEC_ALWAYS(pDC->TextOut(posx + (default_width - sz.cx) / 2, margin + padding, str));
-
-
+				pDC->TextOut(posx + (default_width - sz.cx) / 2, margin + padding, str.data());
 
 				posx += default_width;
 				
@@ -196,15 +194,15 @@ public:
 				m_tab_rect.push_front(CRect(posx, rect.top, posx + default_width, rect.bottom));
 				CRect rect_draw = m_tab_rect.front();
 				if (i == m_tab_hover) {
-					EXEC_ALWAYS(brush_tab.CreateSolidBrush(m_color_hover));
+					brush_tab.CreateSolidBrush(m_color_hover);
 				} else if (i == m_tab_idx) {
-					EXEC_ALWAYS(brush_tab.CreateSolidBrush(m_color_activate));
+					brush_tab.CreateSolidBrush(m_color_activate);
 				} else {
-					EXEC_ALWAYS(brush_tab.CreateSolidBrush(m_color_deactivate));
+					brush_tab.CreateSolidBrush(m_color_deactivate);
 				}
 
 				pDC->FillRect(&rect_draw, &brush_tab);
-				EXEC_ALWAYS(brush_tab.DeleteObject());
+				brush_tab.DeleteObject();
 				CPen* old_pen = nullptr;
 				old_pen = pDC->SelectObject(&pen_bk);
 				if (i != 0) {
@@ -222,12 +220,12 @@ public:
 					pDC->LineTo(CPoint(rect_draw.right, rect_draw.bottom - 1 - j));
 				}
 				pDC->SelectObject(old_pen);
-				CString str = CutText(m_tab[i].m_str, pDC, default_width);
+				TString str = CutText(m_tab[i].m_str, pDC, default_width);
 				CSize sz;
-				EXEC_ALWAYS(::GetTextExtentPoint32(pDC->GetSafeHdc(), str, str.GetLength(), &sz));
+				::GetTextExtentPoint32(pDC->GetSafeHdc(), str.data(), str.length(), &sz);
 				pDC->SetTextColor(m_color_text);
 				pDC->SetBkMode(TRANSPARENT);
-				EXEC_ALWAYS(pDC->TextOut(posx + (default_width - sz.cx) / 2, margin + padding, str));
+				pDC->TextOut(posx + (default_width - sz.cx) / 2, margin + padding, str.data());
 
 
 
@@ -237,10 +235,10 @@ public:
 			ret = -(rect.right - posx - default_width);
 		}
 
-		EXEC_ALWAYS(pen_bk.DeleteObject());
-		EXEC_ALWAYS(pen.DeleteObject());
-		EXEC_ALWAYS(font.DeleteObject());
-		EXEC_ALWAYS(brush.DeleteObject());
+		pen_bk.DeleteObject();
+		pen.DeleteObject();
+		font.DeleteObject();
+		brush.DeleteObject();
 		return ret;
 	}
 	void OnSize(UINT nType, int cx, int cy)override {
@@ -281,6 +279,10 @@ public:
 	void OnNcMouseLeave() override {
 		m_tab_hover = -1;
 	}
+public:
+	static std::shared_ptr<MSpringTabFrame_core> Create(CWnd* pwnd) {
+		return std::shared_ptr<MSpringTabFrame_core>(new MSpringTabFrame_core(pwnd));
+	}
 };
-
+using MSpringTabFrame = std::shared_ptr<MSpringTabFrame_core>;
 #endif  //MSPRING_7E1_9_C_MSPRINGTAFRAME_HPP_INCLUDED

@@ -13,6 +13,15 @@
 #if !defined(MSPRING_7E1_9_C_STRING_HPP_INCLUDED)
 #define MSPRING_7E1_9_C_STRING_HPP_INCLUDED
 #include<afxwin.h>
+
+using TString = std::basic_string<TCHAR>;
+#ifdef _UNICODE
+using OStringStream = std::wostringstream;
+using IStringStream = std::wistringstream;
+#else
+using OStringStream = std::ostringstream;
+using IStringStream = std::istringstream;
+#endif
 namespace mspring {
 	/**
 	* static class : String
@@ -33,19 +42,21 @@ namespace mspring {
 		static std::string ToString(std::wstring str) {
 			return std::string(CW2A(str.c_str()));
 		}
-		static std::string ToString(CString str) {
+		__declspec(deprecated("** Don't use CString **")) static std::string ToString(CString str) {
 			return std::string(CT2A((LPCTSTR)str));
 		}
 		static std::wstring ToWString(std::string str) {
 			return std::wstring(CA2W(str.c_str()));
 		}
-		static std::wstring ToWString(CString str) {
+		__declspec(deprecated("** Don't use CString **")) static std::wstring ToWString(CString str) {
 			return std::wstring((CT2W)(LPCTSTR)str);
 		}
-		static CString ToCString(std::string str) {
+		__declspec(deprecated("** Don't use CString **")) static CString ToCString(std::string str) {
+			//Has memory leak
 			return CString(CA2CT(str.c_str()));
 		}
-		static CString ToCString(std::wstring str) {
+		__declspec(deprecated("** Don't use CString **")) static CString ToCString(std::wstring str) {
+			//Has memory leak
 			return CString(CW2CT(str.c_str()));
 		}
 	};

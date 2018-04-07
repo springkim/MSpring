@@ -15,11 +15,12 @@
 #include<afxwin.h>
 #include<wingdi.h>
 #include<winnt.h>
-#include"Util.h"
+#include"Safe.h"
+#include"String.h"
 namespace mspring {
 	class Font {
 	public:
-		static int GetRealFontHeight(CString font_str, int size, CDC* pdc,CString str=TEXT("A"),bool height=true) {
+		static int GetRealFontHeight(TString font_str, int size, CDC* pdc,TString str=TEXT("A"),bool height=true) {
 			int L = 0;
 			int R = 1000;
 			CSize sz;
@@ -32,11 +33,11 @@ namespace mspring {
 			while (L <= R) {
 				int M = (L + R) / 2;
 				CFont font;
-				EXEC_ALWAYS(font.CreatePointFont(M, font_str));
+				font.CreatePointFont(M, font_str.data());
 				CFont* old_font = pdc->SelectObject(&font);
-				EXEC_ALWAYS(GetTextExtentPoint32(pdc->GetSafeHdc(), str, str.GetLength(), &sz));
+				GetTextExtentPoint32(pdc->GetSafeHdc(), str.data(), str.length(), &sz);
 				pdc->SelectObject(old_font);
-				EXEC_ALWAYS(font.DeleteObject());
+				font.DeleteObject();
 				if (*lp == size) {
 					break;
 				} else if (*lp > size) {

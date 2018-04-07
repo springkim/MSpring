@@ -13,7 +13,7 @@
 #if !defined(MSPRING_7E1_9_C_FRAME_HPP_INCLUDED)
 #define MSPRING_7E1_9_C_FRAME_HPP_INCLUDED
 #include<afxwin.h>
-#include"frame/mspring.frame.h"
-#include"frame/mspring.menu_frame.h"
-#include"frame/mspring.tab_frame.h"
+#include"MSpringFrame.h"
+#include"MSpringMenuFrame.h"
+#include"MSpringTabFrame.h"
 #endif  //MSPRING_7E1_9_C_FRAME_HPP_INCLUDED

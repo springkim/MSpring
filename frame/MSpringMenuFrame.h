@@ -2,8 +2,8 @@
 *  mspring.menu_frame.h
 *  MSpring
 *
-*  Created by kimbom on 2017. 9. 12...
-*  Copyright 2017 kimbom. All rights reserved.
+*  Created by KimBomm on 2017. 9. 12...
+*  Copyright 2017 KimBomm. All rights reserved.
 *
 */
 #if _MSC_VER > 1000
@@ -14,11 +14,10 @@
 #define MSPRING_7E1_9_C_MSPRINGMENUFRAME_HPP_INCLUDED
 
 #include<afxwin.h>
-
-#include"mspring.frame.h"
-
 #include<deque>
 #include<vector>
+#include<memory>
+#include"MSpringFrame.h"
 
 ///MSpringMenu
 class MSpringMenu : public CMenu {
@@ -41,7 +40,7 @@ public:		//constructor,destructor
 private:		//Inner class
 	struct MenuObject {
 		HICON m_hIcon;
-		CString m_strCaption;
+		TString m_strCaption;
 		BOOL bFirstMenu;
 	};
 	std::vector<DWORD_PTR> deleteItem;
@@ -54,12 +53,12 @@ protected:
 		lpMeasureItemStruct->itemHeight = MENU_HEIGHT;
 		CFont font;
 		int h = mspring::Font::GetRealFontHeight(m_font_string, lpMeasureItemStruct->itemHeight, &dc);
-		EXEC_ALWAYS(font.CreatePointFont(h, m_font_string));
+		font.CreatePointFont(h, m_font_string);
 		CFont* old_font = dc.SelectObject(&font);
-		CString str = ((MenuObject*)lpMeasureItemStruct->itemData)->m_strCaption;
+		TString str = ((MenuObject*)lpMeasureItemStruct->itemData)->m_strCaption;
 		CSize sz;
-		EXEC_ALWAYS(::GetTextExtentPoint32(dc.GetSafeHdc(), str, str.GetLength(), &sz));
-		EXEC_ALWAYS(font.DeleteObject());
+		::GetTextExtentPoint32(dc.GetSafeHdc(), str.data(), str.length(), &sz);
+		font.DeleteObject();
 		lpMeasureItemStruct->itemWidth = sz.cx + 10 < 100 ? 100 : sz.cx + 10;
 	}
 	void DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)override {
@@ -84,27 +83,28 @@ protected:
 			}
 			CFont font;
 			int h = mspring::Font::GetRealFontHeight(m_font_string, MENU_HEIGHT, pDC);
-			EXEC_ALWAYS(font.CreatePointFont(h, m_font_string));
+			font.CreatePointFont(h, m_font_string);
 			CFont* old_font = pDC->SelectObject(&font);
 			::FillRect(pDC->GetSafeHdc(), &rect, CreateSolidBrush(color_bk));
 			pDC->SetBkMode(TRANSPARENT);
 			pDC->SetTextColor(MSpringMenu::m_color_text);
-			EXEC_ALWAYS(pDC->TextOut(rect.left + 5, rect.top, ((MenuObject*)lpDrawItemStruct->itemData)->m_strCaption));
+			TString text = ((MenuObject*)lpDrawItemStruct->itemData)->m_strCaption;
+			pDC->TextOut(rect.left + 5, rect.top, text.data(),text.length());
 		} else {
 			//구분선
 			CPen pen;
-			EXEC_ALWAYS(pen.CreatePen(PS_SOLID, 1, MSpringMenu::m_color_text));
+			pen.CreatePen(PS_SOLID, 1, MSpringMenu::m_color_text);
 			CPen* old_pen = pDC->SelectObject(&pen);
 			pDC->MoveTo(rect.left, (rect.top + rect.bottom) / 2);
 			pDC->LineTo(rect.right, (rect.top + rect.bottom) / 2);
 			pDC->SelectObject(old_pen);
-			EXEC_ALWAYS(pen.DeleteObject());
+			pen.DeleteObject();
 		}
 		CDC::DeleteTempMap();
 	}
 public:	//static member
 	const int MENU_HEIGHT = 16;
-	static CString m_font_string;
+	static TCHAR m_font_string[256];
 	static COLORREF m_color_bk;
 	static COLORREF m_color_text;
 	static COLORREF m_color_hover;
@@ -122,13 +122,15 @@ public:
 
 		int iMaxItems = GetMenuItemCount();
 		for (int i = 0; i < iMaxItems; i++) {
-			CString nameHolder;
+			TString nameHolder;
 			MenuObject* pObject = new MenuObject;
 			//m_objects.push_back(pObject);
 			deleteItem.push_back((DWORD_PTR)pObject);
 			pObject->m_hIcon = NULL;
 			pObject->bFirstMenu = TRUE;
-			GetMenuString(i, pObject->m_strCaption, MF_BYPOSITION);
+			TCHAR buffer[1024] = { 0 };			
+			GetMenuString(i, buffer, 1024, MF_BYPOSITION);
+			pObject->m_strCaption = buffer;
 			MENUITEMINFO mInfo;
 			ZeroMemory(&mInfo, sizeof(MENUITEMINFO));
 			//I dont use GetMenuItemID because it doesn't return 0/-1 when it's a Popup (so the MSDN is wrong)
@@ -145,22 +147,23 @@ public:
 			}
 		}
 	}
-	static void SetStyle(CString font_string, COLORREF color_bk, COLORREF color_text, COLORREF color_hover, COLORREF color_border) {
-		MSpringMenu::m_font_string = font_string;
+	static void SetStyle(TString font_string, COLORREF color_bk, COLORREF color_text, COLORREF color_hover, COLORREF color_border) {
+		_tcscpy_s(MSpringMenu::m_font_string, font_string.data());
 		MSpringMenu::m_color_bk = color_bk;
 		MSpringMenu::m_color_text = color_text;
 		MSpringMenu::m_color_hover = color_hover;
 		MSpringMenu::m_color_border = color_border;
 	}
 };
-__declspec(selectany) CString MSpringMenu::m_font_string = TEXT("Arial");
+__declspec(selectany) TCHAR MSpringMenu::m_font_string[] = TEXT("Arial");
 __declspec(selectany) COLORREF MSpringMenu::m_color_bk = RGB(255, 255, 255);
 __declspec(selectany) COLORREF MSpringMenu::m_color_text = RGB(0, 0, 0);
 __declspec(selectany) COLORREF MSpringMenu::m_color_hover = RGB(199, 199, 199);
 __declspec(selectany) COLORREF MSpringMenu::m_color_border = RGB(103, 153, 255);
 
 ///MSpringMenuFrame
-class MSpringMenuFrame : public MSpringFrameExpansion {
+
+class MSpringMenuFrame_core : public MSpringFrameExpansion {
 	/*
 	*	@class : BMDLMenuFrame
 	*	@comment : 이 클래스는 BMDLFrame에 사용될 확장 클래스 입니다.
@@ -168,8 +171,8 @@ class MSpringMenuFrame : public MSpringFrameExpansion {
 	*/
 protected:
 	// 이 클래스는 메뉴를 한번에 띄우지 않고 최상위 메뉴를 Caption에 그린뒤 알맞은 위치에 PopupMenu를 띄우는 방식으로 
-	//구성 했기에, CString과 CMenu를 각각 가지고 있습니다.
-	std::vector<std::pair<CString, CMenu*>> m_menu;
+	//구성 했기에, TString과 CMenu를 각각 가지고 있습니다.
+	std::vector<std::pair<TString, CMenu*>> m_menu;
 	//메뉴에 대한 영역 입니다.
 	std::deque<CRect> m_menu_rect;		
 	//hover된 메뉴의 인덱스 입니다.
@@ -179,7 +182,7 @@ protected:
 	UINT m_position = 0;					
 protected:		//style value
 	//메뉴에 사용될 폰트입니다.
-	CString m_font_str;
+	TString m_font_str;
 	//글꼴의 색상입니다.
 	COLORREF m_color_text;	
 	//Hover 된 메뉴의 배경 색 입니다.
@@ -190,7 +193,7 @@ public:
 	void SetPosition(UINT left_is_zero_right_is_nonzero) {
 		m_position = left_is_zero_right_is_nonzero;
 	}
-	void SetStyle(CString font, COLORREF bk, COLORREF text, COLORREF hover, COLORREF border) {
+	void SetStyle(TString font, COLORREF bk, COLORREF text, COLORREF hover, COLORREF border) {
 		m_font_str = font;
 		m_color_bk = bk;
 		m_color_text = text;
@@ -207,21 +210,22 @@ public:
 			((MSpringMenu*)m_bmdl_menu)->MakeItemsOwnDraw();
 			int c = m_bmdl_menu->GetMenuItemCount();
 			for (int i = 0; i < c; i++) {
-				CString str;
-				m_bmdl_menu->GetMenuString(i, str, MF_BYPOSITION);
+				TCHAR buffer[1024] = { 0 };
+				m_bmdl_menu->GetMenuString(i, buffer,1024, MF_BYPOSITION);
+				TString str = buffer;
 				m_bmdl_menu->ModifyMenu(i, MF_BYPOSITION | MF_OWNERDRAW, i, (LPCTSTR)m_bmdl_menu->m_hMenu);
 				m_menu.push_back(std::make_pair(str, m_bmdl_menu));
 			}
 		}
 	}
 public:			//constructor,destructor
-	MSpringMenuFrame(CWnd* wnd) :MSpringFrameExpansion(wnd){
+	MSpringMenuFrame_core(CWnd* wnd) :MSpringFrameExpansion(wnd){
 		m_font_str = TEXT("Arial");
 		m_color_text = RGB(255, 255, 255);
 		m_color_hover = RGB(255, 199, 199);
 		m_color_bk = RGB(255, 255, 255);
 	}
-	virtual ~MSpringMenuFrame() = default;
+	virtual ~MSpringMenuFrame_core() = default;
 public:			//messageevent method
 	void OnCreate(LPCREATESTRUCT lpCreateStruct)override{ }
 	int OnNcPaint(CDC* pDC, CRect rect)override {
@@ -229,11 +233,11 @@ public:			//messageevent method
 		rect.top += margin;
 		rect.bottom -= margin;
 		CBrush brush;
-		EXEC_ALWAYS(brush.CreateSolidBrush(m_color_bk));
+		brush.CreateSolidBrush(m_color_bk);
 		pDC->FillRect(rect, &brush);
 		int h = mspring::Font::GetRealFontHeight(m_font_str, rect.Height(), pDC);
 		CFont font;
-		EXEC_ALWAYS(font.CreatePointFont(h, m_font_str));
+		font.CreatePointFont(h, m_font_str.data());
 		CFont* old_font = pDC->SelectObject(&font);
 		pDC->SetBkColor(m_color_bk);
 		pDC->SetTextColor(m_color_text);
@@ -243,18 +247,18 @@ public:			//messageevent method
 		if (m_position == 0) {	//set left
 			posx = rect.left;
 			for (int i = 0; i < (int)m_menu.size(); i++) {
-				CString str = m_menu[i].first;
+				TString str = m_menu[i].first;
 				CSize sz;
-				EXEC_ALWAYS(::GetTextExtentPoint32(pDC->GetSafeHdc(), str, str.GetLength(), &sz));
+				::GetTextExtentPoint32(pDC->GetSafeHdc(), str.data(), str.length(), &sz);
 				m_menu_rect.push_back(CRect(posx, rect.top, posx + sz.cx + margin, rect.bottom));
 				if (i == m_menu_hover) {
 					CBrush brush;
-					EXEC_ALWAYS(brush.CreateSolidBrush(m_color_hover));
+					brush.CreateSolidBrush(m_color_hover);
 					pDC->FillRect(m_menu_rect.back(), &brush);
-					EXEC_ALWAYS(brush.DeleteObject());
+					brush.DeleteObject();
 				}
 				pDC->SetBkMode(TRANSPARENT);
-				EXEC_ALWAYS(pDC->TextOut(posx + margin / 2, margin, str, str.GetLength()));
+				pDC->TextOut(posx + margin / 2, margin, str.data(), str.length());
 				posx += sz.cx + margin;
 				if (posx > rect.right) {
 					break;
@@ -264,18 +268,18 @@ public:			//messageevent method
 		} else {
 			posx = rect.right;
 			for (int i = (int)m_menu.size() - 1; i >= 0; i--) {
-				CString str = m_menu[i].first;
+				TString str = m_menu[i].first;
 				CSize sz;
-				EXEC_ALWAYS(::GetTextExtentPoint32(pDC->GetSafeHdc(), str, str.GetLength(), &sz));
+				::GetTextExtentPoint32(pDC->GetSafeHdc(), str.data(), str.length(), &sz);
 				m_menu_rect.push_front(CRect(posx - sz.cx - margin, rect.top, posx, rect.bottom));
 				if (i == m_menu_hover) {
 					CBrush brush;
-					EXEC_ALWAYS(brush.CreateSolidBrush(m_color_hover));
+					brush.CreateSolidBrush(m_color_hover);
 					pDC->FillRect(m_menu_rect.back(), &brush);
-					EXEC_ALWAYS(brush.DeleteObject());
+					brush.DeleteObject();
 				}
 				pDC->SetBkMode(TRANSPARENT);
-				EXEC_ALWAYS(pDC->TextOut(posx - sz.cx - margin, margin, str, str.GetLength()));
+				pDC->TextOut(posx - sz.cx - margin, margin, str.data(), str.length());
 				posx -= sz.cx + margin;
 				if (posx < rect.left) {
 					break;
@@ -284,8 +288,8 @@ public:			//messageevent method
 			ret = -(rect.right - posx);
 		}
 		pDC->SelectObject(old_font);
-		EXEC_ALWAYS(brush.DeleteObject());
-		EXEC_ALWAYS(font.DeleteObject());
+		brush.DeleteObject();
+		font.DeleteObject();
 		return ret;
 	}
 	void OnSize(UINT nType, int cx, int cy)override {}
@@ -300,7 +304,7 @@ public:			//messageevent method
 																				, m_menu_rect[i].bottom + apoint.y - point.y
 																				, m_wnd);
 				if (rVal != 0) {
-					EXEC_ALWAYS(m_wnd->PostMessage(WM_COMMAND, rVal, 0));
+					m_wnd->PostMessage(WM_COMMAND, rVal, 0);
 					ret = true;
 				}
 			}
@@ -329,7 +333,16 @@ public:			//messageevent method
 		m_menu_hover = -1;
 	}
 	void OnDestroy() override {
-		delete m_bmdl_menu;
+		if (m_bmdl_menu != nullptr) {
+			delete m_bmdl_menu;
+			m_bmdl_menu = nullptr;
+		}
+	}
+public:
+	static std::shared_ptr<MSpringMenuFrame_core> Create(CWnd* pwnd) {
+		return std::shared_ptr<MSpringMenuFrame_core>(new MSpringMenuFrame_core(pwnd));
 	}
 };
+
+using MSpringMenuFrame = std::shared_ptr<MSpringMenuFrame_core>;
 #endif  //MSPRING_7E1_9_C_MSPRINGMENUFRAME_HPP_INCLUDED

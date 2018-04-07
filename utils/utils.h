@@ -19,11 +19,11 @@
 #include<iostream>
 
 
-#include"utils/DoubleBufferingDC.h"
-#include"utils/DrawHelper.h"
-#include"utils/String.h"
-#include"utils/Operator.h"
-#include"utils/Util.h"
+#include"DoubleBufferingDC.h"
+#include"DrawHelper.h"
+#include"String.h"
+#include"Operator.h"
+#include"Safe.h"
 #define MSPRING_VERSION 0.0.5
 
 #endif  //MSPRING_7E1_9_C_MSPRING_HPP_INCLUDED

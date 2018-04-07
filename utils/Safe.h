@@ -1,5 +1,5 @@
 /*
-*  Util.hpp
+*  Safe.h
 *  MSpring
 *
 *  Created by kimbom on 2017. 9. 12...
@@ -14,7 +14,6 @@
 #define MSPRING_7E1_9_C_UTIL_HPP_INCLUDED
 #include<afxwin.h>
 #include<fstream>
-#define EXEC_ALWAYS(EXPRESSION)	while((EXPRESSION)==FALSE)
 namespace mspring {
 	template<typename T>
 	T Min(const T& a, const T& b) {

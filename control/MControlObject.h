@@ -1,23 +1,111 @@
-﻿/**
-* @file		mspring.control.object.h
-* @author		kimbomm (springnode@gmail.com)
-* @date		2017. 10. 10...
-* @version	1.0.0
+﻿/*
+*  mcontrolobject.h
+*  MSpring
 *
-*  @brief
-*			MSpring 공용 컨트롤
-*	@remark
-*			Created by kimbom on 2017. 10. 10...
-*			Copyright 2017 kimbom.All rights reserved.
+*  Created by KimBomm on 2018. 4. 7...
+*  Copyright 2018 KimBomm. All rights reserved.
+*
 */
+#if _MSC_VER > 1000
 #pragma once
-#if !defined(MSPRING_7E1_A_9__CONTROLS_HPP_INCLUDED) 
-#define MSPRING_7E1_A_9__CONTROLS_HPP_INCLUDED
-#include<afxwin.h>
+#endif // _MSC_VER > 1000
+
+#if !defined(MSPRING_7E2_4_7_MCONTROLOBJECT_HPP_INCLUDED)
+#define MSPRING_7E2_4_7_MCONTROLOBJECT_HPP_INCLUDED
 #include<atomic>
-#include"_rect.h"
-#include"../utils.h"
-#define M_CLICKED 255
+#include<memory>
+
+#include<afxwin.h>
+
+#include"../utils/utils.h"
+
+enum MRectPosition {	//컨트롤의 위치의 상태를 나타냅니다.
+	LT, RT, LB, RB, DYNAMIC, L, R, T, B
+};
+class MRect {
+private:
+	MRectPosition m_pos;
+	int m_xd;		//left-dist
+	int m_yd;		//top-dist
+	int m_xd2;	//pos가 DYNAMIC이면 right-dist, 그 이외의 경우 width 입니다.
+	int m_yd2;	//pos가 DYNAMIC이면 bottom-dist, 그 이외의 경우 height 입니다.
+public:
+	MRect(MRectPosition pos, int xd, int yd, int xd2, int yd2) {
+		m_pos = pos;
+		m_xd = xd;
+		m_yd = yd;
+		m_xd2 = xd2;
+		m_yd2 = yd2;
+	}
+	MRect() {
+		m_pos = MRectPosition::LT;
+		m_xd = 10;
+		m_yd = 10;
+		m_xd2 = 100;
+		m_yd2 = 100;
+	}
+	CRect GetRect(CRect view) {
+		CRect rect;
+		switch (m_pos) {
+			case L: {
+				rect.left = view.left + m_xd;
+				rect.top = view.top + m_yd;
+				rect.right = rect.left + m_xd2;
+				rect.bottom = view.bottom - m_yd2;
+			}break;
+			case R: {
+				rect.top = view.top + m_yd;
+				rect.right = view.right - m_xd2;
+				rect.bottom = view.bottom - m_yd2;
+				rect.left = rect.right - m_xd;
+			}break;
+			case T: {
+				rect.left = view.left + m_xd;
+				rect.top = view.top + m_yd;
+				rect.right = view.right - m_xd2;
+				rect.bottom = rect.top + m_yd2;
+			}break;
+			case B: {
+				rect.left = view.left + m_xd;
+				rect.bottom = view.bottom - m_yd2;
+				rect.right = view.right - m_xd2;
+				rect.top = rect.bottom - m_yd;
+			}break;
+			case LT: {
+				rect.left = view.left + m_xd;
+				rect.top = view.top + m_yd;
+				rect.right = rect.left + m_xd2;
+				rect.bottom = rect.top + m_yd2;
+			}break;
+			case RT: {
+				rect.right = view.right - m_xd;
+				rect.top = view.top + m_yd;
+				rect.left = rect.right - m_xd2;
+				rect.bottom = rect.top + m_yd2;
+			}break;
+			case LB: {
+				rect.left = view.left + m_xd;
+				rect.right = rect.left + m_xd2;
+				rect.bottom = view.bottom - m_yd;
+				rect.top = rect.bottom - m_yd2;
+			}break;
+			case RB: {
+				rect.right = view.right - m_xd;
+				rect.bottom = view.bottom - m_yd;
+				rect.left = rect.right - m_xd2;
+				rect.top = rect.bottom - m_yd2;
+			}break;
+			case DYNAMIC: {
+				rect.left = view.left + m_xd;
+				rect.top = view.top + m_yd;
+				rect.right = view.right - m_xd2;
+				rect.bottom = view.bottom - m_yd2;
+			}break;
+			default:break;
+		}
+		return rect;
+	}
+};
 enum MControlState {
 	NORMAL, HOVER, CLICK
 };
@@ -25,6 +113,10 @@ using DoFunc_VP = UINT(*)(void*);
 using DoFunc = UINT(*)();
 inline void ThreadEvent(DoFunc_VP func, void* param) {
 	CWinThread* pthread = AfxBeginThread(func, param);
+}
+template<class T>
+T CreateControl(CWnd* pWnd, MRect base) {
+	return T(new T::element_type(pWnd, base));
 }
 class MControlObject {
 public:
@@ -37,22 +129,29 @@ public:	///색상 및 글꼴
 	std::atomic<COLORREF>* m_color_text;	//글자색을 지정합니다.
 	std::atomic<COLORREF>* m_color_other;	//기타색을 지정합니다.
 	std::atomic<COLORREF>* m_color_view;	//부모 뷰의 색을 지정합니다.
-	CString m_font_str;		//글꼴을 나타냅니다.
+	TString m_font_str;		//글꼴을 나타냅니다.
 protected:
 	static std::atomic<COLORREF> s_color_bk;
 	static std::atomic<COLORREF> s_color_fr;
 	static std::atomic<COLORREF> s_color_text;
 	static std::atomic<COLORREF> s_color_other;
 	static std::atomic<COLORREF> s_color_view;
-	static CString s_font_str;
+	static TCHAR s_font_str[256];
 protected:
 	static int s_id;				//객체의 아이디를 관리 합니다.	
 	static int s_curr_id;			//현재 Focused 된 아이디 입니다.	
 	int m_id;						//객체의 고유 id 입니다.
 public:
-	bool isFocused() {
+	virtual bool isFocused() {
 		return m_id == s_curr_id;
 	}
+	virtual bool isClicked() {
+		return false;
+	}
+	virtual bool isChanged() {
+		return false;
+	}
+
 	MControlObject(CWnd* parent, MRect rect) {
 		m_parent = parent;
 		m_rect = rect;
@@ -125,6 +224,9 @@ public:
 	virtual INT OnRButtonUp() {
 		return 1;
 	}
+	virtual INT OnLButtonDblClk() {
+		return 1;
+	}
 	virtual INT OnMouseMove() {
 		return 1;
 	}
@@ -137,7 +239,13 @@ public:
 	virtual INT OnChar(UINT nchar) {
 		return 1;
 	}
+	virtual INT OnComposition(WPARAM wParam, LPARAM lParam) {
+		return 1;
+	}
 	virtual INT OnKeyDown(UINT nChar) {
+		return 1;
+	}
+	virtual INT OnKeyUp(UINT nChar) {
 		return 1;
 	}
 	virtual INT OnTimer(UINT_PTR nIDEvent) {
@@ -153,7 +261,7 @@ __declspec(selectany) std::atomic<COLORREF> MControlObject::s_color_fr = RGB(38,
 __declspec(selectany) std::atomic<COLORREF> MControlObject::s_color_text = RGB(0,0,0);
 __declspec(selectany) std::atomic<COLORREF> MControlObject::s_color_other = RGB(147,161,161);
 __declspec(selectany) std::atomic<COLORREF> MControlObject::s_color_view = RGB(255, 255, 255);
-__declspec(selectany) CString MControlObject::s_font_str = TEXT("Arial");
+__declspec(selectany) TCHAR MControlObject::s_font_str[256] = TEXT("Arial");
 __declspec(selectany) int MControlObject::s_id = 0;
 __declspec(selectany) int MControlObject::s_curr_id = -1;
-#endif  //MSPRING_7E1_A_9__CONTROLS_HPP_INCLUDED
+#endif  //MSPRING_7E2_4_7_MCONTROLOBJECT_HPP_INCLUDED

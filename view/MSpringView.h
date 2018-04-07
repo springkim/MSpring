@@ -8,7 +8,7 @@
 #include<iostream>
 #include<vector>
 #include<set>
-#include"../utils.h"
+#include"../utils/utils.h"
 #include"VirtualView.h"
 #define SAFETY_CALL(VIEW,METHOD,...)	if(VIEW){(VIEW)->METHOD(__VA_ARGS__);}
 
@@ -45,9 +45,9 @@ protected:
 		this->GetClientRect(&rect);
 		mspring::DoubleBufferingDC dbb(&dc, rect);
 		CBrush bk_brush;
-		EXEC_ALWAYS(bk_brush.CreateSolidBrush(m_color_bk));
+		bk_brush.CreateSolidBrush(m_color_bk);
 		dbb.getDC().FillRect(rect, &bk_brush);
-		EXEC_ALWAYS(bk_brush.DeleteObject());
+		bk_brush.DeleteObject();
 		SAFETY_CALL(m_view, OnPaint, dbb.getPDC());
 		dbb.Draw();
 	}
@@ -70,12 +70,12 @@ public:
 		rect_right.left = rect_right.right - 3;
 		//Fixed value
 		CBrush brush;
-		EXEC_ALWAYS(brush.CreateSolidBrush(m_color_bk));
+		brush.CreateSolidBrush(m_color_bk);
 		ncpaint.FillRect(rect_top, &brush);
 		ncpaint.FillRect(rect_bottom, &brush);
 		ncpaint.FillRect(rect_left, &brush);
 		ncpaint.FillRect(rect_right, &brush);
-		EXEC_ALWAYS(brush.DeleteObject());
+		brush.DeleteObject();
 		ReleaseDC(&ncpaint);
 	}
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct) {
@@ -148,7 +148,8 @@ public:
 	}
 	afx_msg void OnDestroy() {
 		CWnd::OnDestroy();
-		SAFETY_CALL(m_view, OnDestroy);
+		//SAFETY_CALL(m_view, OnDestroy);
+		
 	}
 	afx_msg void OnTimer(UINT_PTR nIDEvent) {
 		SAFETY_CALL(m_view, OnTimer, nIDEvent);
