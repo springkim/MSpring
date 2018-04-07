@@ -23,7 +23,10 @@
 #include<map>
 #include"../utils/utils.h"
 #include"MSpringResource01.h"
-
+template<class T>
+T CreateFrame(CWnd* pWnd) {
+	return T(new T::element_type(pWnd));
+}
 #define REDRAW_NCAREA this->OnNcPaint()
 class MSpringFrameExpansion {
 	/*
@@ -54,6 +57,8 @@ public:
 	virtual void OnNcMouseLeave() = 0;
 	virtual void OnDestroy() = 0;
 };
+
+
 __declspec(selectany) double g_maximized_time = 0.0;			//창이 최대화 상태가 된 시간입니다. (최대화후 몇 ms 간은 MouseMove를 동작하지 않습니다.)
 class MSpringFrame : public CFrameWnd {
 protected:

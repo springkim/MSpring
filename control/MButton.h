@@ -17,6 +17,7 @@ class MButton_core : public MControlObject {
 public:
 	TString m_text = TEXT("Button");
 	DoFunc m_func = nullptr;
+	bool m_clicked = false;
 public:
 	MButton_core(CWnd* parent, MRect base) : MControlObject(parent, base) {
 
@@ -57,6 +58,7 @@ public:
 	}
 	INT OnLButtonDown()override {
 		MControlObject::OnLButtonDown();
+		m_clicked = false;
 		CPoint point = this->GetMousePoint();
 		CRect rect;
 		m_parent->GetClientRect(&rect);
@@ -73,9 +75,13 @@ public:
 			if (m_func != nullptr) {
 				m_func();
 			}
+			m_clicked = true;
 			return 1;
 		}
 		return 1;
+	}
+	bool isClicked()override {
+		return m_clicked;
 	}
 	INT OnMouseMove()override {
 		CPoint point = this->GetMousePoint();

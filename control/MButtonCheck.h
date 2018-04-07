@@ -17,7 +17,12 @@ class MButtonCheck_core : public MControlObject {
 public:
 	bool check = false;
 	bool disable = false;
+private:
+	bool m_is_changed = false;
 public:
+	bool isChanged() override{
+		return true;
+	}
 	MButtonCheck_core(CWnd* parent, MRect base) : MControlObject(parent, base) {
 
 	}
@@ -54,6 +59,7 @@ public:
 		return 1;
 	}
 	INT OnLButtonDown()override {
+		m_is_changed = false;
 		MControlObject::OnLButtonDown();
 		if (disable == true) {
 			return 1;
@@ -72,6 +78,7 @@ public:
 				return 1;
 			}, param);
 			check = !check;
+			m_is_changed = true;
 			return 1;
 		}
 		return 1;

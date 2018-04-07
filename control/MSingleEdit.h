@@ -14,7 +14,7 @@
 #define MSPRING_7E2_4_7_MSINGLEEDIT_HPP_INCLUDED
 #include"MControlObject.h"
 class MSingleEdit_core : public MControlObject {
-#define MEDIT_TIMER		17777
+	const UINT_PTR MEDIT_TIMER = (UINT_PTR)"mspring.control.singleedit.h(MEDIT_TIMER)";
 public:
 	TString m_text;
 private:
@@ -83,24 +83,29 @@ public:
 		return 1;
 	}
 	INT OnKeyDown(UINT nChar)override {
+		if (s_curr_id != m_id) return 0;
 		switch (nChar) {
 			case VK_LEFT:pos--; caret = true; break;
 			case VK_RIGHT:pos++; caret = true; break;
+			case VK_DELETE: {
+				if (pos <m_text.length()) {
+					m_text.erase(m_text.begin() + pos);
+				}
+			}break;
 			default:break;
 		}
 		mspring::SetRange(pos, 0, (int)m_text.length());
 		return 1;
 	}
 	INT OnChar(UINT nChar) override {
-		if (s_curr_id != m_id) {
-			return 0;
-		}
+		if (s_curr_id != m_id) return 0;
+		std::cout << nChar << std::endl;
 		if (nChar == VK_BACK) {
 			if (pos > 0) {
 				m_text.erase(m_text.begin() + (pos - 1));
 				pos--;
 			}
-		} else {
+		}else {
 			if (nChar == VK_TAB) {
 				for (int i = 0; i < 4; i++) {
 					m_text.insert(m_text.begin() + pos, TEXT(' '));
@@ -116,9 +121,7 @@ public:
 	}
 	BOOL m_compstr = FALSE;
 	INT OnComposition(WPARAM wParam, LPARAM lParam) override {
-		if (s_curr_id != m_id) {
-			return 0;
-		}
+		if (s_curr_id != m_id) return 0;
 		HIMC hImc = ImmGetContext(this->m_parent->GetSafeHwnd());//현재 IME가져오기
 		TCHAR* result = NULL;
 		TCHAR dest[3];
@@ -173,9 +176,7 @@ public:
 		return 1;
 	}
 	INT OnTimer(UINT_PTR nIDEvent) {
-		if (s_curr_id != m_id) {
-			return 0;
-		}
+		if (s_curr_id != m_id) return 0;
 		if (nIDEvent >= MEDIT_TIMER && nIDEvent <= MEDIT_TIMER + (UINT_PTR)s_id) {
 			caret = !caret;
 			m_parent->Invalidate();
