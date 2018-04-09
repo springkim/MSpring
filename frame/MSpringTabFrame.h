@@ -46,6 +46,7 @@ protected:
 protected:		//style value
 	TString m_font_str;				//탭에 사용될 폰트입니다.
 	COLORREF m_color_activate;		//활성화된 탭의 배경색 입니다.
+	COLORREF m_color_activate_border;
 	COLORREF m_color_deactivate;		//비-활성화된 탭의 배경색 입니다.
 	COLORREF m_color_bk;				//배경색
 	COLORREF m_color_text;			//글꼴 색
@@ -63,6 +64,10 @@ public:
 		int g = ((int)GetGValue(color_activate) + (int)GetGValue(color_deactivate)) / 2;
 		int b = ((int)GetBValue(color_activate) + (int)GetBValue(color_deactivate)) / 2;
 		m_color_hover = RGB(r, g, b);
+
+	}
+	void SetActivateBorder(COLORREF color_activate_border) {
+		m_color_activate_border = color_activate_border;
 	}
 	void SetPosition(UINT left_is_zero_right_is_nonzero) {
 		m_position = left_is_zero_right_is_nonzero;
@@ -96,10 +101,10 @@ public:
 		}
 		auto CutText = [](TString str, CDC* pDC, int w)->TString {
 			CSize sz;
-			::GetTextExtentPoint32(pDC->GetSafeHdc(), str.data(), str.length(), &sz);
+			::GetTextExtentPoint32(pDC->GetSafeHdc(), str.data(), static_cast<int>(str.length()), &sz);
 			while (sz.cx > w) {
 				str.pop_back();
-				::GetTextExtentPoint32(pDC->GetSafeHdc(), str.data(), str.length(), &sz);
+				::GetTextExtentPoint32(pDC->GetSafeHdc(), str.data(), static_cast<int>(str.length()), &sz);
 			}
 			return str;
 		};
@@ -132,8 +137,9 @@ public:
 		CPen pen;
 		pen.CreatePen(PS_SOLID, 1, m_color_activate);
 		CPen pen_bk;
-		
 		pen_bk.CreatePen(PS_SOLID, 1, m_color_bk);
+		CPen pen_ab;
+		pen_ab.CreatePen(PS_SOLID, 1, m_color_activate_border);
 		CFont font;
 		int h = mspring::Font::GetRealFontHeight(m_font_str, rect.Height() - padding * 2, pDC);
 		font.CreatePointFont(h, m_font_str.data(), pDC);
@@ -159,15 +165,28 @@ public:
 				pDC->FillRect(&rect_draw, &brush_tab);
 				brush_tab.DeleteObject();
 				CPen* old_pen = nullptr;
-				old_pen = pDC->SelectObject(&pen_bk);
-				if (i != 0) {
-					pDC->MoveTo(CPoint(rect_draw.left, rect_draw.top));
-					pDC->LineTo(CPoint(rect_draw.left, rect_draw.bottom));
+				
+				if (i == m_tab_idx) {
+					old_pen = pDC->SelectObject(&pen_ab);
+					pDC->MoveTo(CPoint(rect_draw.left+1, rect_draw.top));
+					pDC->LineTo(CPoint(rect_draw.left+1, rect_draw.bottom));
+					pDC->MoveTo(CPoint(rect_draw.right-1, rect_draw.top));
+					pDC->LineTo(CPoint(rect_draw.right-1, rect_draw.bottom));
+					pDC->MoveTo(CPoint(rect_draw.left + 1, rect_draw.top));
+					pDC->LineTo(CPoint(rect_draw.right - 1, rect_draw.top));
+				} else {
+					old_pen = pDC->SelectObject(&pen_bk);
+					if (i != 0) {
+						pDC->MoveTo(CPoint(rect_draw.left, rect_draw.top));
+						pDC->LineTo(CPoint(rect_draw.left, rect_draw.bottom));
+					}
+					if (i != m_tab.size() - 1) {
+						pDC->MoveTo(CPoint(rect_draw.right, rect_draw.top));
+						pDC->LineTo(CPoint(rect_draw.right, rect_draw.bottom));
+					}
 				}
-				if (i != m_tab.size() - 1) {
-					pDC->MoveTo(CPoint(rect_draw.right, rect_draw.top));
-					pDC->LineTo(CPoint(rect_draw.right, rect_draw.bottom));
-				}
+				
+				
 				pDC->SelectObject(old_pen);
 				old_pen = pDC->SelectObject(&pen);
 				for (int j = 0; j < 3; j++) {
@@ -177,7 +196,7 @@ public:
 				pDC->SelectObject(old_pen);
 				TString str = CutText(m_tab[i].m_str, pDC, default_width);
 				CSize sz;
-				::GetTextExtentPoint32(pDC->GetSafeHdc(), str.data(), str.length(), &sz);
+				::GetTextExtentPoint32(pDC->GetSafeHdc(), str.data(), static_cast<int>(str.length()), &sz);
 				pDC->SetTextColor(m_color_text);
 				pDC->SetBkMode(TRANSPARENT);
 				pDC->TextOut(posx + (default_width - sz.cx) / 2, margin + padding, str.data());
@@ -204,7 +223,11 @@ public:
 				pDC->FillRect(&rect_draw, &brush_tab);
 				brush_tab.DeleteObject();
 				CPen* old_pen = nullptr;
-				old_pen = pDC->SelectObject(&pen_bk);
+				if (i == m_tab_idx) {
+					old_pen = pDC->SelectObject(&pen_ab);
+				} else {
+					old_pen = pDC->SelectObject(&pen_bk);
+				}
 				if (i != 0) {
 					pDC->MoveTo(CPoint(rect_draw.left, rect_draw.top));
 					pDC->LineTo(CPoint(rect_draw.left, rect_draw.bottom));
@@ -222,7 +245,7 @@ public:
 				pDC->SelectObject(old_pen);
 				TString str = CutText(m_tab[i].m_str, pDC, default_width);
 				CSize sz;
-				::GetTextExtentPoint32(pDC->GetSafeHdc(), str.data(), str.length(), &sz);
+				::GetTextExtentPoint32(pDC->GetSafeHdc(), str.data(), static_cast<int>(str.length()), &sz);
 				pDC->SetTextColor(m_color_text);
 				pDC->SetBkMode(TRANSPARENT);
 				pDC->TextOut(posx + (default_width - sz.cx) / 2, margin + padding, str.data());
@@ -234,7 +257,7 @@ public:
 			}
 			ret = -(rect.right - posx - default_width);
 		}
-
+		pen_ab.DeleteObject();
 		pen_bk.DeleteObject();
 		pen.DeleteObject();
 		font.DeleteObject();
@@ -243,6 +266,18 @@ public:
 	}
 	void OnSize(UINT nType, int cx, int cy)override {
 
+	}
+	bool PtInRect() override{
+		CPoint apoint;
+		::GetCursorPos(&apoint);
+		bool ret = false;
+		for (int i = 0; i < (int)m_tab_rect.size(); i++) {
+			if (m_tab_rect[i].PtInRect(apoint) == TRUE) {
+				ret = true;
+				break;
+			}
+		}
+		return ret;
 	}
 	bool OnNcLButtonDown(UINT nHitTest, CPoint point) override {
 		bool ret = false;

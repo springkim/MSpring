@@ -39,6 +39,7 @@ protected:
 	CWnd* m_wnd;
 public:
 	MSpringFrameExpansion(CWnd* wnd) :m_wnd(wnd){}
+	virtual bool PtInRect() = 0;
 	virtual void OnCreate(LPCREATESTRUCT lpCreateStruct) = 0;
 	/*
 	*	@method : OnNcPaint
@@ -127,8 +128,10 @@ protected:	//style value
 	COLORREF m_color_bk;						//프레임의 배경색입니다.
 	COLORREF m_color_border;					//경계색의 색상입니다.
 	COLORREF m_color_text;
+	COLORREF m_color_title;
 	TString m_font_str;
 	TString m_title = TEXT("MSpring");
+	bool m_other_task = false;				//탭이나 메뉴 등을 클릭했을때 true가 됩니다.
 public:		//static method
 	static void ButtonEvent_Close(CWnd* wnd) {
 		::AfxGetMainWnd()->PostMessage(WM_COMMAND, ID_APP_EXIT, 0);
@@ -141,7 +144,7 @@ public:		//static method
 			static CRect rect_window;
 			pmainframe->GetWindowRect(rect_window);
 #ifdef _M_AMD64
-			EXEC_ALWAYS(::SetWindowLongPtr(pmainframe->GetSafeHwnd(), GWLP_USERDATA, (LONG_PTR)&rect_window));
+			::SetWindowLongPtr(pmainframe->GetSafeHwnd(), GWLP_USERDATA, (LONG_PTR)&rect_window);
 			//If the function fails, the return value is zero. To get extended error information, call GetLastError. 
 #else
 			::SetWindowLongA(pmainframe->GetSafeHwnd(), GWL_USERDATA, (LONG)&rect_window);
@@ -221,9 +224,15 @@ public:
 	void SetTitle(TString title) {
 		m_title = title;
 	}
+	void SetTitleColor(COLORREF title_color) {
+		m_color_title = title_color;
+	}
 	//시스템버튼을 추가합니다.
 	void AddSysBtn(int bitmap, void(*EventFunc)(CWnd*)) {
 		m_sysbtn.push_back(SystemButton(bitmap, EventFunc));
+	}
+	void ClearSysBtn() {
+		m_sysbtn.clear();
 	}
 	//확장 클래스를 추가합니다.
 	void AddExpansionClass(std::shared_ptr<MSpringFrameExpansion> _class) {
@@ -357,6 +366,8 @@ public:	//messageevent method
 				m_sysbtn[i].m_rect = CRect(btn_pt.x, btn_pt.y, btn_pt.x + btn_sz.cx, btn_pt.y + btn_sz.cy);
 				btn_pt.x -= btn_sz.cx + m_sysbtn_margin;
 				cdc.SelectObject(old_cbmp);
+				delete cbmp;
+				cbmp = nullptr;
 			} else {
 				HBITMAP hbmp = nullptr;
 				CDC* DC = this->GetDC();
@@ -408,12 +419,15 @@ public:	//messageevent method
 		
 		font.CreatePointFont(h, m_font_str.data());
 		CFont* old_font=dbb_top->getDC().SelectObject(&font);
-		dbb_top->getDC().SetTextColor(m_color_text);
+		dbb_top->getDC().SetTextColor(m_color_title);
 		dbb_top->getDC().SetBkMode(TRANSPARENT);
 		
 		CSize title_sz;
-		GetTextExtentPoint32(dbb_top->getDC().GetSafeHdc(), m_title.data(), m_title.length(), &title_sz);
-		dbb_top->getDC().TextOut(m_icon.m_rect.right + 5, rect_window_top.Height() / 2 - title_sz.cy / 2, m_title.data(),m_title.length());
+		GetTextExtentPoint32(dbb_top->getDC().GetSafeHdc(), m_title.data(), (int)m_title.length(), &title_sz);
+		dbb_top->getDC().TextOut(static_cast<int>(m_icon.m_rect.right + 5)
+								 ,static_cast<int>( rect_window_top.Height() / 2 - title_sz.cy / 2)
+								 , m_title.data()
+								 ,static_cast<int>(m_title.length()));
 		dbb_top->getDC().SelectObject(&old_font);
 		font.DeleteObject();
 		//아이콘 오른쪽 부터
@@ -518,7 +532,7 @@ public:	//messageevent method
 			e->OnNcMouseMove(nHitTest, point);
 		}
 		REDRAW_NCAREA;
-		CFrameWnd::OnNcMouseMove(nHitTest, apoint);
+		CFrameWnd::OnNcMouseMove(nHitTest, apoint);	
 	}
 	afx_msg void OnNcLButtonDown(UINT nHitTest, CPoint point) {
 		CPoint apoint = point;
@@ -535,8 +549,11 @@ public:	//messageevent method
 			ret|=e->OnNcLButtonDown(nHitTest, point);
 		}
 		REDRAW_NCAREA;
+		m_other_task = false;
 		if (ret == false) {
 			CFrameWnd::OnNcLButtonDown(nHitTest, apoint);
+		} else {
+			m_other_task = true;
 		}
 	}
 	afx_msg void OnNcLButtonUp(UINT nHitTest, CPoint point) {
@@ -561,6 +578,7 @@ public:	//messageevent method
 		CFrameWnd::OnNcLButtonUp(nHitTest, apoint);
 	}
 	afx_msg LRESULT OnNcHitTest(CPoint point) {
+		CPoint apoint = point;
 		point = this->GetMousePoint();
 		//시스템 버튼 클릭시 아무것도 안함.
 		for (int i = 0; i < (int)this->m_sysbtn.size(); i++) {
@@ -568,7 +586,18 @@ public:	//messageevent method
 				return HTBORDER;
 			}
 		}
-
+		if ((GetAsyncKeyState(VK_LBUTTON) & 0x8000)) {
+			for (auto&e : m_expansion) {
+				if (e->PtInRect() == true) {
+					POINTS ps;
+					ps.x = static_cast<SHORT>(apoint.x);
+					ps.y = static_cast<SHORT>(apoint.y);
+					this->SendMessage(WM_NCLBUTTONDOWN, HTBORDER, (WPARAM)&ps);
+					return HTNOWHERE;
+				}
+			}
+		}
+			
 		//최대화 상태일때 아무것도 안함.
 		//캡션바 더블클릭 , 캡션바 잡고끌기 만 허용.
 		if (m_is_maximize) {

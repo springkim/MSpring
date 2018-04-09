@@ -137,7 +137,7 @@ protected:
 	static std::atomic<COLORREF> s_color_other;
 	static std::atomic<COLORREF> s_color_view;
 	static TCHAR s_font_str[256];
-protected:
+public:
 	static int s_id;				//객체의 아이디를 관리 합니다.	
 	static int s_curr_id;			//현재 Focused 된 아이디 입니다.	
 	int m_id;						//객체의 고유 id 입니다.
@@ -168,6 +168,8 @@ public:
 	CPoint GetMousePoint() {
 		CPoint point;
 		::GetCursorPos(&point);
+		//std::cout << point.x << "," << point.y << std::endl;
+		//ScreenToClient(this->m_parent->GetSafeHwnd(), &point);
 		CRect rect;
 		m_parent->GetWindowRect(&rect);
 		point.x -= rect.left;
@@ -204,9 +206,12 @@ public:
 	virtual INT OnLButtonDown() {
 		//반드시 이 함수를 자식 클래스에서 호출해야 합니다.
 		CPoint point = this->GetMousePoint();
+		//std::cout << "(" << point.x << "," << point.y << ")" << std::endl;
 		CRect rect;
 		m_parent->GetClientRect(&rect);
-		if (m_rect.GetRect(rect).PtInRect(point) == TRUE) {
+		CRect crect = m_rect.GetRect(rect);
+		//std::cout << "(" << crect.left << "," << crect.top << "," << crect.right << "," << crect.bottom << ")" << std::endl;
+		if (crect.PtInRect(point) == TRUE) {
 			s_curr_id = m_id;
 		} else {
 			if (s_curr_id == m_id) {

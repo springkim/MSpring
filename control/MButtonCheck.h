@@ -21,7 +21,7 @@ private:
 	bool m_is_changed = false;
 public:
 	bool isChanged() override{
-		return true;
+		return m_is_changed;
 	}
 	MButtonCheck_core(CWnd* parent, MRect base) : MControlObject(parent, base) {
 

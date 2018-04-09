@@ -16,7 +16,7 @@
 class MStatic_core : public MControlObject {
 public:
 	TString m_text = TEXT("Static Text");
-	DWORD align;
+	UINT_PTR align;
 	const UINT_PTR MSTATIC_ALIGN_LEFT = (UINT_PTR)"mspring.control.static.h(MSTATIC_ALIGN_LEFT)";
 	const UINT_PTR MSTATIC_ALIGN_MIDDLE = (UINT_PTR)"mspring.control.static.h(MSTATIC_ALIGN_MIDDLE)";
 	const UINT_PTR MSTATIC_ALIGN_RIGHT = (UINT_PTR)"mspring.control.static.h(MSTATIC_ALIGN_RIGHT)";
@@ -38,7 +38,7 @@ public:
 		pDC->SetBkMode(TRANSPARENT);
 		pDC->SetTextColor(*m_color_text);
 		CSize sz;
-		::GetTextExtentPoint32(pDC->GetSafeHdc(), m_text.data(), m_text.length(), &sz);
+		::GetTextExtentPoint32(pDC->GetSafeHdc(), m_text.data(), static_cast<int>(m_text.length()), &sz);
 		if (align == MSTATIC_ALIGN_MIDDLE) {
 			pDC->TextOut((rect.Width() - sz.cx) / 2 + rect.left, (rect.Height() - sz.cy) / 2 + rect.top, m_text.data());
 		} else if (align == MSTATIC_ALIGN_LEFT) {

@@ -57,10 +57,10 @@ public:///Utility Functions
 			//pDC->TextOutW(rect.left+m_padding, rect.top+page_y, m_data[page_idx]);
 			if (rect.top + page_y <= pt.y && pt.y < rect.top + page_y + HEIGHT) {
 				CSize sz;
-				GetTextExtentPoint32(pDC->GetSafeHdc(), m_data[page_idx].first.data(), m_data[page_idx].first.length(), &sz);
+				GetTextExtentPoint32(pDC->GetSafeHdc(), m_data[page_idx].first.data(), static_cast<int>(m_data[page_idx].first.length()), &sz);
 				if (rect.left + m_padding + m_checkbox_padding + m_num_padding + sz.cx > pt.x) {	//가로 셀에 있는지 검사
 					if (page_height <= view_height || pt.x < rect.right - m_scrollbar_weight) {		//V스크롤이 있으면 그 부분은 제외
-						if (m_max_length < rect.Width() || pt.y < rect.bottom - m_scrollbar_weight) {	//H스크롤이 있으면 그 부분은 제외
+						if (is_h_scroll==false || pt.y < rect.bottom - m_scrollbar_weight) {	//H스크롤이 있으면 그 부분은 제외
 							ret = page_idx;
 						}
 					}
@@ -85,15 +85,16 @@ protected:
 	CRect m_h_thumb_rect;
 	float m_prev_scroll_pos;		//(내부적사용)스크롤의 예전 위치 입니다.
 	int m_max_length = -1;				//제일 긴 문자열의 길이입니다.
+	bool is_h_scroll = false;
 protected:
 	//리스트박스의 높이를 가져 옵니다.
 	int GetViewHeight() {
 		CRect rect = this->m_rect.GetRect(GetViewRect());
 		int r = this->m_rect.GetRect(this->GetViewRect()).Height();
-		/*if (m_max_length >= rect.Width()) {
-		r -= HEIGHT;
-		r = mspring::Max(r, 0);
-		}*/
+		if (is_h_scroll) {
+			r -= m_scrollbar_weight;
+			r = mspring::Max(r, 0);
+		}
 		return r;
 	}
 	int GetViewWidth() {
@@ -110,7 +111,7 @@ protected:
 		return static_cast<int>(m_data.size()*HEIGHT);
 	}
 	int GetPageWidth() {
-		return m_max_length - (m_padding * 2 + m_num_padding + m_checkbox_padding);
+		return m_max_length;// -(m_padding * 2 + m_num_padding + m_checkbox_padding);
 	}
 	//스크롤 엄지의 높이를 가져 옵니다.
 	int GetVThumbHeight() {
@@ -167,13 +168,16 @@ protected:
 			pDC->RoundRect(&thumb_rect, CPoint(5, 5));
 			m_v_thumb_rect = thumb_rect;
 		}
-		if (m_max_length >= rect.Width()) {
+		int view_width = GetViewWidth();
+		int page_width = GetPageWidth();
+		int thumb_width = GetHThumbWidth();
+		is_h_scroll = false;
+		if (page_width > view_width) {
+			is_h_scroll = true;
 			CRect thumb_rect = rect;
 			int actual_width = m_max_length - (m_padding * 2 + m_num_padding + m_checkbox_padding);
 
-			int view_width = GetViewWidth();
-			int page_width = GetPageWidth();
-			int thumb_width = GetHThumbWidth();
+			
 			thumb_width = mspring::Max(thumb_width, 20);
 
 			thumb_rect.left += static_cast<decltype(thumb_rect.left)>((view_width - thumb_width)*m_h_scroll_pos);
@@ -230,13 +234,15 @@ public:///Message Function
 	}
 
 	INT OnPaint(CDC* pDC) override {
+		
+		
 		CRect rect = this->m_rect.GetRect(GetViewRect());
+
 		CRgn rgn; rgn.CreateRectRgnIndirect(&rect);
 		pDC->SelectClipRgn(&rgn);
 
 		CBrush brush_bk; brush_bk.CreateSolidBrush(*m_color_bk);
 		pDC->FillRect(&rect, &brush_bk);
-
 
 		int h = mspring::Font::GetRealFontHeight(m_font_str, HEIGHT, pDC);
 		CFont font; font.CreatePointFont(h, m_font_str.data());
@@ -276,21 +282,21 @@ public:///Message Function
 			m_checkbox_padding = 0;
 		}
 		if (is_numbering == true) {
-			m_num_padding = sz.cx*static_cast<int>(round(log10(m_data.size())));
+			m_num_padding = sz.cx*static_cast<int>(ceil(log10(m_data.size()+1))+1);
 		} else {
 			m_num_padding = 0;
 		}
 		while (page_idx < (int)m_data.size() && page_y < view_height) {
 			pDC->SetBkMode(TRANSPARENT);
-			GetTextExtentPoint32(pDC->GetSafeHdc(), m_data[page_idx].first.data(), m_data[page_idx].first.length(), &sz);
+			GetTextExtentPoint32(pDC->GetSafeHdc(), m_data[page_idx].first.data(), static_cast<int>(m_data[page_idx].first.length()), &sz);
 			int width = m_padding + m_num_padding + sz.cx;
 
 
 			if (page_idx == m_select) {
 				CBrush* brush_old = pDC->SelectObject(&brush_highlight);
-				pDC->RoundRect(rect.left + m_checkbox_padding - h_minus,
+				pDC->RoundRect(rect.left + m_padding + m_checkbox_padding + m_num_padding - h_minus,
 							   rect.top + page_y,
-							   rect.left + m_checkbox_padding + width + m_padding - h_minus,
+							   rect.left + m_padding + m_checkbox_padding + m_num_padding - h_minus + sz.cx,
 							   rect.top + page_y + HEIGHT, 5, 5);
 				pDC->SelectObject(&brush_old);
 			}
@@ -313,7 +319,7 @@ public:///Message Function
 			}
 			if (is_numbering == true) {
 				OStringStream oss;
-				oss << page_idx;
+				oss << page_idx << TEXT(":");
 				pDC->TextOut(rect.left + m_padding + m_checkbox_padding, rect.top + page_y, oss.str().data());
 			}
 
@@ -327,14 +333,13 @@ public:///Message Function
 		for (size_t i = 0; i<m_data.size(); i++) {
 			if (static_cast<int>(m_data[i].first.length()) > max_len) {
 				max_len = static_cast<int>(m_data[i].first.length());
-				max_len_idx = i;
+				max_len_idx = static_cast<int>(i);
 			}
 		}
 		if (max_len_idx != -1) {
-			GetTextExtentPoint32(pDC->GetSafeHdc(), m_data[max_len_idx].first.data(), m_data[max_len_idx].first.length(), &sz);
-			m_max_length = mspring::Max(m_max_length, static_cast<int>(m_checkbox_padding + m_num_padding + m_padding * 2 + sz.cx));
+			GetTextExtentPoint32(pDC->GetSafeHdc(), m_data[max_len_idx].first.data(), static_cast<int>(m_data[max_len_idx].first.length()), &sz);
+			m_max_length =static_cast<int>(m_checkbox_padding + m_num_padding + m_padding * 2 + sz.cx);
 		}
-
 		DrawScroll(pDC);
 		pDC->SelectObject(&pen_old);
 		pen_null.DeleteObject();
