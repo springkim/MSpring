@@ -59,7 +59,7 @@ public:
 	virtual void OnDestroy() = 0;
 };
 
-
+#define MSPRING_DISABLE_HTTEST	33333
 __declspec(selectany) double g_maximized_time = 0.0;			//창이 최대화 상태가 된 시간입니다. (최대화후 몇 ms 간은 MouseMove를 동작하지 않습니다.)
 class MSpringFrame : public CFrameWnd {
 protected:
@@ -132,6 +132,11 @@ protected:	//style value
 	TString m_font_str;
 	TString m_title = TEXT("MSpring");
 	bool m_other_task = false;				//탭이나 메뉴 등을 클릭했을때 true가 됩니다.
+	bool m_disable_httest = false;
+public:
+	virtual void SetHtTest(bool b) {
+		m_disable_httest = b;
+	}
 public:		//static method
 	static void ButtonEvent_Close(CWnd* wnd) {
 		::AfxGetMainWnd()->PostMessage(WM_COMMAND, ID_APP_EXIT, 0);
@@ -578,6 +583,9 @@ public:	//messageevent method
 		CFrameWnd::OnNcLButtonUp(nHitTest, apoint);
 	}
 	afx_msg LRESULT OnNcHitTest(CPoint point) {
+		if (m_disable_httest == true) {
+			return HTNOWHERE;
+		}
 		CPoint apoint = point;
 		point = this->GetMousePoint();
 		//시스템 버튼 클릭시 아무것도 안함.
@@ -625,7 +633,7 @@ public:	//messageevent method
 		REDRAW_NCAREA;
 	}
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC) {
-		return TRUE;
+		return FALSE;
 	}
 	afx_msg void OnDestroy() {
 		for (auto&e : m_expansion) {

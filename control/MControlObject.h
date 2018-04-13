@@ -181,7 +181,7 @@ public:
 		m_parent->GetClientRect(rect);
 		return rect;
 	}
-	COLORREF GetBrightColor(COLORREF color) {
+	static COLORREF GetBrightColor(COLORREF color) {
 		int r = GetRValue(color);
 		int g = GetGValue(color);
 		int b = GetBValue(color);
@@ -190,7 +190,7 @@ public:
 		b = mspring::Min(b + 10, 255);
 		return RGB(r, g, b);
 	}
-	COLORREF GetDarkColor(COLORREF color) {
+	static COLORREF GetDarkColor(COLORREF color) {
 		int r = GetRValue(color);
 		int g = GetGValue(color);
 		int b = GetBValue(color);

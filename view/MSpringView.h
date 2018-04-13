@@ -171,7 +171,7 @@ public:
 		this->Invalidate();
 	}
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC) {
-		return TRUE;
+		return FALSE;
 	}
 	afx_msg void OnChar(UINT nChar, UINT nRepCnt, UINT nFlags) {
 		SAFETY_CALL(m_view, OnChar, nChar, nRepCnt,nFlags);
