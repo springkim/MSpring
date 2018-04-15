@@ -99,7 +99,6 @@ public:
 	}
 	INT OnChar(UINT nChar) override {
 		if (s_curr_id != m_id) return 0;
-		std::cout << nChar << std::endl;
 		if (nChar == VK_BACK) {
 			if (pos > 0) {
 				m_text.erase(m_text.begin() + (pos - 1));
