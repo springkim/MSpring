@@ -24,7 +24,8 @@ public:
 	int HEIGHT = 20;				//각 리스트의 높이 입니다.
 	bool is_check = false;			//체크 박스를 넣을지 말지 결정 합니다.
 	bool is_numbering = false;		//순서를 보여줄지 말지 결정 합니다.
-	int m_select = -1;				//선택된 리스트의 인덱스 입니다.
+	int m_select_beg = -1;				//선택된 리스트의 인덱스 입니다.
+	int m_select_end = -1;				//선택된 리스트의 인덱스 입니다.
 	float m_v_scroll_pos = 0.0F;		//(내부적사용)스크롤의 위치를 나타냅니다.(0.0~1.0)
 	float m_h_scroll_pos = 0.0F;
 public:///Utility Functions
@@ -286,7 +287,7 @@ public:///Message Function
 			int width = m_padding + m_num_padding + sz.cx;
 
 
-			if (page_idx == m_select) {
+			if (m_select_beg<=page_idx && page_idx<=m_select_end) {
 				CBrush* brush_old = pDC->SelectObject(&brush_highlight);
 				pDC->RoundRect(rect.left + m_checkbox_padding - h_minus,
 							   rect.top + page_y,
@@ -358,19 +359,27 @@ public:///Message Function
 			m_prev_scroll_pos = m_h_scroll_pos;
 			m_drag_point = point;
 		} else {
-			m_select = this->GetElementByPoint(point);
+			if ((GetKeyState(VK_SHIFT) & 0x8000) == 0x8000) {
+				m_select_end = this->GetElementByPoint(point);
+				if (m_select_end < m_select_beg) {
+					std::swap(m_select_beg, m_select_end);
+				}
+			} else {
+				m_select_beg=m_select_end = this->GetElementByPoint(point);
+			}
+			
 		}
 		return 1;
 	}
 	INT OnRButtonDown() override {
 		MControlObject::OnLButtonDown();
 		if (s_curr_id != m_id) return 0;
-		CPoint point = this->GetMousePoint();
+		/*CPoint point = this->GetMousePoint();
 		CRect rect;
 		m_parent->GetClientRect(&rect);
 		if (m_v_thumb_rect.PtInRect(point) == FALSE && m_h_thumb_rect.PtInRect(point) == FALSE) {
 			m_select = this->GetElementByPoint(point);
-		}
+		}*/
 		return 1;
 	}
 	INT OnLButtonUp()override {
@@ -429,32 +438,36 @@ public:///Message Function
 	INT OnKeyDown(UINT nChar) override {
 		if (isFocused() == false)return 0;
 		int page_idx = GetPageIndex();
+		bool single_select = m_select_beg == m_select_end;
 		switch (nChar) {
 			case VK_HOME:this->m_v_scroll_pos = 0.0F; break;
 			case VK_END:this->m_v_scroll_pos = 1.0F; break;
 			case VK_PRIOR:SetPageIndex(page_idx - GetViewHeight() / HEIGHT); break;
 			case VK_NEXT:SetPageIndex(page_idx + GetViewHeight() / HEIGHT); break;
-			case VK_UP:if (m_select >0) {
-				if (m_select < page_idx || m_select >= page_idx + (GetViewHeight() / HEIGHT)) {
-					m_select--;
-					SetPageIndex(m_select);
-
+			case VK_UP:if (single_select && m_select_beg >0) {
+				if (m_select_beg < page_idx || m_select_beg >= page_idx + (GetViewHeight() / HEIGHT)) {
+					m_select_beg--;
+					m_select_end--;
+					SetPageIndex(m_select_beg);
 				} else {
-					m_select--;
-					if (m_select < page_idx) {
+					m_select_beg--;
+					m_select_end--;
+					if (m_select_beg < page_idx) {
 						SetPageIndex(page_idx - 1);
 					}
 				}
 
 			}break;
-			case VK_DOWN:if (m_select != -1 && m_select<(int)m_data.size() - 1) {
-				if (m_select < page_idx || m_select >= page_idx + (GetViewHeight() / HEIGHT)) {
-					m_select++;
-					SetPageIndex(m_select);
+			case VK_DOWN:if (single_select && m_select_beg != -1 && m_select_beg<(int)m_data.size() - 1) {
+				if (m_select_beg < page_idx || m_select_beg >= page_idx + (GetViewHeight() / HEIGHT)) {
+					m_select_beg++;
+					m_select_end++;
+					SetPageIndex(m_select_beg);
 
 				} else {
-					m_select++;
-					if (m_select >= page_idx + (GetViewHeight() / HEIGHT)) {
+					m_select_beg++;
+					m_select_end++;
+					if (m_select_beg >= page_idx + (GetViewHeight() / HEIGHT)) {
 						SetPageIndex(page_idx + 1);
 					}
 				}
