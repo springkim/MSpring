@@ -35,7 +35,7 @@ namespace mspring {
 				CFont font;
 				font.CreatePointFont(M, font_str.data());
 				CFont* old_font = pdc->SelectObject(&font);
-				GetTextExtentPoint32(pdc->GetSafeHdc(), str.data(), str.length(), &sz);
+				GetTextExtentPoint32(pdc->GetSafeHdc(), str.data(), (int)str.length(), &sz);
 				pdc->SelectObject(old_font);
 				font.DeleteObject();
 				if (*lp == size) {

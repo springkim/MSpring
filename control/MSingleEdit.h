@@ -45,7 +45,7 @@ public:
 		pDC->SetBkMode(TRANSPARENT);
 		pDC->SetTextColor(*m_color_text);
 		CSize sz;
-		::GetTextExtentPoint32(pDC->GetSafeHdc(), m_text.data(), m_text.length(), &sz);
+		::GetTextExtentPoint32(pDC->GetSafeHdc(), m_text.data(), static_cast<int>(m_text.length()), &sz);
 
 		pDC->TextOut(rect.left, (rect.Height() - sz.cy) / 2 + rect.top, m_text.data());
 
@@ -99,7 +99,6 @@ public:
 	}
 	INT OnChar(UINT nChar) override {
 		if (s_curr_id != m_id) return 0;
-		std::cout << nChar << std::endl;
 		if (nChar == VK_BACK) {
 			if (pos > 0) {
 				m_text.erase(m_text.begin() + (pos - 1));

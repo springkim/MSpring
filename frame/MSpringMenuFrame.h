@@ -57,7 +57,7 @@ protected:
 		CFont* old_font = dc.SelectObject(&font);
 		TString str = ((MenuObject*)lpMeasureItemStruct->itemData)->m_strCaption;
 		CSize sz;
-		::GetTextExtentPoint32(dc.GetSafeHdc(), str.data(), str.length(), &sz);
+		::GetTextExtentPoint32(dc.GetSafeHdc(), str.data(), static_cast<int>(str.length()), &sz);
 		font.DeleteObject();
 		lpMeasureItemStruct->itemWidth = sz.cx + 10 < 100 ? 100 : sz.cx + 10;
 	}
@@ -89,7 +89,10 @@ protected:
 			pDC->SetBkMode(TRANSPARENT);
 			pDC->SetTextColor(MSpringMenu::m_color_text);
 			TString text = ((MenuObject*)lpDrawItemStruct->itemData)->m_strCaption;
-			pDC->TextOut(rect.left + 5, rect.top, text.data(),text.length());
+			pDC->TextOut(static_cast<int>(rect.left + 5)
+						 , static_cast<int>(rect.top)
+						 , text.data()
+						 , static_cast<int>(text.length()));
 		} else {
 			//구분선
 			CPen pen;
@@ -249,7 +252,7 @@ public:			//messageevent method
 			for (int i = 0; i < (int)m_menu.size(); i++) {
 				TString str = m_menu[i].first;
 				CSize sz;
-				::GetTextExtentPoint32(pDC->GetSafeHdc(), str.data(), str.length(), &sz);
+				::GetTextExtentPoint32(pDC->GetSafeHdc(), str.data(), static_cast<int>(str.length()), &sz);
 				m_menu_rect.push_back(CRect(posx, rect.top, posx + sz.cx + margin, rect.bottom));
 				if (i == m_menu_hover) {
 					CBrush brush;
@@ -258,7 +261,8 @@ public:			//messageevent method
 					brush.DeleteObject();
 				}
 				pDC->SetBkMode(TRANSPARENT);
-				pDC->TextOut(posx + margin / 2, margin, str.data(), str.length());
+				pDC->TextOut(static_cast<int>(posx + margin / 2)
+							 , margin, str.data(), static_cast<int>(str.length()));
 				posx += sz.cx + margin;
 				if (posx > rect.right) {
 					break;
@@ -270,7 +274,7 @@ public:			//messageevent method
 			for (int i = (int)m_menu.size() - 1; i >= 0; i--) {
 				TString str = m_menu[i].first;
 				CSize sz;
-				::GetTextExtentPoint32(pDC->GetSafeHdc(), str.data(), str.length(), &sz);
+				::GetTextExtentPoint32(pDC->GetSafeHdc(), str.data(), static_cast<int>(str.length()), &sz);
 				m_menu_rect.push_front(CRect(posx - sz.cx - margin, rect.top, posx, rect.bottom));
 				if (i == m_menu_hover) {
 					CBrush brush;
@@ -279,7 +283,8 @@ public:			//messageevent method
 					brush.DeleteObject();
 				}
 				pDC->SetBkMode(TRANSPARENT);
-				pDC->TextOut(posx - sz.cx - margin, margin, str.data(), str.length());
+				pDC->TextOut(static_cast<int>(posx - sz.cx - margin)
+							 , margin, str.data(), static_cast<int>(str.length()));
 				posx -= sz.cx + margin;
 				if (posx < rect.left) {
 					break;
@@ -293,6 +298,18 @@ public:			//messageevent method
 		return ret;
 	}
 	void OnSize(UINT nType, int cx, int cy)override {}
+	bool PtInRect()override {
+		CPoint apoint;
+		::GetCursorPos(&apoint);
+		bool ret = false;
+		for (int i = 0; i < (int)m_menu_rect.size(); i++) {
+			if (m_menu_rect[i].PtInRect(apoint) == TRUE) {
+				ret = true;
+				break;
+			}
+		}
+		return ret;
+	}
 	bool OnNcLButtonDown(UINT nHitTest, CPoint point) override {
 		CPoint apoint;
 		::GetCursorPos(&apoint);
