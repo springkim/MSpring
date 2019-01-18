@@ -35,8 +35,15 @@ public:
 		CPen pen;
 		pen.CreatePen(PS_SOLID, 1, *m_color_fr);
 		old_pen = pDC->SelectObject(&pen);
+		CDrawingManager dm(*pDC);
+		dm.DrawShadow(&CRect(rect.left - 5, rect.top +2, rect.right, rect.bottom +2 ), 3);
+		
 		pDC->MoveTo(rect.left, rect.bottom);
-		pDC->LineTo(rect.right, rect.bottom);
+		pDC->LineTo(rect.right-1, rect.bottom);
+		pDC->LineTo(rect.right-1, rect.top+5);
+
+		//pDC->LineTo(rect.left, rect.top);
+		//pDC->LineTo(rect.left, rect.bottom);
 		if (h < 2)return 0;
 		CFont font;
 		font.CreatePointFont(h, m_font_str.data());

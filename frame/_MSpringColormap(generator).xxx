@@ -1,0 +1,65 @@
+#include<opencv2/opencv.hpp>
+#include<Windows.h>
+int main() {
+	std::vector<int> colormap = {
+		cv::COLORMAP_AUTUMN
+	,cv::COLORMAP_BONE
+	,cv::COLORMAP_JET
+	,cv::COLORMAP_WINTER
+	,cv::COLORMAP_RAINBOW
+	,cv::COLORMAP_OCEAN
+	,cv::COLORMAP_SUMMER
+	,cv::COLORMAP_SPRING
+	,cv::COLORMAP_COOL
+	,cv::COLORMAP_HSV
+	,cv::COLORMAP_PINK
+	,cv::COLORMAP_HOT
+	,cv::COLORMAP_PARULA};
+	std::vector<std::string> colormap_name = {
+		"COLORMAP_AUTUMN"
+		,"COLORMAP_BONE"
+		,"COLORMAP_JET"
+		,"COLORMAP_WINTER"
+		,"COLORMAP_RAINBOW"
+		,"COLORMAP_OCEAN"
+		,"COLORMAP_SUMMER"
+		,"COLORMAP_SPRING"
+		,"COLORMAP_COOL"
+		,"COLORMAP_HSV"
+		,"COLORMAP_PINK"
+		,"COLORMAP_HOT"
+		,"COLORMAP_PARULA"
+	};
+	std::fstream fout("MSpringColormap.h", std::ios::out);
+	fout << "#pragma once" << std::endl;
+
+
+
+	for (int k = 0; k < colormap.size(); k++) {
+		int value = 0x00FFFFFF + 1 + k;
+		fout << "__declspec(selectany) DWORD MSP_" << colormap_name[k] <<" = " << value << ";";
+
+		fout << "__declspec(selectany) unsigned char g_" << colormap_name[k] << "[256*3] = {";
+
+
+		cv::Mat image = cv::Mat(1, 256, CV_8UC3);
+		for (int i = 0; i < 256; i++)
+			image.at<cv::Vec3b>(0, i) = cv::Vec3b(i, i, i);
+		cv::applyColorMap(image, image,colormap[k]);
+		for (int i = 0; i < 256; i++) {
+			for (int c = 0; c < 3; c++) {
+				std::ostringstream oss;
+				oss.width(2);
+				oss.fill('0');
+				oss << std::hex << static_cast<int>(image.at<cv::Vec3b>(0, i)[c]);
+				fout << "0x" << oss.str();
+				if (i != 255 || c != 2) {
+					fout << ",";
+				}
+			}
+		}
+		fout << "};" << std::endl;
+	}
+	fout.close();
+	return 0;
+}

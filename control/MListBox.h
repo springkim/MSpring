@@ -25,6 +25,7 @@ public:
 	bool is_check = false;			//체크 박스를 넣을지 말지 결정 합니다.
 	bool is_numbering = false;		//순서를 보여줄지 말지 결정 합니다.
 	bool allow_multi_select = false;
+	bool allow_h_hover = true;
 	int m_select_beg = -1;				//선택된 리스트의 인덱스 입니다.
 	int m_select_end = -1;				//선택된 리스트의 인덱스 입니다.
 	float m_v_scroll_pos = 0.0F;		//(내부적사용)스크롤의 위치를 나타냅니다.(0.0~1.0)
@@ -188,7 +189,7 @@ protected:
 
 			CRect area = rect;
 			area.top = thumb_rect.top;
-			area.right = rect.right - m_scrollbar_weight;
+			area.right = rect.right - m_scrollbar_weight-1;
 			pDC->FillRect(&area, &brush_bk);
 			pDC->RoundRect(&thumb_rect, CPoint(5, 5));
 			m_h_thumb_rect = thumb_rect;
@@ -205,22 +206,30 @@ protected:
 		CPen pen_null;
 		pen_null.CreatePen(PS_NULL, 0, RGB(0, 0, 0));
 		pen_check.CreatePen(PS_SOLID, HEIGHT / 10, *m_color_text);
-		if (check == true) {
-			brush_check.CreateSolidBrush(*m_color_fr);
-		} else {
-			brush_check.CreateSolidBrush(this->GetDarkColor(this->GetDarkColor(*m_color_bk)));
-		}
+		brush_check.CreateSolidBrush(*m_color_fr);
+		
 		CBrush* old_brush = pDC->SelectObject(&brush_check);
 		CPen* old_pen = pDC->SelectObject(&pen_null);
 		CRect rect = CRect(x, y, x + HEIGHT, y + HEIGHT);
 		pDC->RoundRect(&rect, CPoint(5, 5));
+		if (check == false) {
+			pDC->SelectObject(old_brush);
+			brush_check.DeleteObject();
+			brush_check.CreateSolidBrush(*m_color_bk);
+			old_brush=pDC->SelectObject(&brush_check);
+			pDC->RoundRect(&CRect(rect.left+1,rect.top+1,rect.right-1,rect.bottom-1), CPoint(5, 5));
+		}
+
+
 		pDC->SelectObject(old_pen);
 		old_pen = pDC->SelectObject(&pen_check);
 
 		int divw = HEIGHT / 5;
-		pDC->MoveTo(rect.left + divw, static_cast<int>(rect.top + divw*2.5));
-		pDC->LineTo(static_cast<int>(rect.left + divw*1.5), rect.top + divw * 4);
-		pDC->LineTo(rect.right - divw, rect.top + divw * 1);
+		if (check == true) {
+			pDC->MoveTo(rect.left + divw, static_cast<int>(rect.top + divw*2.5));
+			pDC->LineTo(static_cast<int>(rect.left + divw*1.5), rect.top + divw * 4);
+			pDC->LineTo(rect.right - divw, rect.top + divw * 1);
+		}
 		pDC->SelectObject(old_pen);
 		pDC->SelectObject(old_brush);
 
@@ -241,10 +250,17 @@ public:///Message Function
 		CRect rect = this->m_rect.GetRect(GetViewRect());
 
 		CRgn rgn; rgn.CreateRectRgnIndirect(&rect);
-		pDC->SelectClipRgn(&rgn);
+		
 
 		CBrush brush_bk; brush_bk.CreateSolidBrush(*m_color_bk);
+		CPen pen_null; pen_null.CreatePen(PS_NULL, 0, (COLORREF)0);
+		CPen* pen_old = pDC->SelectObject(&pen_null);
+		CDrawingManager dm(*pDC);
+		dm.DrawShadow(&CRect(rect.left - 1, rect.top-1 , rect.right - 1, rect.bottom-1), 5);
+		//dm.DrawShadow(&CRect(rect.left - 1, rect.top , rect.right - 1, rect.bottom ), 5,100,50,0,0, (COLORREF)-1,FALSE);
 		pDC->FillRect(&rect, &brush_bk);
+
+		pDC->SelectClipRgn(&rgn);
 
 		int h = mspring::Font::GetRealFontHeight(m_font_str, HEIGHT, pDC);
 		CFont font; font.CreatePointFont(h, m_font_str.data());
@@ -264,8 +280,7 @@ public:///Message Function
 			page_y = -div.rem;
 			page_idx = div.quot;
 		}
-		CPen pen_null; pen_null.CreatePen(PS_NULL, 0, RGB(0, 0, 0));
-		CPen* pen_old = pDC->SelectObject(&pen_null);
+		
 		pDC->SetTextColor(*m_color_text);
 
 		CBrush brush_highlight; brush_highlight.CreateSolidBrush(*m_color_fr);
@@ -308,9 +323,21 @@ public:///Message Function
 			area.top += page_y;
 			area.bottom = area.top + HEIGHT;
 			area.right = rect.left + m_padding + m_checkbox_padding + m_num_padding;
-			if (m_h_scroll_pos > 0.0F) {
-				COLORREF dark = this->GetDarkColor(*m_color_bk);
-				CBrush brush_bk_dark; brush_bk_dark.CreateSolidBrush(dark);
+			if (m_h_scroll_pos > 0.0F && allow_h_hover) {
+				int R = GetRValue(*m_color_bk);
+				int G = GetGValue(*m_color_bk);
+				int B = GetBValue(*m_color_bk);
+				float pos = m_h_scroll_pos / 2.0F;
+				if ((R + G + B) / 3 < 127) {
+					R += (120 - mspring::Min(R, 120))*pos;
+					G += (120 - mspring::Min(G, 120))*pos;
+					B += (120 - mspring::Min(B, 120))*pos;
+				} else {
+					R -= (mspring::Min(R, 100)-100)*pos;
+					G -= (mspring::Min(G, 100) - 100)*pos;
+					B -= (mspring::Min(B, 100) - 100)*pos;
+				}
+				CBrush brush_bk_dark; brush_bk_dark.CreateSolidBrush(RGB(R,G,B));
 				pDC->FillRect(&area, &brush_bk_dark);
 				brush_bk_dark.DeleteObject();
 			} else {

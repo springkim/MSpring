@@ -2,8 +2,8 @@
 *  DoubleBufferingDC.hpp
 *  MSpring
 *
-*  Created by kimbom on 2017. 9. 12...
-*  Copyright 2017 kimbom. All rights reserved.
+*  Created by kimbomm on 2017. 9. 12...
+*  Copyright 2017 kimbomm. All rights reserved.
 *
 */
 #if _MSC_VER > 1000

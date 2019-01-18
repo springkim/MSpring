@@ -24,6 +24,7 @@
 #include"String.h"
 #include"Operator.h"
 #include"Safe.h"
+#include"Capture.h"
 #define MSPRING_VERSION 0.0.5
 
 #endif  //MSPRING_7E1_9_C_MSPRING_HPP_INCLUDED

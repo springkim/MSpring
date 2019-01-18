@@ -36,7 +36,11 @@ public:
 		}
 		CPen* old_pen = pDC->SelectObject(&null_pen);
 		CBrush* old_brush = pDC->SelectObject(&brush);
-		pDC->RoundRect(&rect, CPoint(5, 5));
+		
+		CDrawingManager dm(*pDC);
+		dm.DrawShadow(&CRect(rect.left , rect.top+1, rect.right - 3, rect.bottom-2), 5);
+		pDC->RoundRect(&rect, CPoint(5,5));
+		
 		int h = mspring::Font::GetRealFontHeight(m_font_str, rect.Height() - 6, pDC, m_text, true);
 		int h2 = mspring::Font::GetRealFontHeight(m_font_str, rect.Width() - 6, pDC, m_text, false);
 		h = mspring::Min(h, h2);

@@ -22,8 +22,7 @@ public:
 protected:
 	virtual BOOL PreCreateWindow(CREATESTRUCT& cs) {
 		if (!CWnd::PreCreateWindow(cs))
-			return FALSE;
-
+			return FALSE; 
 		cs.dwExStyle |= WS_EX_CLIENTEDGE;
 		cs.style &= ~WS_BORDER;
 		cs.lpszClass = AfxRegisterWndClass(CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS,
@@ -32,6 +31,7 @@ protected:
 	}
 	virtual void OnUpdate(CView* view, LPARAM lParam, CObject* co) {
 		this->ModifyStyleEx(WS_EX_CLIENTEDGE, 0, SWP_FRAMECHANGED);
+		
 	}
 	COLORREF m_color_bk = RGB(255, 255, 255);
 public:
@@ -44,10 +44,28 @@ protected:
 		CRect rect;
 		this->GetClientRect(&rect);
 		mspring::DoubleBufferingDC dbb(&dc, rect);
+
 		CBrush bk_brush;
 		bk_brush.CreateSolidBrush(m_color_bk);
 		dbb.getDC().FillRect(rect, &bk_brush);
 		bk_brush.DeleteObject();
+
+		//auto DrawBitmap = [](CDC* pdc,CRect rect)->void {
+		//	CDC memdc;
+		//	BITMAP bmpinfo;
+		//	memdc.CreateCompatibleDC(pdc);
+		//	CBitmap bmp, *oldbmp;
+		//	HANDLE hbitmap = ::LoadImage(0, TEXT("blur.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+		//	//bmp.LoadBitmapW(TEXT("blur.bmp"));
+		//	bmp.Attach((HBITMAP)hbitmap);
+		//	bmp.GetBitmap(&bmpinfo);
+		//	oldbmp = memdc.SelectObject(&bmp);
+		//	pdc->SetStretchBltMode(HALFTONE);
+		//	pdc->StretchBlt(0, 0, rect.Width(),rect.Height(), &memdc, 0, 0, bmpinfo.bmWidth, bmpinfo.bmHeight, SRCCOPY);
+		//	memdc.SelectObject(oldbmp);
+		//};
+		//DrawBitmap(dbb.getPDC(),rect);
+
 		SAFETY_CALL(m_view, OnPaint, dbb.getPDC());
 		dbb.Draw();
 	}
@@ -79,10 +97,13 @@ public:
 		ReleaseDC(&ncpaint);
 	}
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct) {
+		
 		if (CWnd::OnCreate(lpCreateStruct) == -1) {
 			return -1;
 		}
+		
 		SAFETY_CALL(m_view, OnCreate);
+		
 		return 0;
 	}
 	afx_msg void OnSetFocus(CWnd* pOldWnd) {

@@ -232,17 +232,16 @@ public:			//constructor,destructor
 public:			//messageevent method
 	void OnCreate(LPCREATESTRUCT lpCreateStruct)override{ }
 	int OnNcPaint(CDC* pDC, CRect rect)override {
-		const int margin = 7;
+		const int margin = 3;
 		rect.top += margin;
 		rect.bottom -= margin;
 		CBrush brush;
 		brush.CreateSolidBrush(m_color_bk);
 		pDC->FillRect(rect, &brush);
-		int h = mspring::Font::GetRealFontHeight(m_font_str, rect.Height(), pDC);
-		CFont font;
-		font.CreatePointFont(h, m_font_str.data());
-		CFont* old_font = pDC->SelectObject(&font);
+		int h = mspring::Font::GetRealFontHeight(m_font_str, rect.Height(), pDC, TEXT("A"), true, mspring::Font::PointFontType);
+		h = h * 60 / 100;
 		pDC->SetBkColor(m_color_bk);
+		pDC->SetBkMode(TRANSPARENT);
 		pDC->SetTextColor(m_color_text);
 		m_menu_rect.clear();
 		int posx = 0;
@@ -251,6 +250,7 @@ public:			//messageevent method
 			posx = rect.left;
 			for (int i = 0; i < (int)m_menu.size(); i++) {
 				TString str = m_menu[i].first;
+#if 0
 				CSize sz;
 				::GetTextExtentPoint32(pDC->GetSafeHdc(), str.data(), static_cast<int>(str.length()), &sz);
 				m_menu_rect.push_back(CRect(posx, rect.top, posx + sz.cx + margin, rect.bottom));
@@ -264,6 +264,46 @@ public:			//messageevent method
 				pDC->TextOut(static_cast<int>(posx + margin / 2)
 							 , margin, str.data(), static_cast<int>(str.length()));
 				posx += sz.cx + margin;
+#else
+				DWORD option_shadow = 0;
+				DWORD option_depth = 0;
+				switch (g_theme_story) {
+					case MSpringThemeStory::Fluent: {
+						option_shadow = KEY_LIGHT_B | AMBIENT_LIGHT4;
+						option_depth = 2;
+					}break;
+					case MSpringThemeStory::Material: {
+						option_shadow = KEY_LIGHT_R | KEY_LIGHT_B;
+						option_depth = 1;
+					}break;
+					case MSpringThemeStory::Flat: {
+						option_shadow = 0;
+						option_depth = 0;
+					}break;
+				}
+				
+				
+				CRect sz = mspring::Text::TextOutMSP(pDC,
+															  static_cast<int>(posx + margin / 2), 
+															  (rect.bottom + rect.top) / 2, str.data(), 
+															  static_cast<int>(str.length()),
+														  m_font_str.data(), h, option_shadow, this->m_color_bk, true, option_depth);
+				m_menu_rect.push_back(sz);
+				if (i == m_menu_hover) {
+					CBrush brush;
+					brush.CreateSolidBrush(m_color_hover);
+					pDC->FillRect(m_menu_rect.back(), &brush);
+					brush.DeleteObject();
+					option_shadow = false;
+				}
+				mspring::Text::TextOutMSP(pDC,
+										  static_cast<int>(posx + margin / 2),
+										  (rect.bottom + rect.top) / 2, str.data(),
+										  static_cast<int>(str.length()),
+										  m_font_str.data(), h, option_shadow, this->m_color_bk, false, option_depth);
+
+				posx += sz.Width() + margin*2;
+#endif
 				if (posx > rect.right) {
 					break;
 				}
@@ -292,9 +332,9 @@ public:			//messageevent method
 			}
 			ret = -(rect.right - posx);
 		}
-		pDC->SelectObject(old_font);
+		
 		brush.DeleteObject();
-		font.DeleteObject();
+
 		return ret;
 	}
 	void OnSize(UINT nType, int cx, int cy)override {}

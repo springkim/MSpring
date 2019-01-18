@@ -44,14 +44,17 @@ public:
 				CRect ellipse_right = rect;
 				ellipse_right.left = ellipse_right.right - rect.Height();
 				pDC->Ellipse(ellipse_left);
-				if (ellipse_left.Width() <= rect.Width()) {
-					pDC->Ellipse(ellipse_right);
-				}
+				
 				CRect rect_inside = rect;
 				rect_inside.left += rect.Height() / 2;
 				rect_inside.right -= rect.Height() / 2;
 				if (ellipse_left.Width() <= rect.Width()) {
+					CDrawingManager dm(*pDC);
+					dm.DrawShadow(&CRect(rect_inside.left - 5, rect_inside.top + 2, rect_inside.right, rect_inside.bottom), 3);
 					pDC->Rectangle(rect_inside);
+				}
+				if (ellipse_left.Width() <= rect.Width()) {
+					pDC->Ellipse(ellipse_right);
 				}
 				pDC->SelectObject(old_pen);
 				pDC->SelectObject(old_brush);

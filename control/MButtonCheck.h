@@ -42,10 +42,12 @@ public:
 		}
 		CPen* old_pen = pDC->SelectObject(&null_pen);
 		CBrush* old_brush = pDC->SelectObject(&brush);
+		CDrawingManager dm(*pDC);
+		dm.DrawShadow(&CRect(rect.left, rect.top + 1, rect.right - 3, rect.bottom - 2), 5);
 		pDC->RoundRect(&rect, CPoint(5, 5));
 		if (check == true && disable == false) {
 			CPen pen;
-			pen.CreatePen(PS_SOLID, 3, *m_color_text);
+			pen.CreatePen(PS_ALTERNATE, 3, *m_color_text);
 			pDC->SelectObject(&pen);
 			int divw = rect.Height() / 5;
 			pDC->MoveTo(rect.left + divw, static_cast<int>(rect.top + divw*2.5));
