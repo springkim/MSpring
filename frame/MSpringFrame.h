@@ -32,6 +32,8 @@
 #define RESOURCE_MAXIMIZE -2
 #define RESOURCE_MINIMIZE -3
 
+__declspec(selectany) bool g_sizing = false;
+__declspec(selectany) bool g_maximizing = false;
 inline unsigned char* GetColorMap(DWORD mspcmap) {
 	switch (mspcmap) {
 		case 16777216:return g_COLORMAP_AUTUMN;
@@ -81,7 +83,7 @@ inline void SetWindowBlur(HWND hWnd,COLORREF color,bool disable=false) {
 				policy.nAccentState = AccentState::ACCENT_ENABLE_ACRYLICBLURBEHIND;
 			}
 			policy.nFlags = 0x20 | 0x40 | 0x80 | 0x100;
-			policy.nColor = (color) | (0xAF << 24);
+			policy.nColor = (color) | (0x9F << 24);
 			WINCOMPATTRDATA data = { 19, &policy, sizeof(ACCENTPOLICY) }; // WCA_ACCENT_POLICY=19
 			SetWindowCompositionAttribute(hWnd, &data);
 		}
@@ -237,16 +239,40 @@ public:		//static method
 			wnd->GetWindowRect(&rect);
 			HMONITOR hMOnitor = MonitorFromRect(&rect, MONITOR_DEFAULTTONEAREST);
 			GetMonitorInfoA(hMOnitor, &monitor);
-			g_maximized_time = clock();			
-			wnd->MoveWindow(&monitor.rcWork,FALSE);
+			g_maximized_time = clock();
+			int C = 5;
+			g_maximizing = true;
+			for (int i = C; i >=0; i--) {
+				CRect srect;
+				srect.left = monitor.rcWork.left + (rect.left - monitor.rcWork.left)*i / C;
+				srect.top = monitor.rcWork.top + (rect.top - monitor.rcWork.top)*i / C;
+				srect.right = monitor.rcWork.right + (rect.right - monitor.rcWork.right)*i / C;
+				srect.bottom = monitor.rcWork.bottom + (rect.bottom - monitor.rcWork.bottom)*i / C;
+				//::SetWindowPos(wnd->GetSafeHwnd(), NULL, srect.left, srect.top, srect.right - srect.left, srect.bottom - srect.top, 0);
+				wnd->MoveWindow(&srect, FALSE);
+			}
+			g_maximizing = false;
+			//wnd->MoveWindow(&monitor.rcWork,FALSE);
 		} else {
+			CRect rect;
+			wnd->GetWindowRect(&rect);
 #ifdef _M_AMD64
 			CRect* rect_window = (CRect*)::GetWindowLongPtr(pmainframe->GetSafeHwnd(), GWLP_USERDATA);
 #else
 			CRect* rect_window = (CRect*)::GetWindowLongA(pmainframe->GetSafeHwnd(), GWL_USERDATA);
 #endif
-			pmainframe->MoveWindow(*rect_window);
+			int C = 5;
+			for (int i = C; i >= 0; i--) {
+				CRect srect;
+				srect.left = rect_window->left + (rect.left - rect_window->left)*i / C;
+				srect.top = rect_window->top + (rect.top - rect_window->top)*i / C;
+				srect.right = rect_window->right + (rect.right - rect_window->right)*i / C;
+				srect.bottom = rect_window->bottom + (rect.bottom - rect_window->bottom)*i / C;
+				wnd->MoveWindow(&srect, FALSE);
+			}
+			//pmainframe->MoveWindow(*rect_window);
 		}
+
 		pmainframe->m_is_maximize = !pmainframe->m_is_maximize;
 		pmainframe->ReplaceSystemButtonState(SystemButton::State::Hover, SystemButton::State::Normal);
 		pmainframe->ReplaceSystemButtonState(SystemButton::State::Click, SystemButton::State::Normal);
@@ -405,7 +431,9 @@ public:	//messageevent method
 		return 0;
 	}
 	afx_msg void OnNcPaint() {
-		
+		if (g_sizing == true && !(GetAsyncKeyState(VK_LBUTTON) & 0x8000)) {
+			g_sizing = false;
+		}
 		WINDOWPLACEMENT place;
 		place.length = (UINT)sizeof(WINDOWPLACEMENT);
 		if (GetWindowPlacement(&place) && place.showCmd==SW_SHOWMINIMIZED) {
@@ -454,6 +482,7 @@ public:	//messageevent method
 		}
 		//여기까지가 프레임 그리기.
 		if ((m_color_border&MSP_COLOR_MAP) == MSP_COLOR_MAP) {
+			if (g_sizing == false && g_maximizing==false) {
 				auto GradientLine = [&Normalize](mspring::DoubleBufferingDC* dbb, DWORD color_border, CPoint point_beg, CPoint point_end)->void {
 					int inc = 1;
 					int beg = 0;
@@ -560,7 +589,7 @@ public:	//messageevent method
 				GradientLine(dbb_bottom, line_first
 							 , CPoint(Normalize(rect_window_bottom).left + 1, Normalize(rect_window_left).bottom)
 							 , CPoint(Normalize(rect_window_bottom).left + 1, Normalize(rect_window_left).top));
-			
+			}
 		}else{
 			CPen pen, *old_pen;
 			int thickness = 1;
@@ -715,7 +744,7 @@ public:	//messageevent method
 				option_depth = 4;
 			}break;
 			case MSpringThemeStory::Material: {
-				option_shadow = KEY_LIGHT_R | KEY_LIGHT_B;
+				option_shadow = KEY_LIGHT_B;
 				option_depth = 1;
 			}break;
 			case MSpringThemeStory::Flat: {
@@ -762,12 +791,14 @@ public:	//messageevent method
 			e = nullptr;
 		}
 		ReleaseDC(ncpaint);
+
 	}
 	afx_msg BOOL OnNcActivate(BOOL bActive) {
 		REDRAW_NCAREA;
 		return TRUE;
 	}
 	afx_msg void OnSize(UINT nType, int cx, int cy) {
+		g_sizing = true;
 		CFrameWnd::OnSize(nType, cx, cy);
 		CRect rect_window;
 		this->GetWindowRect(&rect_window);
@@ -937,7 +968,7 @@ public:	//messageevent method
 		REDRAW_NCAREA;
 	}
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC) {
-		return FALSE;
+		return TRUE;
 	}
 	afx_msg void OnShowWindow(BOOL bShow, UINT nStatus) {
 		CFrameWnd::OnShowWindow(bShow, nStatus);
@@ -947,6 +978,13 @@ public:	//messageevent method
 			e->OnDestroy();
 		}
 		CFrameWnd::OnDestroy();
+	}
+	afx_msg void OnGetMinMaxInfo(MINMAXINFO* lpMMI) {
+		lpMMI->ptMinTrackSize.x = 640;
+		lpMMI->ptMinTrackSize.y = 320;
+		lpMMI->ptMaxTrackSize.x = 3840;
+		lpMMI->ptMaxTrackSize.y = 2160;
+		CFrameWnd::OnGetMinMaxInfo(lpMMI);
 	}
 };
 
@@ -967,6 +1005,7 @@ MSPRING_BEGIN_MESSAGE_MAP(MSpringFrame, CFrameWnd)
 	ON_WM_ERASEBKGND()
 	ON_WM_DESTROY()
 	ON_WM_SHOWWINDOW()
+	ON_WM_GETMINMAXINFO()
 MSPRING_END_MESSAGE_MAP()
 
 

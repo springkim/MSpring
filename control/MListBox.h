@@ -155,10 +155,10 @@ protected:
 		int thumb_height = GetVThumbHeight();
 		thumb_height = mspring::Max(thumb_height, 20);
 		CPen pen; pen.CreatePen(PS_NULL, 1, RGB(0, 0, 0));
-		CBrush brush; brush.CreateSolidBrush(*m_color_fr);
+		CBrush brush; brush.CreateSolidBrush(m_color_fr);
 		CPen* old_pen = pDC->SelectObject(&pen);
 		CBrush* old_brush = pDC->SelectObject(&brush);
-		CBrush brush_bk; brush_bk.CreateSolidBrush(*m_color_bk);
+		CBrush brush_bk; brush_bk.CreateSolidBrush(m_color_bk);
 		if (page_height > view_height) {
 			CRect thumb_rect = rect;
 			thumb_rect.top += static_cast<decltype(thumb_rect.top)>((view_height - thumb_height)*m_v_scroll_pos);
@@ -205,18 +205,23 @@ protected:
 		CBrush brush_check;
 		CPen pen_null;
 		pen_null.CreatePen(PS_NULL, 0, RGB(0, 0, 0));
-		pen_check.CreatePen(PS_SOLID, HEIGHT / 10, *m_color_text);
-		brush_check.CreateSolidBrush(*m_color_fr);
+		pen_check.CreatePen(PS_SOLID, HEIGHT / 10, m_color_other);
+		brush_check.CreateSolidBrush(m_color_fr);
 		
 		CBrush* old_brush = pDC->SelectObject(&brush_check);
 		CPen* old_pen = pDC->SelectObject(&pen_null);
 		CRect rect = CRect(x, y, x + HEIGHT, y + HEIGHT);
+		if (m_shadow) {
+			CDrawingManager dm(*pDC);
+			dm.DrawShadow(&CRect(rect.left - 1, rect.top - 1, rect.right - 1, rect.bottom - 1), 3);
+		}
 		pDC->RoundRect(&rect, CPoint(5, 5));
 		if (check == false) {
 			pDC->SelectObject(old_brush);
 			brush_check.DeleteObject();
-			brush_check.CreateSolidBrush(*m_color_bk);
+			brush_check.CreateSolidBrush(m_color_bk);
 			old_brush=pDC->SelectObject(&brush_check);
+			
 			pDC->RoundRect(&CRect(rect.left+1,rect.top+1,rect.right-1,rect.bottom-1), CPoint(5, 5));
 		}
 
@@ -252,11 +257,13 @@ public:///Message Function
 		CRgn rgn; rgn.CreateRectRgnIndirect(&rect);
 		
 
-		CBrush brush_bk; brush_bk.CreateSolidBrush(*m_color_bk);
+		CBrush brush_bk; brush_bk.CreateSolidBrush(m_color_bk);
 		CPen pen_null; pen_null.CreatePen(PS_NULL, 0, (COLORREF)0);
 		CPen* pen_old = pDC->SelectObject(&pen_null);
-		CDrawingManager dm(*pDC);
-		dm.DrawShadow(&CRect(rect.left - 1, rect.top-1 , rect.right - 1, rect.bottom-1), 5);
+		if (m_shadow) {
+			CDrawingManager dm(*pDC);
+			dm.DrawShadow(&CRect(rect.left - 1, rect.top - 1, rect.right - 1, rect.bottom - 1), 5);
+		}
 		//dm.DrawShadow(&CRect(rect.left - 1, rect.top , rect.right - 1, rect.bottom ), 5,100,50,0,0, (COLORREF)-1,FALSE);
 		pDC->FillRect(&rect, &brush_bk);
 
@@ -281,9 +288,9 @@ public:///Message Function
 			page_idx = div.quot;
 		}
 		
-		pDC->SetTextColor(*m_color_text);
+		pDC->SetTextColor(m_color_text);
 
-		CBrush brush_highlight; brush_highlight.CreateSolidBrush(*m_color_fr);
+		CBrush brush_highlight; brush_highlight.CreateSolidBrush(m_color_fr);
 		CSize sz; GetTextExtentPoint32(pDC->GetSafeHdc(), TEXT("A"), 1, &sz);
 
 
@@ -324,9 +331,9 @@ public:///Message Function
 			area.bottom = area.top + HEIGHT;
 			area.right = rect.left + m_padding + m_checkbox_padding + m_num_padding;
 			if (m_h_scroll_pos > 0.0F && allow_h_hover) {
-				int R = GetRValue(*m_color_bk);
-				int G = GetGValue(*m_color_bk);
-				int B = GetBValue(*m_color_bk);
+				int R = GetRValue(m_color_bk);
+				int G = GetGValue(m_color_bk);
+				int B = GetBValue(m_color_bk);
 				float pos = m_h_scroll_pos / 2.0F;
 				if ((R + G + B) / 3 < 127) {
 					R += (120 - mspring::Min(R, 120))*pos;

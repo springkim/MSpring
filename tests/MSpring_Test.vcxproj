@@ -211,6 +211,9 @@
     <ClInclude Include="..\utils\Safe.h" />
     <ClInclude Include="..\utils\String.h" />
     <ClInclude Include="..\utils\utils.h" />
+    <ClInclude Include="..\view\MSpringView.h" />
+    <ClInclude Include="..\view\view.h" />
+    <ClInclude Include="..\view\VirtualView.h" />
     <ClInclude Include="ControlTestView.h" />
     <ClInclude Include="ImageTestView.h" />
     <ClInclude Include="MainFrm.h" />

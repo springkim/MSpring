@@ -274,7 +274,7 @@ public:			//messageevent method
 					}break;
 					case MSpringThemeStory::Material: {
 						option_shadow = KEY_LIGHT_R | KEY_LIGHT_B;
-						option_depth = 1;
+						option_depth = 0;
 					}break;
 					case MSpringThemeStory::Flat: {
 						option_shadow = 0;

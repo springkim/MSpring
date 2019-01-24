@@ -132,6 +132,15 @@
     <ClInclude Include="..\control\MStatic.h">
       <Filter>MSpring\control</Filter>
     </ClInclude>
+    <ClInclude Include="..\view\MSpringView.h">
+      <Filter>MSpring\view</Filter>
+    </ClInclude>
+    <ClInclude Include="..\view\view.h">
+      <Filter>MSpring\view</Filter>
+    </ClInclude>
+    <ClInclude Include="..\view\VirtualView.h">
+      <Filter>MSpring\view</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MSpring_Test.cpp">

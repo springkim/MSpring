@@ -33,7 +33,7 @@ public:
 		h = mspring::Min(h, h2);
 
 		CPen pen;
-		pen.CreatePen(PS_SOLID, 1, *m_color_fr);
+		pen.CreatePen(PS_SOLID, 1, m_color_fr);
 		old_pen = pDC->SelectObject(&pen);
 		CDrawingManager dm(*pDC);
 		dm.DrawShadow(&CRect(rect.left - 5, rect.top +2, rect.right, rect.bottom +2 ), 3);
@@ -50,7 +50,7 @@ public:
 		CFont* old_font = pDC->SelectObject(&font);
 
 		pDC->SetBkMode(TRANSPARENT);
-		pDC->SetTextColor(*m_color_text);
+		pDC->SetTextColor(m_color_text);
 		CSize sz;
 		::GetTextExtentPoint32(pDC->GetSafeHdc(), m_text.data(), static_cast<int>(m_text.length()), &sz);
 
@@ -60,7 +60,7 @@ public:
 
 		if (m_id == s_curr_id && caret == true) {
 			CPen pen;
-			pen.CreatePen(PS_SOLID, 2, *m_color_fr);
+			pen.CreatePen(PS_SOLID, 2, m_color_fr);
 			pDC->SelectObject(&pen);
 			::GetTextExtentPoint32(pDC->GetSafeHdc(), m_text.data(), pos, &sz);
 			int x = rect.left + sz.cx;

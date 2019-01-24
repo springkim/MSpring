@@ -15,6 +15,7 @@
 #include<afxwin.h>
 
 using TString = std::basic_string<TCHAR>;
+
 #ifdef _UNICODE
 using OStringStream = std::wostringstream;
 using IStringStream = std::wistringstream;

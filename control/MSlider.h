@@ -61,10 +61,10 @@ public:
 				pen_null.DeleteObject();
 				brush.DeleteObject();
 			};
-			DrawHSlider(pDC, rect, *m_color_bk);
+			DrawHSlider(pDC, rect, m_color_bk);
 			CRect rect_activate = rect;
 			rect_activate.right = static_cast<LONG>(rect.left + rect.Height() + (m_pos*(rect.Width() - rect.Height())));
-			DrawHSlider(pDC, rect_activate, *m_color_fr);
+			DrawHSlider(pDC, rect_activate, m_color_fr);
 
 			int base = rect.left + rect.Height() / 2;
 			int width = rect.Width() - rect.Height();
@@ -74,7 +74,7 @@ public:
 			m_thumb.top = rect.top;
 			m_thumb.bottom = rect.bottom;
 			CBrush brush;
-			brush.CreateSolidBrush(*m_color_other);
+			brush.CreateSolidBrush(m_color_other);
 			CPen pen_null;
 			pen_null.CreatePen(PS_NULL, 0, RGB(0, 0, 0));
 			CPen* old_pen = pDC->SelectObject(&pen_null);

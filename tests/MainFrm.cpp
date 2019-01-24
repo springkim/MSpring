@@ -64,19 +64,17 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	this->AddSysBtn(RESOURCE_MAXIMIZE, MSpringFrame::ButtonEvent_MaximizeWindow);
 	this->AddSysBtn(RESOURCE_MINIMIZE, MSpringFrame::ButtonEvent_MinimizeWindow);
 	this->SetIcon(IDR_MAINFRAME);
-	this->SetStyle(GetTheme().g_font[0], GetTheme().g_color_bk[0], GetTheme().g_color_text[0], GetTheme().g_color_border[0]);
-	this->SetTitle(GetTheme().g_string_title[GetTheme().g_idx]);
-	this->SetTitleColor(GetTheme().g_color_title[GetTheme().g_idx]);
-	this->SetAcrylicThemeAsBackgroundColor();
+	
+	
 	m_menu_frame = CreateFrame<MSpringMenuFrame>(this);
 	
-	m_menu_frame->SetStyle(GetTheme().g_font[0], GetTheme().g_color_bk[0], GetTheme().g_color_text[0], GetTheme().g_color_hover[0], GetTheme().g_color_bk[0]);
+	
 	m_menu_frame->SetMenu(IDR_MAINFRAME);
 	m_menu_frame->SetPosition(0);
 	this->AddExpansionClass(m_menu_frame);
 
 	m_tab_frame = CreateFrame<MSpringTabFrame>(this);
-	m_tab_frame->SetStyle(GetTheme().g_font[0], GetTheme().g_color_hover[0], GetTheme().g_color_deactivate[0], GetTheme().g_color_bk[0], GetTheme().g_color_text[0], RGB(0, 0, 0));
+	
 	m_tab_frame->SetPosition(0);
 	m_tab_frame->SetActivateBorder(GetTheme().g_color_hover[0]);
 	
@@ -86,22 +84,35 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	this->AddExpansionClass(m_tab_frame);
 
 
-	m_wndView.SetStyle(GetTheme().g_color_bk[0]);
+	
 	static ControlTestView ctl_test_view(&m_wndView);
 	static ImageTestView img_test_view(&m_wndView);
 	m_ctl_test_view = &ctl_test_view;
 	m_img_test_view =&img_test_view;
 	m_wndView.m_view = m_ctl_test_view;
+	SetTheme();
+	this->SetAcrylicThemeAsBackgroundColor();
 	return 0;
 }
-
+void CMainFrame::SetTheme() {
+	int i = GetTheme().g_idx;
+	this->SetStyle(GetTheme().g_font[i], GetTheme().g_color_bk[i], GetTheme().g_color_text[i], GetTheme().g_color_border[i]);
+	
+	this->SetTitle(GetTheme().g_string_title[i]);
+	this->SetTitleColor(GetTheme().g_color_title[i]);
+	m_menu_frame->SetStyle(GetTheme().g_font[i], GetTheme().g_color_bk[i], GetTheme().g_color_text[i], GetTheme().g_color_hover[i], GetTheme().g_color_bk[i]);
+	m_tab_frame->SetStyle(GetTheme().g_font[i], GetTheme().g_color_hover[i], GetTheme().g_color_deactivate[i], GetTheme().g_color_bk[i], GetTheme().g_color_text[i], RGB(0,0,0));
+	m_tab_frame->SetActivateBorder(GetTheme().g_color_hover[i]);
+	m_wndView.SetStyle(GetTheme().g_color_bk[i]);
+}
 BOOL CMainFrame::PreCreateWindow(CREATESTRUCT& cs)
 {
 	if( !MSpringFrame::PreCreateWindow(cs) )
 		return FALSE;
 	cs.style = WS_OVERLAPPED | WS_CAPTION | FWS_ADDTOTITLE
 		 | WS_THICKFRAME;
-
+	cs.cx = 960;
+	cs.cy = 640;
 	cs.dwExStyle &= ~WS_EX_CLIENTEDGE;
 	cs.lpszClass = AfxRegisterWndClass(0);
 	return TRUE;
@@ -148,12 +159,9 @@ void CMainFrame::OnNcLButtonDown(UINT nHitTest, CPoint point) {
 	MSpringFrame::OnNcLButtonDown(nHitTest, point);
 	int idx = m_tab_frame->GetCurrentTab();
 	GetTheme().g_idx = idx;
-	this->SetStyle(GetTheme().g_font[idx], GetTheme().g_color_bk[idx], GetTheme().g_color_text[idx], GetTheme().g_color_border[idx]);
-	m_menu_frame->SetStyle(GetTheme().g_font[idx], GetTheme().g_color_bk[idx], GetTheme().g_color_text[idx], GetTheme().g_color_hover[idx], GetTheme().g_color_bk[idx]);
-	m_tab_frame->SetStyle(GetTheme().g_font[idx], GetTheme().g_color_hover[idx], GetTheme().g_color_deactivate[idx], GetTheme().g_color_bk[idx], GetTheme().g_color_text[idx], RGB(idx, idx, idx));
-
-	m_wndView.SetStyle(GetTheme().g_color_bk[idx]);
-
+	SetTheme();
+	m_ctl_test_view->SetTheme();
+	
 	if (idx == 0) {
 		m_wndView.m_view = this->m_ctl_test_view;
 		this->SetAcrylicThemeAsBackgroundColor();
@@ -161,7 +169,7 @@ void CMainFrame::OnNcLButtonDown(UINT nHitTest, CPoint point) {
 		m_wndView.m_view = this->m_ctl_test_view;
 		this->SetMaterialTheme();
 	} else {
-		m_wndView.m_view = this->m_img_test_view;
+		m_wndView.m_view = this->m_ctl_test_view;
 		this->SetFlatTheme();
 	}
 	

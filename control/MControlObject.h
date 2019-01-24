@@ -124,19 +124,14 @@ public:
 	MControlState m_state;		//컨트롤의 상태를 나타냅니다. 
 	MRect m_rect;				//컨트롤의 위치를 나타냅니다.
 public:	///색상 및 글꼴
-	std::atomic<COLORREF>* m_color_bk;		//배경색을 지정합니다.
-	std::atomic<COLORREF>* m_color_fr;		//전경색을 지정합니다.
-	std::atomic<COLORREF>* m_color_text;	//글자색을 지정합니다.
-	std::atomic<COLORREF>* m_color_other;	//기타색을 지정합니다.
-	std::atomic<COLORREF>* m_color_view;	//부모 뷰의 색을 지정합니다.
-	TString m_font_str;		//글꼴을 나타냅니다.
-protected:
-	static std::atomic<COLORREF> s_color_bk;
-	static std::atomic<COLORREF> s_color_fr;
-	static std::atomic<COLORREF> s_color_text;
-	static std::atomic<COLORREF> s_color_other;
-	static std::atomic<COLORREF> s_color_view;
-	static TCHAR s_font_str[256];
+	COLORREF m_color_bk= RGB(199, 199, 199);		//배경색을 지정합니다.
+	COLORREF m_color_fr= RGB(38, 139, 210);		//전경색을 지정합니다.
+	COLORREF m_color_text= RGB(0, 0, 0);	//글자색을 지정합니다.
+	COLORREF m_color_other= RGB(147, 161, 161);	//기타색을 지정합니다.
+	COLORREF m_color_view= RGB(255, 255, 254);	//부모 뷰의 색을 지정합니다.
+	TString m_font_str= TEXT("Arial");		//글꼴을 나타냅니다.
+	bool m_hide = false;
+	bool m_shadow = false;
 public:
 	static int s_id;				//객체의 아이디를 관리 합니다.	
 	static int s_curr_id;			//현재 Focused 된 아이디 입니다.	
@@ -155,11 +150,6 @@ public:
 	MControlObject(CWnd* parent, MRect rect) {
 		m_parent = parent;
 		m_rect = rect;
-		m_color_bk = &s_color_bk;
-		m_color_fr = &s_color_fr;
-		m_color_text = &s_color_text;
-		m_color_other = &s_color_other;
-		m_font_str = s_font_str;
 		m_state = MControlState::NORMAL;
 		m_id = s_id;
 		s_id++;
@@ -261,12 +251,6 @@ public:
 		return 1;
 	}
 };
-__declspec(selectany) std::atomic<COLORREF> MControlObject::s_color_bk = RGB(199,199,199);
-__declspec(selectany) std::atomic<COLORREF> MControlObject::s_color_fr = RGB(38,139,210);
-__declspec(selectany) std::atomic<COLORREF> MControlObject::s_color_text = RGB(0,0,0);
-__declspec(selectany) std::atomic<COLORREF> MControlObject::s_color_other = RGB(147,161,161);
-__declspec(selectany) std::atomic<COLORREF> MControlObject::s_color_view = RGB(255, 255, 255);
-__declspec(selectany) TCHAR MControlObject::s_font_str[256] = TEXT("Arial");
 __declspec(selectany) int MControlObject::s_id = 0;
 __declspec(selectany) int MControlObject::s_curr_id = -1;
 #endif  //MSPRING_7E2_4_7_MCONTROLOBJECT_HPP_INCLUDED

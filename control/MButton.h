@@ -28,17 +28,19 @@ public:
 		CPen null_pen; null_pen.CreatePen(PS_NULL, 0, RGB(0, 0, 0));
 		CBrush brush;
 		if (this->m_state == MControlState::CLICK) {
-			brush.CreateSolidBrush(GetDarkColor(*this->m_color_fr));
+			brush.CreateSolidBrush(GetDarkColor(this->m_color_fr));
 		} else if (this->m_state == MControlState::NORMAL) {
-			brush.CreateSolidBrush(*this->m_color_fr);
+			brush.CreateSolidBrush(this->m_color_fr);
 		} else if (this->m_state == MControlState::HOVER) {
-			brush.CreateSolidBrush(GetBrightColor(*this->m_color_fr));
+			brush.CreateSolidBrush(GetBrightColor(this->m_color_fr));
 		}
 		CPen* old_pen = pDC->SelectObject(&null_pen);
 		CBrush* old_brush = pDC->SelectObject(&brush);
 		
-		CDrawingManager dm(*pDC);
-		dm.DrawShadow(&CRect(rect.left , rect.top+1, rect.right - 3, rect.bottom-2), 5);
+		if (m_shadow) {
+			CDrawingManager dm(*pDC);
+			dm.DrawShadow(&CRect(rect.left, rect.top + 1, rect.right - 3, rect.bottom - 2), 5);
+		}
 		pDC->RoundRect(&rect, CPoint(5,5));
 		
 		int h = mspring::Font::GetRealFontHeight(m_font_str, rect.Height() - 6, pDC, m_text, true);
@@ -48,7 +50,7 @@ public:
 		font.CreatePointFont(h, m_font_str.data());
 		CFont* old_font = pDC->SelectObject(&font);
 		pDC->SetBkMode(TRANSPARENT);
-		pDC->SetTextColor(*m_color_text);
+		pDC->SetTextColor(m_color_text);
 		CSize sz;
 		::GetTextExtentPoint32(pDC->GetSafeHdc(), m_text.data(), static_cast<int>(m_text.length()), &sz);
 		pDC->TextOut((rect.Width() - sz.cx) / 2 + rect.left, (rect.Height() - sz.cy) / 2 + rect.top, m_text.data());

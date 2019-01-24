@@ -36,7 +36,7 @@ public:
 		CFont* old_font = pDC->SelectObject(&font);
 
 		pDC->SetBkMode(TRANSPARENT);
-		pDC->SetTextColor(*m_color_text);
+		pDC->SetTextColor(m_color_text);
 		CSize sz;
 		::GetTextExtentPoint32(pDC->GetSafeHdc(), m_text.data(), static_cast<int>(m_text.length()), &sz);
 
@@ -44,13 +44,13 @@ public:
 		DWORD option_depth = 0;
 
 		if (align == MSTATIC_ALIGN_MIDDLE) {
-			mspring::Text::TextOutMSP(pDC, (rect.Width() - sz.cx) / 2 + rect.left, (rect.Height() - sz.cy) / 2 + rect.top, m_text.data(), m_text.length(), m_font_str.data(), h, option_shadow, *m_color_bk, false, option_depth);
+			mspring::Text::TextOutMSP(pDC, (rect.Width() - sz.cx) / 2 + rect.left, (rect.Height() - sz.cy) / 2 + rect.top, m_text.data(), m_text.length(), m_font_str.data(), h, option_shadow, m_color_bk, false, option_depth);
 			//pDC->TextOut((rect.Width() - sz.cx) / 2 + rect.left, (rect.Height() - sz.cy) / 2 + rect.top, m_text.data());
 		} else if (align == MSTATIC_ALIGN_LEFT) {
-			mspring::Text::TextOutMSP(pDC, rect.left, (rect.Height() - sz.cy) / 2 + rect.top, m_text.data(), m_text.length(), m_font_str.data(), h, option_shadow, *m_color_bk, false, option_depth);
+			mspring::Text::TextOutMSP(pDC, rect.left, (rect.Height() - sz.cy) / 2 + rect.top, m_text.data(), m_text.length(), m_font_str.data(), h, option_shadow, m_color_bk, false, option_depth);
 			//pDC->TextOut(rect.left, (rect.Height() - sz.cy) / 2 + rect.top, m_text.data());
 		} else if (align == MSTATIC_ALIGN_RIGHT) {
-			mspring::Text::TextOutMSP(pDC, rect.right - sz.cx, (rect.Height() - sz.cy) / 2 + rect.top, m_text.data(), m_text.length(), m_font_str.data(), h, option_shadow, *m_color_bk, false, option_depth);
+			mspring::Text::TextOutMSP(pDC, rect.right - sz.cx, (rect.Height() - sz.cy) / 2 + rect.top, m_text.data(), m_text.length(), m_font_str.data(), h, option_shadow, m_color_bk, false, option_depth);
 			//pDC->TextOut(rect.right - sz.cx, (rect.Height() - sz.cy) / 2 + rect.top, m_text.data());
 		}
 		pDC->SelectObject(old_font);

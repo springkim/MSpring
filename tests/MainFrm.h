@@ -40,6 +40,7 @@ public:
 	MSpringView    m_wndView;
 	ControlTestView* m_ctl_test_view;
 	ImageTestView* m_img_test_view;
+	void SetTheme();
 // 생성된 메시지 맵 함수
 protected:
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);

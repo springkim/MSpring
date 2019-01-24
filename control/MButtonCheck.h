@@ -32,22 +32,24 @@ public:
 		CPen null_pen; null_pen.CreatePen(PS_NULL, 0, RGB(0, 0, 0));
 		CBrush brush;
 		if (disable == true) {
-			brush.CreateSolidBrush(*this->m_color_other);
+			brush.CreateSolidBrush(this->m_color_other);
 		} else if (this->m_state == MControlState::CLICK) {
-			brush.CreateSolidBrush(GetDarkColor(*this->m_color_fr));
+			brush.CreateSolidBrush(GetDarkColor(this->m_color_fr));
 		} else if (this->m_state == MControlState::NORMAL) {
-			brush.CreateSolidBrush(*this->m_color_fr);
+			brush.CreateSolidBrush(this->m_color_fr);
 		} else if (this->m_state == MControlState::HOVER) {
-			brush.CreateSolidBrush(GetBrightColor(*this->m_color_fr));
+			brush.CreateSolidBrush(GetBrightColor(this->m_color_fr));
 		}
 		CPen* old_pen = pDC->SelectObject(&null_pen);
 		CBrush* old_brush = pDC->SelectObject(&brush);
-		CDrawingManager dm(*pDC);
-		dm.DrawShadow(&CRect(rect.left, rect.top + 1, rect.right - 3, rect.bottom - 2), 5);
+		if (m_shadow) {
+			CDrawingManager dm(*pDC);
+			dm.DrawShadow(&CRect(rect.left, rect.top + 1, rect.right - 3, rect.bottom - 2), 5);
+		}
 		pDC->RoundRect(&rect, CPoint(5, 5));
 		if (check == true && disable == false) {
 			CPen pen;
-			pen.CreatePen(PS_ALTERNATE, 3, *m_color_text);
+			pen.CreatePen(PS_ALTERNATE, 3, m_color_text);
 			pDC->SelectObject(&pen);
 			int divw = rect.Height() / 5;
 			pDC->MoveTo(rect.left + divw, static_cast<int>(rect.top + divw*2.5));
