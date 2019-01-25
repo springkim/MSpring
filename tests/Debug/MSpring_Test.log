@@ -1,0 +1,19 @@
+﻿  MSpring_Test.cpp
+c:\users\virnect\documents\git\mspring\utils\drawhelper.h(60): warning C4018: '>=': signed 또는 unsigned가 일치하지 않습니다.
+c:\users\virnect\documents\git\mspring\control\mlistbox.h(339): warning C4244: '+=': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+c:\users\virnect\documents\git\mspring\control\mlistbox.h(340): warning C4244: '+=': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+c:\users\virnect\documents\git\mspring\control\mlistbox.h(341): warning C4244: '+=': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+c:\users\virnect\documents\git\mspring\control\mlistbox.h(343): warning C4244: '-=': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+c:\users\virnect\documents\git\mspring\control\mlistbox.h(344): warning C4244: '-=': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+c:\users\virnect\documents\git\mspring\control\mlistbox.h(345): warning C4244: '-=': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+  MainFrm.cpp
+c:\users\virnect\documents\git\mspring\utils\drawhelper.h(60): warning C4018: '>=': signed 또는 unsigned가 일치하지 않습니다.
+c:\users\virnect\documents\git\mspring\control\mlistbox.h(339): warning C4244: '+=': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+c:\users\virnect\documents\git\mspring\control\mlistbox.h(340): warning C4244: '+=': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+c:\users\virnect\documents\git\mspring\control\mlistbox.h(341): warning C4244: '+=': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+c:\users\virnect\documents\git\mspring\control\mlistbox.h(343): warning C4244: '-=': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+c:\users\virnect\documents\git\mspring\control\mlistbox.h(344): warning C4244: '-=': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+c:\users\virnect\documents\git\mspring\control\mlistbox.h(345): warning C4244: '-=': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+  코드를 생성하고 있습니다...
+  MSpring_Test.vcxproj -> C:\Users\VIRNECT\Documents\git\MSpring\tests\Debug\MSpring_Test.exe
+  MSpring_Test.vcxproj -> C:\Users\VIRNECT\Documents\git\MSpring\tests\Debug\MSpring_Test.pdb (Partial PDB)
