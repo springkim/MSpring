@@ -87,35 +87,35 @@ public:
 	}
 
 	virtual void OnPaint(CDC* pDC){
-		for_each(m_objs.begin(), m_objs.end(), [pDC](std::shared_ptr<MControlObject> obj)->void {obj->OnPaint(pDC); });
+		for_each(m_objs.begin(), m_objs.end(), [pDC](std::shared_ptr<MControlObject> obj)->void {if (obj->m_hide == false)obj->OnPaint(pDC); });
 	}
 	virtual void OnSetFocus(CWnd* pOldWnd){}
 	virtual void OnKillFocus(CWnd* pNewWnd){}
 	
 	virtual void OnLButtonDown(UINT nFlags, CPoint point){
-		for_each(m_objs.begin(), m_objs.end(), [](std::shared_ptr<MControlObject> obj)->void {obj->OnLButtonDown(); });
+		for_each(m_objs.begin(), m_objs.end(), [](std::shared_ptr<MControlObject> obj)->void {if (obj->m_hide == false)obj->OnLButtonDown(); });
 	}
 	virtual void OnLButtonUp(UINT nFlags, CPoint point){
-		for_each(m_objs.begin(), m_objs.end(), [](std::shared_ptr<MControlObject> obj)->void {obj->OnLButtonUp(); });
+		for_each(m_objs.begin(), m_objs.end(), [](std::shared_ptr<MControlObject> obj)->void {if (obj->m_hide == false)obj->OnLButtonUp(); });
 	}
 	virtual void OnLButtonDblClk(UINT nFlags, CPoint point){
-		for_each(m_objs.begin(), m_objs.end(), [](std::shared_ptr<MControlObject> obj)->void {obj->OnLButtonDblClk(); });
+		for_each(m_objs.begin(), m_objs.end(), [](std::shared_ptr<MControlObject> obj)->void {if (obj->m_hide == false)obj->OnLButtonDblClk(); });
 	}
 	virtual void OnRButtonDown(UINT nFlags, CPoint point) {
-		for_each(m_objs.begin(), m_objs.end(), [](std::shared_ptr<MControlObject> obj)->void {obj->OnRButtonDown(); });
+		for_each(m_objs.begin(), m_objs.end(), [](std::shared_ptr<MControlObject> obj)->void {if (obj->m_hide == false)obj->OnRButtonDown(); });
 	}
 	virtual void OnRButtonUp(UINT nFlags, CPoint point){
-		for_each(m_objs.begin(), m_objs.end(), [](std::shared_ptr<MControlObject> obj)->void {obj->OnRButtonUp(); });
+		for_each(m_objs.begin(), m_objs.end(), [](std::shared_ptr<MControlObject> obj)->void {if (obj->m_hide == false)obj->OnRButtonUp(); });
 	}
 	virtual BOOL OnMouseWheel(UINT nFlags, short zDelta, CPoint pt){
-		for_each(m_objs.begin(), m_objs.end(), [zDelta](std::shared_ptr<MControlObject> obj)->void {obj->OnMouseWheel(zDelta); });
+		for_each(m_objs.begin(), m_objs.end(), [zDelta](std::shared_ptr<MControlObject> obj)->void {if (obj->m_hide == false)obj->OnMouseWheel(zDelta); });
 		return TRUE;
 	}
 	virtual void OnMouseMove(UINT nFlags, CPoint point){
-		for_each(m_objs.begin(), m_objs.end(), [](std::shared_ptr<MControlObject> obj)->void {obj->OnMouseMove(); });
+		for_each(m_objs.begin(), m_objs.end(), [](std::shared_ptr<MControlObject> obj)->void {if (obj->m_hide == false)obj->OnMouseMove(); });
 	}
 	virtual void OnMouseLeave(){
-		for_each(m_objs.begin(), m_objs.end(), [](std::shared_ptr<MControlObject> obj)->void {obj->OnMouseLeave(); });
+		for_each(m_objs.begin(), m_objs.end(), [](std::shared_ptr<MControlObject> obj)->void {if (obj->m_hide == false)obj->OnMouseLeave(); });
 	}
 
 	virtual BOOL OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message){
@@ -124,20 +124,20 @@ public:
 	virtual void OnSize(UINT nType, int cx, int cy){}
 	
 	virtual void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags){
-		for_each(m_objs.begin(), m_objs.end(), [nChar](std::shared_ptr<MControlObject> obj)->void {obj->OnKeyDown(nChar); });
+		for_each(m_objs.begin(), m_objs.end(), [nChar](std::shared_ptr<MControlObject> obj)->void {if (obj->m_hide == false)obj->OnKeyDown(nChar); });
 	}
 	virtual void OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags) {
-		for_each(m_objs.begin(), m_objs.end(), [nChar](std::shared_ptr<MControlObject> obj)->void {obj->OnKeyUp(nChar); });
+		for_each(m_objs.begin(), m_objs.end(), [nChar](std::shared_ptr<MControlObject> obj)->void {if (obj->m_hide == false)obj->OnKeyUp(nChar); });
 	}
 	virtual void OnTimer(UINT_PTR nIDEvent){
-		for_each(m_objs.begin(), m_objs.end(), [nIDEvent](std::shared_ptr<MControlObject> obj)->void {obj->OnTimer(nIDEvent); });
+		for_each(m_objs.begin(), m_objs.end(), [nIDEvent](std::shared_ptr<MControlObject> obj)->void {if (obj->m_hide == false)obj->OnTimer(nIDEvent); });
 	}
 	virtual void OnChar(UINT nChar, UINT nRepCnt, UINT nFlags) {
-		for_each(m_objs.begin(), m_objs.end(), [nChar](std::shared_ptr<MControlObject> obj)->void {obj->OnChar(nChar); });
+		for_each(m_objs.begin(), m_objs.end(), [nChar](std::shared_ptr<MControlObject> obj)->void {if (obj->m_hide == false)obj->OnChar(nChar); });
 	}
 	//virtual void OnContextMenu(CWnd* pWnd, CPoint point);
 	virtual LRESULT OnComposition(WPARAM wParam, LPARAM lParam) {
-		for_each(m_objs.begin(), m_objs.end(), [wParam, lParam](std::shared_ptr<MControlObject> obj)->void {obj->OnComposition(wParam, lParam); });
+		for_each(m_objs.begin(), m_objs.end(), [wParam, lParam](std::shared_ptr<MControlObject> obj)->void {if (obj->m_hide == false)obj->OnComposition(wParam, lParam); });
 		return 1;
 	}
 };

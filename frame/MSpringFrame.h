@@ -31,9 +31,8 @@
 #define RESOURCE_CLOSE -1
 #define RESOURCE_MAXIMIZE -2
 #define RESOURCE_MINIMIZE -3
-
+#define MAXIMIZE_ANIMATION 0
 __declspec(selectany) bool g_sizing = false;
-__declspec(selectany) bool g_maximizing = false;
 inline unsigned char* GetColorMap(DWORD mspcmap) {
 	switch (mspcmap) {
 		case 16777216:return g_COLORMAP_AUTUMN;
@@ -240,19 +239,8 @@ public:		//static method
 			HMONITOR hMOnitor = MonitorFromRect(&rect, MONITOR_DEFAULTTONEAREST);
 			GetMonitorInfoA(hMOnitor, &monitor);
 			g_maximized_time = clock();
-			int C = 5;
-			g_maximizing = true;
-			for (int i = C; i >=0; i--) {
-				CRect srect;
-				srect.left = monitor.rcWork.left + (rect.left - monitor.rcWork.left)*i / C;
-				srect.top = monitor.rcWork.top + (rect.top - monitor.rcWork.top)*i / C;
-				srect.right = monitor.rcWork.right + (rect.right - monitor.rcWork.right)*i / C;
-				srect.bottom = monitor.rcWork.bottom + (rect.bottom - monitor.rcWork.bottom)*i / C;
-				//::SetWindowPos(wnd->GetSafeHwnd(), NULL, srect.left, srect.top, srect.right - srect.left, srect.bottom - srect.top, 0);
-				wnd->MoveWindow(&srect, FALSE);
-			}
-			g_maximizing = false;
-			//wnd->MoveWindow(&monitor.rcWork,FALSE);
+			wnd->MoveWindow(&monitor.rcWork,FALSE);
+			g_sizing = false;
 		} else {
 			CRect rect;
 			wnd->GetWindowRect(&rect);
@@ -261,16 +249,8 @@ public:		//static method
 #else
 			CRect* rect_window = (CRect*)::GetWindowLongA(pmainframe->GetSafeHwnd(), GWL_USERDATA);
 #endif
-			int C = 5;
-			for (int i = C; i >= 0; i--) {
-				CRect srect;
-				srect.left = rect_window->left + (rect.left - rect_window->left)*i / C;
-				srect.top = rect_window->top + (rect.top - rect_window->top)*i / C;
-				srect.right = rect_window->right + (rect.right - rect_window->right)*i / C;
-				srect.bottom = rect_window->bottom + (rect.bottom - rect_window->bottom)*i / C;
-				wnd->MoveWindow(&srect, FALSE);
-			}
-			//pmainframe->MoveWindow(*rect_window);
+			pmainframe->MoveWindow(*rect_window);
+			g_sizing = false;
 		}
 
 		pmainframe->m_is_maximize = !pmainframe->m_is_maximize;
@@ -439,6 +419,7 @@ public:	//messageevent method
 		if (GetWindowPlacement(&place) && place.showCmd==SW_SHOWMINIMIZED) {
 			return;
 		}
+		
 		auto Normalize = [](CRect r)->CRect {
 			r.OffsetRect(-r.left, -r.top);
 			r.NormalizeRect();
@@ -482,7 +463,7 @@ public:	//messageevent method
 		}
 		//여기까지가 프레임 그리기.
 		if ((m_color_border&MSP_COLOR_MAP) == MSP_COLOR_MAP) {
-			if (g_sizing == false && g_maximizing==false) {
+			if (g_sizing == false) {
 				auto GradientLine = [&Normalize](mspring::DoubleBufferingDC* dbb, DWORD color_border, CPoint point_beg, CPoint point_end)->void {
 					int inc = 1;
 					int beg = 0;
@@ -888,13 +869,14 @@ public:	//messageevent method
 		for (auto&e : m_expansion) {
 			ret|=e->OnNcLButtonDown(nHitTest, point);
 		}
-		REDRAW_NCAREA;
+		
 		m_other_task = false;
 		if (ret == false) {
 			CFrameWnd::OnNcLButtonDown(nHitTest, apoint);
 		} else {
 			m_other_task = true;
 		}
+		REDRAW_NCAREA;
 	}
 	afx_msg void OnNcLButtonUp(UINT nHitTest, CPoint point) {
 		CPoint apoint = point;
@@ -915,6 +897,7 @@ public:	//messageevent method
 			}
 		}
 		REDRAW_NCAREA;
+		
 		CFrameWnd::OnNcLButtonUp(nHitTest, apoint);
 	}
 	afx_msg LRESULT OnNcHitTest(CPoint point) {

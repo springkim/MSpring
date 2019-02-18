@@ -172,7 +172,8 @@ void CMainFrame::OnNcLButtonDown(UINT nHitTest, CPoint point) {
 		m_wndView.m_view = this->m_ctl_test_view;
 		this->SetFlatTheme();
 	}
-	
+
+	MSpringFrame::OnNcPaint();
 	m_wndView.Invalidate();
 	this->Invalidate();
 }
