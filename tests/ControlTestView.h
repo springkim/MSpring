@@ -58,14 +58,13 @@ public:
 		m_slider->m_vertical = false;
 		this->AddControl(m_slider);
 
-		m_static = CreateControl<MStatic>(wnd, MRect(MRectPosition::LB, 20, 20, 400, 30));
-		this->AddControl(m_static);
+		
 
 		m_edit = CreateControl<MSingleEdit>(wnd, MRect(MRectPosition::LB, 20, 70, 200, 30));
 		this->AddControl(m_edit);
 
-
-		m_static->m_text = TEXT("Test Application 그리고 한글....");*/
+		*/
+		
 		
 		m_list = CreateControl<MListBox>(wnd, MRect(MRectPosition::DYNAMIC, 50, 100, 150, 200));
 		m_list->is_check = true;
@@ -84,9 +83,12 @@ public:
 		}
 		this->AddControl(m_list);
 
-		m_check = CreateControl<MButtonCheck>(wnd, MRect(MRectPosition::LT, 20, 20, 25, 25));
+		m_check = CreateControl<MButtonCheck>(wnd, MRect(MRectPosition::LT, 200, 20, 25, 25));
 		this->AddControl(m_check);
 
+		m_static = CreateControl<MStatic>(wnd, MRect(MRectPosition::LT, 0, 0, 400, 30));
+		this->AddControl(m_static);
+		m_static->m_text = TEXT("ABC한글");
 		SetTheme();
 	}
 	virtual ~ControlTestView() {

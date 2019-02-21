@@ -64,8 +64,8 @@ namespace mspring {
 			
 			CFont* font_old = pdc->SelectObject(&font);
 			CSize size;
-			GetTextExtentPoint32(pdc->GetSafeHdc(), lpString, _tcslen(lpString), &size);
-			y -= size.cy / 2;
+			GetTextExtentPoint32(pdc->GetSafeHdc(), lpString, static_cast<int>(_tcslen(lpString)), &size);
+			//y -= size.cy / 2;
 			if (measure == false) {
 				if (option_shadow&AMBIENT_LIGHT4) {
 					pdc->SetTextColor(color_shadows[0]);
@@ -86,6 +86,7 @@ namespace mspring {
 					if (option_shadow& KEY_LIGHT_L)
 						pdc->DrawText(lpString, &CRect(x - i, y + 0, x + size.cx - i, y + size.cy + 0), DT_SINGLELINE | DT_VCENTER | DT_LEFT | DT_NOPREFIX);
 				}
+				//pdc->Rectangle(CRect(x, y, x + size.cx, y + size.cy));
 				pdc->SetTextColor(color_text);
 				pdc->DrawText(lpString, &CRect(x, y, x + size.cx, y + size.cy), DT_SINGLELINE | DT_VCENTER | DT_LEFT | DT_NOPREFIX);
 			}

@@ -288,6 +288,9 @@ public:			//messageevent method
 															  (rect.bottom + rect.top) / 2, str.data(), 
 															  static_cast<int>(str.length()),
 														  m_font_str.data(), h, option_shadow, this->m_color_bk, true, option_depth);
+				int height_temp = sz.Height() / 2;
+				sz.top -= height_temp;
+				sz.bottom -= height_temp;
 				m_menu_rect.push_back(sz);
 				if (i == m_menu_hover) {
 					CBrush brush;
@@ -298,7 +301,7 @@ public:			//messageevent method
 				}
 				mspring::Text::TextOutMSP(pDC,
 										  static_cast<int>(posx + margin / 2),
-										  (rect.bottom + rect.top) / 2, str.data(),
+										  (rect.bottom + rect.top) / 2-sz.Height()/2, str.data(),
 										  static_cast<int>(str.length()),
 										  m_font_str.data(), h, option_shadow, this->m_color_bk, false, option_depth);
 

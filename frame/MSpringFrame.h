@@ -722,7 +722,7 @@ public:	//messageevent method
 		switch (g_theme_story) {
 			case MSpringThemeStory::Fluent: {
 				option_shadow = KEY_LIGHT_B | AMBIENT_LIGHT4;
-				option_depth = 4;
+				option_depth = 3;
 			}break;
 			case MSpringThemeStory::Material: {
 				option_shadow = KEY_LIGHT_B;
@@ -734,11 +734,16 @@ public:	//messageevent method
 			}break;
 		}
 		title_sz = mspring::Text::TextOutMSP(dbb_top->getPDC(),
-												  static_cast<int>(m_icon.m_rect.right + 9),
-												  static_cast<int>((rect_window_top.top + rect_window_top.bottom) / 2),
+												 0,0,
 												  m_title.data(),
 												  static_cast<int>(m_title.length()),
-												  m_font_str.data(), h,option_shadow, this->m_color_bk, false,option_depth);
+												  m_font_str.data(), h,option_shadow, this->m_color_bk, true,option_depth);
+		mspring::Text::TextOutMSP(dbb_top->getPDC(),
+								  static_cast<int>(m_icon.m_rect.right + 9),
+								  static_cast<int>(((rect_window_top.top + rect_window_top.bottom) / 2)-title_sz.Height()/2),
+								  m_title.data(),
+								  static_cast<int>(m_title.length()),
+								  m_font_str.data(), h, option_shadow, this->m_color_bk, false, option_depth);
 		//아이콘 오른쪽 부터 (Icon margin + Title margin)
 		int begin_point = m_icon.m_rect.right + 10 + title_sz.Width() + 10;
 		//시스템 버튼의 왼쪽 까지

@@ -336,13 +336,13 @@ public:///Message Function
 				int B = GetBValue(m_color_bk);
 				float pos = m_h_scroll_pos / 2.0F;
 				if ((R + G + B) / 3 < 127) {
-					R += (120 - mspring::Min(R, 120))*pos;
-					G += (120 - mspring::Min(G, 120))*pos;
-					B += (120 - mspring::Min(B, 120))*pos;
+					R += static_cast<int>((120 - mspring::Min(R, 120))*pos);
+					G += static_cast<int>((120 - mspring::Min(G, 120))*pos);
+					B += static_cast<int>((120 - mspring::Min(B, 120))*pos);
 				} else {
-					R -= (mspring::Min(R, 100)-100)*pos;
-					G -= (mspring::Min(G, 100) - 100)*pos;
-					B -= (mspring::Min(B, 100) - 100)*pos;
+					R -= static_cast<int>((mspring::Min(R, 100)-100)*pos);
+					G -= static_cast<int>((mspring::Min(G, 100) - 100)*pos);
+					B -= static_cast<int>((mspring::Min(B, 100) - 100)*pos);
 				}
 				CBrush brush_bk_dark; brush_bk_dark.CreateSolidBrush(RGB(R,G,B));
 				pDC->FillRect(&area, &brush_bk_dark);
