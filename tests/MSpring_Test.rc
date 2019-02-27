@@ -89,6 +89,10 @@ BEGIN
         MENUITEM "잘라내기(&T)\tCtrl+X",            ID_EDIT_CUT
         MENUITEM "복사(&C)\tCtrl+C",              ID_EDIT_COPY
         MENUITEM "붙여넣기(&P)\tCtrl+V",            ID_EDIT_PASTE
+        MENUITEM SEPARATOR
+        MENUITEM "CheckTest",                   ID_32771, CHECKED
+        MENUITEM "CheckTest2",                  ID_32772
+        MENUITEM "CheckTest3",                  ID_32773
     END
     POPUP "Help(&H)"
     BEGIN

@@ -61,6 +61,24 @@ protected:
 		font.DeleteObject();
 		lpMeasureItemStruct->itemWidth = sz.cx + 10 < 100 ? 100 : sz.cx + 10;
 	}
+	static std::map<UINT, bool*> m_check_menu;
+public:
+	static void ApplyCheckedOption(UINT id, bool init = false,bool toggle=false) {
+		auto it = MSpringMenu::m_check_menu.find(id);
+		if (it == MSpringMenu::m_check_menu.end()) {
+			bool* pbool = new bool;
+			*pbool = init;
+			MSpringMenu::m_check_menu.insert(std::make_pair(id, pbool));
+		} else {
+			if (toggle) *(it->second) = !*(it->second);
+			else *(it->second) = init;
+		}
+	}
+	static bool* GetCheckedOption(UINT id) {
+		auto it = MSpringMenu::m_check_menu.find(id);
+		return it == MSpringMenu::m_check_menu.end() ? nullptr : it->second;
+	}
+protected:
 	void DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)override {
 		//CMenu::DrawItem(lpDrawItemStruct);
 		CRect rect(lpDrawItemStruct->rcItem);
@@ -78,9 +96,8 @@ protected:
 				//Hover 상태
 				color_bk = MSpringMenu::m_color_hover;
 			}
-			if (lpDrawItemStruct->itemState & ODS_CHECKED) {
-				pDC->Rectangle(rect.left, rect.top, rect.Height(), rect.Height());
-			}
+			
+			//if (lpDrawItemStruct->itemState & ODS_CHECKED) //Not working...
 			CFont font;
 			int h = mspring::Font::GetRealFontHeight(m_font_string, MENU_HEIGHT, pDC);
 			font.CreatePointFont(h, m_font_string);
@@ -89,10 +106,27 @@ protected:
 			pDC->SetBkMode(TRANSPARENT);
 			pDC->SetTextColor(MSpringMenu::m_color_text);
 			TString text = ((MenuObject*)lpDrawItemStruct->itemData)->m_strCaption;
-			pDC->TextOut(static_cast<int>(rect.left + 5)
+			int height = rect.Height();
+			pDC->TextOut(static_cast<int>(rect.left + height+5)
 						 , static_cast<int>(rect.top)
 						 , text.data()
 						 , static_cast<int>(text.length()));
+			auto checked_menu = m_check_menu.find(lpDrawItemStruct->itemID);
+			if (checked_menu != m_check_menu.end()) {
+				CRect mrect(rect.left+1, rect.top+1, rect.left + height-1, rect.bottom-1);
+				CPen pen(PS_SOLID, 1, MSpringMenu::m_color_text);
+				CPen* old_pen=pDC->SelectObject(&pen);
+				pDC->MoveTo(CPoint(mrect.right-mrect.Width()*0.4, mrect.top));
+				pDC->LineTo(CPoint(mrect.left, mrect.top));
+				pDC->LineTo(CPoint(mrect.left, mrect.bottom-1));
+				pDC->LineTo(CPoint(mrect.right, mrect.bottom-1));
+				pDC->LineTo(CPoint(mrect.right, mrect.top + mrect.Height() *0.4));
+				if (*checked_menu->second == true) {
+					CRect irect(mrect.left + 3, mrect.top + 3, mrect.right - 2, mrect.bottom - 3);
+					::FillRect(pDC->GetSafeHdc(), &irect, CreateSolidBrush(MSpringMenu::m_color_text));
+				}
+				pDC->SelectObject(old_pen);
+			}
 		} else {
 			//구분선
 			CPen pen;
@@ -163,7 +197,7 @@ __declspec(selectany) COLORREF MSpringMenu::m_color_bk = RGB(255, 255, 255);
 __declspec(selectany) COLORREF MSpringMenu::m_color_text = RGB(0, 0, 0);
 __declspec(selectany) COLORREF MSpringMenu::m_color_hover = RGB(199, 199, 199);
 __declspec(selectany) COLORREF MSpringMenu::m_color_border = RGB(103, 153, 255);
-
+__declspec(selectany) std::map<UINT, bool*> MSpringMenu::m_check_menu = std::map<UINT, bool*>();
 ///MSpringMenuFrame
 
 class MSpringMenuFrame_core : public MSpringFrameExpansion {

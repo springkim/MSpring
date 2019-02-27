@@ -454,7 +454,7 @@ public:///Message Function
 	}
 	INT OnMouseMove()override {
 		CPoint point = this->GetMousePoint();
-		if (m_is_drag == DragStatus::VSCROLL_DRAG) {
+		if (m_is_drag == DragStatus::VSCROLL_DRAG && (GetAsyncKeyState(VK_LBUTTON) & 0x8000)) {
 			int view_height = GetViewHeight();
 			int page_height = GetPageHeight();
 			int thumb_height = GetVThumbHeight();
@@ -462,7 +462,7 @@ public:///Message Function
 			int drag_height = point.y - m_drag_point.y;
 			m_v_scroll_pos = m_prev_scroll_pos + ((float)drag_height / (view_height - thumb_height));
 			mspring::SetRange(m_v_scroll_pos, 0.0F, 1.0F);
-		} else if (m_is_drag == DragStatus::HSCROLL_DRAG) {
+		} else if (m_is_drag == DragStatus::HSCROLL_DRAG && (GetAsyncKeyState(VK_LBUTTON) & 0x8000)) {
 			int view_width = GetViewWidth();
 			int page_width = GetPageWidth();
 			int thumb_width = GetHThumbWidth();

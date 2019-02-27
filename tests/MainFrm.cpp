@@ -22,6 +22,9 @@ BEGIN_MESSAGE_MAP(CMainFrame, MSpringFrame)
 	ON_WM_DESTROY()
 	ON_WM_ERASEBKGND()
 	ON_WM_ACTIVATE()
+	ON_COMMAND(ID_32771, &CMainFrame::On32771)
+	ON_COMMAND(ID_32772, &CMainFrame::On32772)
+	ON_COMMAND(ID_32773, &CMainFrame::On32773)
 END_MESSAGE_MAP()
 
 // CMainFrame 생성/소멸
@@ -65,6 +68,9 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	this->AddSysBtn(RESOURCE_MINIMIZE, MSpringFrame::ButtonEvent_MinimizeWindow);
 	this->SetIcon(IDR_MAINFRAME);
 	
+	MSpringMenu::ApplyCheckedOption(ID_32771, true);
+	MSpringMenu::ApplyCheckedOption(ID_32772, false);
+	MSpringMenu::ApplyCheckedOption(ID_32773, false);
 	
 	m_menu_frame = CreateFrame<MSpringMenuFrame>(this);
 	
@@ -194,4 +200,17 @@ void CMainFrame::OnActivate(UINT nState, CWnd* pWndOther, BOOL bMinimized) {
 	
 
 	// TODO: 여기에 메시지 처리기 코드를 추가합니다.
+}
+
+
+void CMainFrame::On32771() {
+	MSpringMenu::ApplyCheckedOption(ID_32771, true, true);
+}
+
+void CMainFrame::On32772() {
+	MSpringMenu::ApplyCheckedOption(ID_32772, true, true);
+}
+
+void CMainFrame::On32773() {
+	MSpringMenu::ApplyCheckedOption(ID_32773, true, true);
 }

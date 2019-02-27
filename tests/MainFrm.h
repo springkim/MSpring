@@ -52,6 +52,9 @@ public:
 	afx_msg void OnDestroy();
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 	afx_msg void OnActivate(UINT nState, CWnd* pWndOther, BOOL bMinimized);
+	afx_msg void On32771();
+	afx_msg void On32772();
+	afx_msg void On32773();
 };
 
 
